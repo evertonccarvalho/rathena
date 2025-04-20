@@ -1,9 +1,7 @@
-version: "3.7"
-
 services:
     db:
-        image: "mariadb:bionic"
-        container_name: "rathena_db"
+        image: rathena-mysql
+        container_name: mysql
         ports:
             - "3306:3306" # allow DB connections from host
         volumes:

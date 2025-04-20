@@ -150,3 +150,5 @@ Thumbs.db
 
 # generated files
 generated
+mariadb_data
+mysql_data

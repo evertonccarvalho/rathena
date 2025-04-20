@@ -1,5 +1,16 @@
-FROM alpine:3.11
+FROM ubuntu:22.04
 WORKDIR /rathena
-RUN apk add --no-cache wget git cmake make gcc g++ gdb zlib-dev mariadb-dev ca-certificates linux-headers bash valgrind netcat-openbsd
-RUN wget https://raw.githubusercontent.com/eficode/wait-for/v2.2.2/wait-for -O /bin/wait-for && chmod +x /bin/wait-for
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-libmysqlclient-dev \
+    libssl-dev \
+    zlib1g-dev \
+    cmake \
+    make \
+    g++ \
+    screen \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
 ENTRYPOINT [  ]
