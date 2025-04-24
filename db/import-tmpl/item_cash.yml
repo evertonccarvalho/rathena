@@ -29,5 +29,29 @@
 ###########################################################################
 
 Header:
-  Type: ITEM_CASH_DB
-  Version: 1
+    Type: ITEM_CASH_DB
+    Version: 1
+
+Body:
+    - Tab: Permanent
+      Items:
+          - Item: 2357 # Angel Wing
+            Price: 8000
+          - Item: 5195 # Robo Eye
+            Price: 5000
+          - Item: 5283 # Feather Beret
+            Price: 3000
+          - Item: 5124 # Valkyrie Helm
+            Price: 12000
+          - Item: 5374 # Sunglasses[1]
+            Price: 10000
+          - Item: 5287 # Ulle's Cap
+            Price: 7000
+          - Item: 5376 # Rideword Hat
+            Price: 15000
+          - Item: 5371 # Deviruchi Hat
+            Price: 10000
+          - Item: 5378 # Red Wing Hat
+            Price: 20000
+          - Item: 5379 # Angel Spirit
+            Price: 25000
