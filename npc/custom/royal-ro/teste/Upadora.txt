@@ -1,0 +1,29 @@
+prontera,144,184,5	script	Julie Upadora	955,{
+mes "[ ~Upadora~ ]";
+mes "Ol� ^FF0000"+strcharinfo(0)+"^000000 , eu sou respons�vel por dar leveis aos jogadores, gostaria de pegar o level m�ximo?";
+menu "Sim",yessir,"- N�o",noting;
+yessir:
+set baselevel,baselevel +99; //
+set joblevel,joblevel +70; //
+next;
+mes "[ ~Upadora~ ]";
+mes "Level m�ximo efetuado com sucesso!";
+close;
+
+noting:
+next;
+mes "[ ~Upadora~ ]";
+mes "Tem a certeza?";
+menu "Sim",tessir2,"N�o",noting2;
+
+tessir2:
+mes "[ ~Upadora~ ]";
+mes "Tudo bem!";
+close;
+
+noting2:
+mes "[ ~Upadora~ ]";
+mes "Tudo bem!";
+close;
+close;
+}

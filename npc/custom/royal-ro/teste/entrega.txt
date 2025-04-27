@@ -1,0 +1,26 @@
+// Script para entregar prêmios ao logar
+-	script	OnPCLoginEvent	-1,{
+    OnPCLoginEvent:
+        // Recupera o account_id do jogador
+        set .@account_id, getcharid(3);
+
+        // Checa se o jogador tem prêmios pendentes
+        query_sql("SELECT id, item_id, quantity FROM player_rewards WHERE account_id = "+.@account_id+" AND delivered = 0", .@reward_id, .@item_id, .@quantity);
+
+        // Se houver prêmios pendentes
+        if (getarraysize(.@item_id) > 0) {
+            set .@i, 0;
+            while (.@i < getarraysize(.@item_id)) {
+                // Entrega o prêmio ao jogador
+                getitem(.@item_id[.@i], .@quantity[.@i]);
+
+                // Marca como entregue no banco de dados usando o ID único do prêmio
+                query_sql("UPDATE player_rewards SET delivered = 1 WHERE id = "+.@reward_id[.@i]);
+
+                // Move para o próximo item
+                set .@i, .@i + 1;
+            }
+        }
+
+        close;
+}

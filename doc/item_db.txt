@@ -293,9 +293,3 @@ EquipScript: Script to execute when the item is equipped.
 UnEquipScript: Script to execute when the item is unequipped or when a rental item expires.
                Warning, not all item bonuses will work here as expected.
 
-
-50009,Curandeira_VIP_1_D,Curandeira VIP (1D),2,1,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ fstatus(getcharid(0),973,0,1); callfunc("Curandeira_Premium",1); },{},{}
-50010,Curandeira_VIP_7_D,Curandeira VIP (7D),2,1,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ fstatus(getcharid(0),973,0,1); callfunc("Curandeira_Premium",7); },{},{}
-50011,Curandeira_VIP_15_D,Curandeira VIP (15D),2,1,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ fstatus(getcharid(0),973,0,1); callfunc("Curandeira_Premium",15); },{},{}
-50012,Curandeira_VIP_30_D,Curandeira VIP (30D),2,1,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ fstatus(getcharid(0),973,0,1); callfunc("Curandeira_Premium",30); },{},{}
-50013,Curandeira_VIP_60_D,Curandeira VIP (60D),2,1,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ fstatus(getcharid(0),973,0,1); callfunc("Curandeira_Premium",60); },{},{}

@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//======= Por |Gin| =======////////////////////////////////////////////////////////////////////////////////////////
+//======= Versão 1.0 ======////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+prontera,153,185,5	script	Manolo do Buff	483,{
+	mes "[Manolo]";
+	mes "Você vai receber os Buffs básicos";
+	next;
+	skilleffect 75,0; sc_start SC_GLORIA,360000,5;
+	skilleffect 34,0; sc_start SC_BLESSING,360000,10;
+	skilleffect 29,0; sc_start SC_INCREASEAGI,360000,10;
+	mes "E agora o que quer fazer?";
+	next;
+	menu "Você gostaria de receber os Buffs completos?",L_right,"Quer reparar um equipamento quebrado?",L_wrong,"Já é o bastante!",L_sorry;
+	L_right:
+	next;
+	skilleffect 383,0; sc_start SC_WINDWALK,360000,5;
+	skilleffect 465,0; sc_start SC_KAITE,360000,7; 
+	skilleffect 464,0; sc_start SC_KAUPE,360000,3; 
+	skilleffect 463,0; sc_start SC_KAAHI,360000,7; 
+	skilleffect 462,0; sc_start SC_KAIZEL,360000,7;
+	skilleffect 8,0; sc_start SC_ENDURE,360000,10;
+	skilleffect 33,0; sc_start SC_ANGELUS,360000,10;
+	skilleffect 45,0; sc_start SC_CONCENTRATE,360000,10;
+	skilleffect 74,0; sc_start SC_MAGNIFICAT,360000,5;
+	skilleffect 75,0; sc_start SC_GLORIA,360000,5;
+	skilleffect 66,0; sc_start SC_IMPOSITIO,360000,5;
+	skilleffect 34,0; sc_start SC_BLESSING,360000,10;
+	skilleffect 29,0; sc_start SC_INCREASEAGI,360000,10;
+	skilleffect 357,0; sc_start SC_CONCENTRATION,360000,5;
+	skilleffect 355,0; sc_start SC_AURABLADE,360000,5;
+	skilleffect 155,0; sc_start SC_LOUD,360000,1;
+	sc_start SC_ASPDPOTION2,360000,0;
+	sc_start SC_STRFood,360000,10;
+	sc_start SC_AGIFood,360000,10;
+	sc_start SC_VITFood,360000,10;
+	sc_start SC_INTFood,360000,10;
+	sc_start SC_DEXFood,360000,10;
+	sc_start SC_LUKFood,360000,10;
+	sc_start SC_HitFood,1200000,30;
+	sc_start SC_FleeFood,1200000,30;
+	sc_start SC_BATKFood,1200000,10;
+	sc_start SC_MATKFood,120000,10;
+	skilleffect 380,0; sc_start SC_TRUESIGHT,360000,5;
+	skilleffect 361,0; sc_start SC_ASSUMPTIO,360000,5;
+	close;
+	L_wrong:
+	emotion 51;
+	next;
+	atcommand "@repairall";
+	close;
+	L_sorry:
+	next;
+	mes "[Manolo]";
+	mes "Okay, volte quando precisar de meus serviços!";
+	close;
+	}
+
+	
