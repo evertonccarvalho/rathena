@@ -1089,7 +1089,7 @@ enum sc_type : int16 {
 	SC_EP16_2_BUFF_SS,
 	SC_EP16_2_BUFF_SC,
 	SC_EP16_2_BUFF_AC,
-	
+
 	// Job Improvement Bundle
 	SC_OVERBRANDREADY,
 	SC_POISON_MIST,
@@ -1312,7 +1312,7 @@ enum sc_type : int16 {
 
 	SC_RUSH_QUAKE1,
 	SC_RUSH_QUAKE2,
-	
+
 	SC_G_LIFEPOTION,
 
 	// Hyper Novice
@@ -2391,6 +2391,7 @@ enum efst_type : int16{
 	EFST_EP16_2_BUFF_SC,
 	EFST_EP16_2_BUFF_AC,
 	EFST_GS_MAGICAL_BULLET,
+	EFST_HEAL = 973,
 
 	EFST_FALLEN_ANGEL = 976,
 	EFST_REUSE_LIMIT_MOVEPOINT,
