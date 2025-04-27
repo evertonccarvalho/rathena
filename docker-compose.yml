@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    mysql-ragnarok:
+        build: .
+        container_name: db-ragnarok
+        environment:
+            MYSQL_ROOT_PASSWORD: ragnarok
+            MYSQL_USER: ragnarok
+            MYSQL_PASSWORD: ragnarok
+            MYSQL_DATABASE: ragnarok
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_ragnarok_data:/var/lib/mysql
+        networks:
+            - private-network
+
+volumes:
+    mysql_ragnarok_data:
+
+networks:
+    private-network:
+        name: private-network
+        driver: bridge
