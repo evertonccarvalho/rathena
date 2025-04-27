@@ -1,0 +1,364 @@
+-	script	pontosmvp	-1,{
+    OnNPCKillEvent:
+        // Lista de IDs dos monstros MVP
+        setarray .@monsterID[0],
+            1038,1039,1046,1059,1086,1087,1112,1115,1147,1150,1157,1159,1190,1251,1272,1312,1373,1389,1492,1511, // Lista 1
+            1583,1630,1658,1685,1719,1734,1751,1768,1779,1785,1832,1871,1252,1623,1418,1688,1885,1873,1651,1650,1649,1648,1647,1646,1874; // Lista 3
+
+        // Lista de nomes dos monstros MVP
+        setarray .@monsterName$,
+            "Osíris","Bafomé","Doppelganger","Abelha Rainha","Besouro-Ladrão Dourado","Orc Herói","Drake","Eddga","Maya","Flor do Luar",
+            "Faraó","Freonii","Senhor dos Orcs","Cavaleiro Tempestade","Senhor das Trevas","General Tartaruga","Senhor da Morte","Drácula","Samurai Encarnado","Amon-Rá", // Lista 1
+            "Tao Gunka","Lady Branca","Egnigem Cenia","Vesper","Detardeurus","Kiel D-01","Valk Randgris","Pesar Noturno","Ktullanux","Atroce",
+            "Ifrit","Bispo Decadente","Hatii","RSX-0806","Serpente Suprema","Lady Tanee","Gorynych","Belzebu","High Wizard Katrinn","Sniper Cecil","High Priest Magaleta","Whitesmith Harword","Assassin Cross Eremes","Lord Knight Seyren","Belzebu"; // Lista 32
+
+        // Verifica se o mapa é Prontera ou qualquer um dos mapas de guilda de guild1 a guild60
+       	set .@currentMap$, strcharinfo(3);
+        if (.@currentMap$ == "prontera" || .@currentMap$ == "mvp_room" || .@currentMap$ == "bossnia_01" || .@currentMap$ == "bossnia_02" || .@currentMap$ == "bossnia_03") {
+            end;
+        }
+        for (set .@i, 1; .@i <= 60; set .@i, .@i + 1) {
+            if (.@currentMap$ == "guild" + .@i || .@currentMap$ == "guilddun" + .@i) {
+                end;
+            }
+        }
+
+        for (set .@i, 0; .@i < getarraysize(.@monsterID); .@i++) {
+            if (killedrid == .@monsterID[.@i]) {
+                set @CID, getcharid(0);
+                query_sql "SELECT `name` FROM `mvp` WHERE `char_id`=" + @CID, .@name$;
+
+                if ( .@name$ == "" ) {
+                    query_sql "INSERT INTO `mvp` (`char_id`,`account_id`,`name`,`mvps`,`pontos`) VALUES (" + @CID + "," + getcharid(3) + ",'" + strcharinfo(0) + "',1,1)";
+                    set #mvpoints, 1;
+                } else {
+                    query_sql "UPDATE `mvp` SET `mvps` = `mvps` + 1, `pontos` = `pontos` + 1 WHERE `char_id`=" + @CID;
+                    set #mvpoints, #mvpoints + 1;
+                }
+
+                message strcharinfo(0), "[#Odin]: Você possui " + #mvpoints + " ponto(s) de MvPs.";
+                announce "O jogador [" + strcharinfo(0) + "] matou o MVP " + .@monsterName$[.@i] + " no mapa " + strcharinfo(3), bc_all;
+                end;
+            }
+        }
+}
+/*
+DROP TABLE IF EXISTS `mvp`;
+CREATE TABLE `mvp` (
+  `char_id` int(11) unsigned NOT NULL auto_increment,
+  `account_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '0',
+  `mvps` int(11) unsigned NOT NULL default '0',
+  `pontos` int(11) unsigned NOT NULL default '0',
+  `premio_mvp` INT (11) NOT NULL DEFAULT '0',
+  KEY `char_id` (`char_id`),
+  KEY `account_id` (`account_id`),
+  KEY `mvps` (`mvps`),
+  KEY `pontos` (`pontos`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+*/
+
+-	pointshop	LojaMVPVip	-1,#mvpoints,7233:100
+-	pointshop	LojaMVP	-1,#mvpoints,7233:100
+-	pointshop	LojaMVPVip1	-1,#mvpoints,7233:100
+-	pointshop	LojaMVP1	-1,#mvpoints,7233:100
+
+
+prontera,183,214,3	script	Rank MVP	655,{
+
+mes "^339966[ Rank MVP ]^000000";
+mes "Bem-vindo ao sistema de Rank MVP! O que você gostaria de fazer?";
+menu "^339966[>]^000000 Ver Rank",L_Rank,"^339966[>]^000000 Loja",L_Loja;
+
+L_Rank:
+	set $topmvp, 3;
+	if (getgroupid() > 90) {
+		mes "^339966[ Rank MVP ]^000000";
+		mes "O que deseja fazer?";
+		switch(select("Ver Top",(($a) ? "Desligar anúncio":"Ligar anúncio"),"Resetar Top MVP")) {
+			case 1:
+				next;
+				break;
+			case 2:
+				set $a, ($a) ? 0 : 1;
+				mes "^339966[ Rank MVP ]^000000";
+				mes "Anúncio " + (($a) ? "ligado" : "desligado") + ".";
+				close;
+			case 3:
+				query_sql "TRUNCATE `mvp`";
+				mes "^339966[ Rank MVP ]^000000";
+				mes "O Rank MVP foi resetado.";
+				close;
+		}
+	}
+	next;
+	query_sql "SELECT `name`, `mvps`, `pontos` FROM `mvp` ORDER BY `pontos` DESC LIMIT "+$topmvp+"", @names$, @mvpkills, @mvppontos;
+	if (getarraysize(@names$) == 0) {
+		mes "^339966[ Rank MVP ]^000000";
+		mes "Nenhum jogador no Rank MVP ainda.";
+		close;
+	}
+	mes "^339966[ Top "+$topmvp+" MVPs ]^000000";
+	for (set @c, 0; @c < getarraysize(@names$); set @c, @c + 1) {
+		mes "-----------------------------------------------";
+		mes "^339966[" + (@c+1) + "] Jogador: " + @names$[@c];
+		mes "Matou: " + @mvpkills[@c] + " MVPs";
+		mes "Pontos: " + @mvppontos[@c];
+	}
+	close;
+
+L_Loja:
+	callfunc "lojamvp";
+	end;
+
+OnInit:
+	.NPCName$ = callfunc("F_NpcInitStatus", "Loja MVP", 56);
+	end;
+
+}
+
+//===== rAthena Script =======================================
+//= Euphy's Quest Shop
+//===== By: ==================================================
+//= Euphy
+//===== Current Version: =====================================
+//= 1.6b
+//===== Compatible With: =====================================
+//= rAthena SVN r16862+
+//===== Description: =========================================
+//= A dynamic quest shop based on Lunar's, with easier config.
+//= Includes support for multiple shops & cashpoints.
+//= Item Preview script by ToastOfDoom.
+//===== Additional Comments: =================================
+//= 1.0 Initial script.
+//= 1.2 Added category support.
+//= 1.3 More options and fixes.
+//= 1.4 Added debug settings.
+//= 1.5 Replaced categories with shop IDs.
+//= 1.6 Added support for purchasing stackables.
+//= 1.6a Added support for previewing costumes and robes.
+//= 1.6b Added 'disable_items' command.
+//============================================================
+
+// Shop NPCs -- supplying no argument displays entire menu.
+//	callfunc "qshopmvp"{,<shop ID>{,<shop ID>{,...}}};
+//============================================================
+function	script	lojamvp	{
+
+callfunc "qshopmvp_";
+
+ }
+
+// Script Core
+//============================================================
+-	script	quest_shop22	-1,{
+function Add; function Chk; function Slot; function A_An;
+OnInit:
+	freeloop(1);
+
+// -----------------------------------------------------------
+//  Basic shop settings.
+// -----------------------------------------------------------
+
+	set .Announce,0;	// Announce quest completion? (1: yes / 0: no)
+	set .ShowSlot,1;	// Show item slots? (2: all equipment / 1: if slots > 0 / 0: never)
+	set .ShowID,0;  	// Show item IDs? (1: yes / 0: no)
+	set .ShowZeny,0;	// Show Zeny cost, if any? (1: yes / 0: no)
+	set .MaxStack,100;	// Max number of quest items purchased at one time.
+
+// -----------------------------------------------------------
+//  Points variable -- optional quest requirement.
+//	setarray .Points$[0],"<variable name>","<display name>";
+// -----------------------------------------------------------
+
+	setarray .Points$[0],"#mvpoints","Pontos MVP";
+
+// -----------------------------------------------------------
+//  Shop IDs -- to add shops, copy dummy data at bottom of file.
+//	setarray .Shops$[1],"<Shop 1>","<Shop 2>"{,...};
+// -----------------------------------------------------------
+
+	setarray .Shops$[1],"^3CB371[ ]^000000Trocar Pontos";
+
+// -----------------------------------------------------------
+//  Quest items -- do NOT use a reward item more than once!
+//	Add(<shop ID>,<reward ID>,<reward amount>,
+//	    <Zeny cost>,<point cost>,
+//	    <required item ID>,<required item amount>{,...});
+// -----------------------------------------------------------
+	Add(1,33052,1,0,200);
+	Add(1,33053,1,0,200);
+	Add(1,33054,1,0,200);
+	Add(1,33055,1,0,200);
+	Add(1,33056,1,0,200);
+	Add(1,33057,1,0,200);
+	Add(1,33058,1,0,200);
+	Add(1,33059,1,0,200);
+	Add(1,33060,1,0,200);
+	Add(1,33061,1,0,200);
+	Add(1,33062,1,0,200);
+	Add(1,33063,1,0,200);
+	Add(1,33064,1,0,200);
+	Add(1,33065,1,0,200);
+	Add(1,33066,1,0,200);
+	Add(1,33038,1,0,200);
+	Add(1,33039,1,0,200);
+	Add(1,33040,1,0,200);
+	Add(1,33041,1,0,200);
+	Add(1,31488,1,0,200);
+	Add(1,20502,1,0,200);
+	Add(1,31601,1,0,200);
+	Add(1,31572,1,0,200);
+	Add(1,12633,1,0,100);
+	Add(1,12103,1,0,100);
+	Add(1,12214,1,0,100);
+// -----------------------------------------------------------
+
+	freeloop(0);
+	set .menu$,"";
+	for(set .@i,1; .@i<=getarraysize(.Shops$); set .@i,.@i+1) {
+		set .menu$, .menu$+.Shops$[.@i]+":";
+		npcshopdelitem "qshopmvp_"+.@i,909;
+	}
+	end;
+
+OnMenu:
+	set .@size, getarraysize(@i);
+	if (!.@size) set .@i, select(.menu$);
+	else if (.@size == 1) set .@i, @i[0];
+	else {
+		for(set .@j,0; .@j<.@size; set .@j,.@j+1)
+			set .@menu$, .@menu$+.Shops$[@i[.@j]]+":";
+		set .@i, @i[select(.@menu$)-1];
+	}
+	deletearray @i[0],getarraysize(@i);
+	if (.Shops$[.@i] == "") {
+		message strcharinfo(0),"An error has occurred.";
+		end;
+	}
+	dispbottom "Selecione apenas um item.";
+	callshop "qshopmvp_"+.@i,1;
+	npcshopattach "qshopmvp_"+.@i;
+	end;
+
+OnBuyItem:
+	// .@q[] : RewardID, BoughtAmt, RewardAmt, BaseAmt, ReqZeny, ReqPts, { ReqItem, ReqAmt, ... }
+	setarray .@q[0],@bought_nameid[0],((@bought_quantity[0] > .MaxStack)?.MaxStack:@bought_quantity[0]);
+	copyarray .@q[3],getd(".q_"+.@q[0]+"[0]"),getarraysize(getd(".q_"+.@q[0]));
+	set .@q[2],.@q[1]*.@q[3];
+	if (!.@q[2] || .@q[2] > 30000) {
+		message strcharinfo(0),"Não foi possível comprar tantos "+getitemname(.@q[0])+".";
+		end;
+	}
+	mes "[Loja MVP]";
+	mes "Recompensa: ^0055FF"+((.@q[2] > 1)?.@q[2]+"x ":"")+Slot(.@q[0])+"^000000";
+	mes "Requerimentos:";
+	disable_items;
+	if (.@q[4]) mes " > "+Chk(Zeny,.@q[4]*.@q[1])+(.@q[4]*.@q[1])+" Zeny^000000";
+	if (.@q[5]) mes " > "+Chk(getd(.Points$[0]),.@q[5]*.@q[1])+(.@q[5]*.@q[1])+" "+.Points$[1]+" ("+getd(.Points$[0])+"/"+(.@q[5]*.@q[1])+")^000000";
+	if (.@q[6]) for(set .@i,6; .@i<getarraysize(.@q); set .@i,.@i+2)
+		mes " > "+Chk(countitem(.@q[.@i]),.@q[.@i+1]*.@q[1])+((.ShowID)?"{"+.@q[.@i]+"} ":"")+Slot(.@q[.@i])+" ("+countitem(.@q[.@i])+"/"+(.@q[.@i+1]*.@q[1])+")^000000";
+	next;
+	setarray @qe[1], getiteminfo(.@q[0],5), getiteminfo(.@q[0],11);
+	if (@qe[2] > 0 && ((@qe[1] & 1) || (@qe[1] & 256) || (@qe[1] & 512) || (@qe[1] & 1024) || (@qe[1] & 2048) || (@qe[1] & 4096) || (@qe[1] & 4) || (@qe[1] & 8192)))
+		set .@preview,1;
+	addtimer 1000, strnpcinfo(0)+"::OnEnd";
+	while(1) {
+		switch(select(" - Comprar ^0055FF"+getitemname(.@q[0])+"^000000:"+((.@preview && !@qe[7])?" - Visualizar":"")+": - ^777777Cancelar^000000")) {
+		case 1:
+			if (@qe[0]) {
+				mes "[Loja MVP]";
+				mes "Faltam pontos de MVP!";
+				close;
+			}
+			if (!checkweight(.@q[0],.@q[2])) {
+				mes "[Loja MVP]";
+				mes "^FF0000Falta "+(((.@q[2]*getiteminfo(.@q[0],6))+Weight-MaxWeight)/10)+" capacidade de carga/peso para receber seu item.^000000";
+				close;
+			}
+			if (.@q[4]) set Zeny, Zeny-(.@q[4]*.@q[1]);
+			if (.@q[5]) setd .Points$[0], getd(.Points$[0])-(.@q[5]*.@q[1]);
+			if (.@q[6]) for(set .@i,6; .@i<getarraysize(.@q); set .@i,.@i+2)
+				delitem .@q[.@i],.@q[.@i+1]*.@q[1];
+			getitem .@q[0],.@q[2];
+			if (.Announce) announce strcharinfo(0)+" has created "+((.@q[2] > 1)?.@q[2]+"x "+getitemname(.@q[0]):A_An(getitemname(.@q[0])))+"!",0;
+			specialeffect2 EF_FLOWERLEAF;
+			close;
+		case 2:
+			setarray @qe[3], getlook(LOOK_HEAD_BOTTOM), getlook(LOOK_HEAD_TOP), getlook(LOOK_HEAD_MID), getlook(LOOK_ROBE), 1;
+			if ((@qe[1] & 1) || (@qe[1] & 4096)) changelook LOOK_HEAD_BOTTOM, @qe[2];
+			else if ((@qe[1] & 256) || (@qe[1] & 1024)) changelook LOOK_HEAD_TOP, @qe[2];
+			else if ((@qe[1] & 512) || (@qe[1] & 2048)) changelook LOOK_HEAD_MID, @qe[2];
+			else if ((@qe[1] & 4) || (@qe[1] & 8192)) changelook LOOK_ROBE, @qe[2];
+			break;
+		case 3:
+			close;
+		}
+	}
+
+OnEnd:
+	if (@qe[7]) {
+		changelook LOOK_HEAD_BOTTOM, @qe[3];
+		changelook LOOK_HEAD_TOP, @qe[4];
+		changelook LOOK_HEAD_MID, @qe[5];
+		changelook LOOK_ROBE, @qe[6];
+	}
+	deletearray @qe[0],8;
+	end;
+
+function Add {
+	if (getitemname(getarg(1)) == "null") {
+		debugmes "Quest reward #"+getarg(1)+" invalid (skipped).";
+		return;
+	}
+	setarray .@j[0],getarg(2),getarg(3),getarg(4);
+	for(set .@i,5; .@i<getargcount(); set .@i,.@i+2) {
+		if (getitemname(getarg(.@i)) == "null") {
+			debugmes "Quest requirement #"+getarg(.@i)+" invalid (skipped).";
+			return;
+		} else
+			setarray .@j[.@i-2],getarg(.@i),getarg(.@i+1);
+	}
+	copyarray getd(".q_"+getarg(1)+"[0]"),.@j[0],getarraysize(.@j);
+	npcshopadditem "qshopmvp_"+getarg(0),getarg(1),((.ShowZeny)?getarg(3):0);
+	return;
+}
+
+function Chk {
+	if (getarg(0) < getarg(1)) {
+		set @qe[0],1;
+		return "^FF0000";
+	} else
+		return "^00FF00";
+}
+
+function Slot {
+	set .@s$,getitemname(getarg(0));
+	switch(.ShowSlot) {
+		case 1: if (!getitemslots(getarg(0))) return .@s$;
+		case 2: if (getiteminfo(getarg(0),2) == 4 || getiteminfo(getarg(0),2) == 5) return .@s$+" ["+getitemslots(getarg(0))+"]";
+		default: return .@s$;
+	}
+}
+
+function A_An {
+	setarray .@A$[0],"a","e","i","o","u";
+	set .@B$, "_"+getarg(0);
+	for(set .@i,0; .@i<5; set .@i,.@i+1)
+		if (compare(.@B$,"_"+.@A$[.@i])) return "an "+getarg(0);
+	return "a "+getarg(0);
+}
+}
+
+function	script	qshopmvp_	{
+	deletearray @i[0],getarraysize(@i);
+	for(set .@i,0; .@i<getargcount(); set .@i,.@i+1)
+		set @i[.@i],getarg(.@i);
+	doevent "quest_shop22::OnMenu";
+	end;
+}
+
+
+// Dummy shop data -- copy as needed.
+//============================================================
+-	shop	qshopmvp_1	-1,909:-1
