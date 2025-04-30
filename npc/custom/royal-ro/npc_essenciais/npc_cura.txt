@@ -1,0 +1,380 @@
+//===== Cronus Script ======================================== 
+//= Curandeira
+//===== Por: =================================================
+//= DennyLoko
+//===== Versão Atual: ======================================== 
+//= 1.3a
+//===== Descrição: =========================================== 
+//= Recupera HP e SP gratuitamente
+//= Usado as cordenadas do NPC do eAthena
+//===== Changelog: =========================================== 
+//= 1.0 Iniciado o Npc [DennyLoko]
+//= 1.1 Organizado o NPc [Kamper]
+//= 1.1b corrigindo erro na duplicate de rachel [Tiu Skan]
+//= - Removidos ".gat" 
+//= Script Reestruturado [Mehah]
+//= 1.2 Removido falas, adicionado cura de Homunculo e Moscóvia. [RoM]
+//= 1.3 Adicionado a opção paga. [RoM]
+//= 1.3a Removido show [Keoy]
+//============================================================
+
+prontera,150,189,5	script	Buffs#hG1-1::HealerG	478,{
+
+	.@is_vip = getgroupid() >= 1? 1 : 0;
+	.@is_premium = callfunc("F_isPremium");
+
+	if(Class == 23){ 
+		set PC_DIE_COUNTER,0;
+	}
+
+	emotion 51;
+	specialeffect2 7;
+
+	if(.@is_premium == 1){
+		callfunc("F_BuffPremium");	
+		.@premium_message$ = "[Odin]: Você ainda possui %s de Buff Premium!";
+		dispbottom sprintf(.@premium_message$, callfunc("F_RemainingBuffTime"));
+	}else if (.@is_vip == 1) {
+		callfunc("F_BuffVip");
+	} else {
+		dispbottom "[Odin]: Você não é um jogador VIP, acesse www.odin.izludegames.com e saiba como conseguir os privilégios!";
+	}
+	
+	percentheal 100,100;
+	end;
+
+	OnPCLoginEvent:
+		if(callfunc("F_isPremium")){
+	        fstatus(getcharid(0), 1514, 0, 1);
+		}
+OnInit:
+	.NPCName$ = callfunc("F_NpcInitStatus", "Curandeira", 44);
+end;
+
+}
+
+function	script	F_isPremium	{
+	return #buff_premium_tick > gettimetick(2)? 1 : 0;
+
+}
+
+function	script	F_RemainingBuffTime	{
+	.@diff =  #buff_premium_tick - gettimetick(2);
+	.@remaining = .@diff / 60;
+	if(.@remaining > 1440){
+		.@days = .@remaining/ 1440;
+		.@hours =  .@remaining%1440 / 60;
+		return sprintf("%d %s e %d %s", .@remaining/ 1440, callfunc("pluralize", .@days, "dia", "dias"), .@hours, callfunc("pluralize", .@hours, "hora", "horas"));
+	} else if(.@remaining > 60){
+		.@hours = .@remaining/ 60;
+		return sprintf("%d %s", .@remaining/60, callfunc("pluralize", .@hours, "hora", "horas"));
+	} else {
+		return sprintf("%d %s", .@remaining, callfunc("pluralize", .@remaining, "minuto", "minutos"));
+	}
+}
+
+function	script	pluralize	{
+	return getarg(0) > 1 ? getarg(2) : getarg(1);
+}
+
+function	script	F_AddBuffPremium	{
+	.@days = getarg(0);
+	.@is_premium = callfunc("F_isPremium");
+
+
+	if(.@is_premium){
+		#buff_premium_tick += (60 * 60 * 24 * .@days);
+	} else {
+		#buff_premium_tick = gettimetick(2) + (60 * 60 * 24 * .@days);
+	}
+
+	dispbottom sprintf("[Odin]: Você acabou de adicionar %d dias de curandeira premium. Total %s", .@days, callfunc("F_RemainingBuffTime"));
+	return;
+}
+
+function	script	F_BuffVip	{
+	sc_start 32, 600000, 10;
+	sc_start 30, 600000, 10;
+	identifyall(true);
+	repairall getcharid(0);
+	return;
+}
+
+function	script	F_BuffPremium	{
+	sc_end SC_STONE;
+	sc_end SC_FREEZE;
+	sc_end SC_STUN;
+	sc_end SC_SLEEP;
+	sc_end SC_POISON;
+	sc_end SC_CURSE;
+	sc_end SC_SILENCE;
+	sc_end SC_CONFUSION;
+	sc_end SC_BLIND;
+	sc_end SC_BLOODING;
+	sc_end SC_DEC_AGI;
+	sc_end SC_NOEQUIPWEAPON;
+	sc_end SC_NOEQUIPSHIELD;
+	sc_end SC_NOEQUIPARMOR;
+	sc_end SC_NOEQUIPHELM;
+	sc_end SC__STRIPACCESSARY;
+	sc_end SC_ORCISH;
+
+	sc_start SC_ANGELUS,300000,10;
+	sc_start SC_MAGNIFICAT,300000,5;
+	sc_start SC_GLORIA,30000,5;
+	sc_start 32, 600000, 10;
+	sc_start 30, 600000, 10;
+
+	//Foods
+	sc_start SC_STRFOOD,600000,3;
+	sc_start SC_INTFOOD,600000,3;
+	sc_start SC_DEXFOOD,600000,3;
+	sc_start SC_AGIFOOD,600000,3;
+	sc_start SC_VITFOOD,600000,3;
+	sc_start SC_LUKFOOD,600000,3;
+
+	identifyall(true);
+	repairall getcharid(0);
+
+	return;
+}
+
+-	script	buff_command	-1,{
+OnInit:
+	bindatcmd "buff", strnpcinfo(0) + "::OnBuffCommand";
+	end;
+
+OnBuffCommand:
+	callfunc("F_BuffPremiums");
+	end;
+
+}
+
+function	script	F_BuffPremiums	{
+	.@is_premium = callfunc("F_isPremium");
+
+	if (.@is_premium == 0) {
+		dispbottom "[Odin]: Você precisa ser um jogador premium para usar este comando.";
+		end;
+	}
+
+	if (gettimetick(2) < #last_buff_use_tick) {
+		.@wait_time = (#last_buff_use_tick - gettimetick(2)) / 60;
+		dispbottom sprintf("[Odin]: Você precisa aguardar mais %d minutos antes de usar o comando novamente.", .@wait_time);
+		end;
+	}
+
+	callfunc("F_BuffPremium");
+	#last_buff_use_tick = gettimetick(2) + 300; // 5 minutos (300 segundos)
+	dispbottom "[Odin]: Buff premium aplicado com sucesso!";
+	end;
+
+}
+
+gld2_ald,258,119,5	duplicate(HealerG)	Buffs#hG2-107	478
+bat_room02,148,153,5	duplicate(HealerG)	Buffs#hG2-107BG	478
+gld2_ald,178,53,5	duplicate(HealerG)	Buffs#hG2-106	478
+gld2_ald,150,110,5	duplicate(HealerG)	Buffs#hG2-105	478
+gld2_ald,94,139,5	duplicate(HealerG)	Buffs#hG2-104	478
+gld2_ald,110,255,5	duplicate(HealerG)	Buffs#hG2-103	478
+dic_fild02,94,126,5	duplicate(HealerG)	Buffs#hG2-102	478
+dic_fild02,136,234,5	duplicate(HealerG)	Buffs#hG2-101	478
+dic_fild02,78,370,5	duplicate(HealerG)	Buffs#hG2-100	478
+dic_fild01,156,279,5	duplicate(HealerG)	Buffs#hG2-223	478
+dic_fild01,139,186,5	duplicate(HealerG)	Buffs#hG2-222	478
+dic_fild01,82,69,5	duplicate(HealerG)	Buffs#hG2-221	478
+morocc,153,97,5	duplicate(HealerG)	Buffs#hG2-2	478
+ayothaya,155,111,5	duplicate(HealerG)	Buffs#hG2-3	478
+geffen,112,63,5	duplicate(HealerG)	Buffs#hG2-4	478
+umbala,94,162,5	duplicate(HealerG)	Buffs#hG2-5	478
+payon,163,236,5	duplicate(HealerG)	Buffs#hG2-6	478
+alberta,192,151,5	duplicate(HealerG)	Buffs#hG2-7	478
+alb2trea,64,64,2	duplicate(HealerG)	Buffs#hG2-8	478
+aldebaran,134,123,5	duplicate(HealerG)	Buffs#hG2-9	478
+izlude,125,118,5	duplicate(HealerG)	Buffs#hG2-10	478
+hugel,91,148,5	duplicate(HealerG)	Buffs#hG2-1111	478
+xmas,149,136,5	duplicate(HealerG)	Buffs#hG2-11	478
+comodo,215,142,5	duplicate(HealerG)	Buffs#hG2-12	478
+amatsu,200,80,5	duplicate(HealerG)	Buffs#hG2-13	478
+gonryun,163,122,5	duplicate(HealerG)	Buffs#hG2-14	478
+yuno,149,187,5	duplicate(HealerG)	Buffs#hG2-15	478
+yuno,162,53,5	duplicate(HealerG)	Buffs#hG2-1045	478
+//niflheim,188,180,5	duplicate(HealerG)	Buffs#hG2-16	478
+louyang,221,47,5	duplicate(HealerG)	Buffs#hG2-17	478
+rachel,130,117,5	duplicate(HealerG)	Buffs#hG2-18	478
+veins,212,124,5	duplicate(HealerG)	Buffs#hG2-19	478
+moscovia,217,197,5	duplicate(HealerG)	Buffs#hG2-20	478
+cave,81,48,4	duplicate(HealerG)	Buffs#hG2-25	478
+einbroch,70,200,4	duplicate(HealerG)	Buffs#hG2-29	478
+einbech,67,100,4	duplicate(HealerG)	Buffs#hG2-129	478
+lighthalzen,165,88,2	duplicate(HealerG)	Buffs#hG2-31	478
+moc_para01,40,22,5	duplicate(HealerG)	Buffs#hG2-32	478
+niflheim,28,158,5	duplicate(HealerG)	Buffs#hG2-68	478
+prontera,229,76,5	duplicate(HealerG)	Buffs#hG2-99	478
+prontera,246,76,5	duplicate(HealerG)	Buffs#hG2-10012	478
+jawaii,254,135,5	duplicate(HealerG)	Buffs#hG2-168	478
+
+guild1,19,13,5	duplicate(HealerG)	Buffs#hG2-34	478
+guild2,19,13,5	duplicate(HealerG)	Buffs#hG2-35	478
+guild3,19,13,5	duplicate(HealerG)	Buffs#hG2-36	478
+guild4,19,13,5	duplicate(HealerG)	Buffs#hG2-37	478
+guild5,19,13,5	duplicate(HealerG)	Buffs#hG2-38	478
+guild6,19,13,5	duplicate(HealerG)	Buffs#hG2-39	478
+guild7,19,13,5	duplicate(HealerG)	Buffs#hG2-40	478
+guild8,19,13,5	duplicate(HealerG)	Buffs#hG2-41	478
+guild9,19,13,5	duplicate(HealerG)	Buffs#hG2-42	478
+guild10,19,13,5	duplicate(HealerG)	Buffs#hG2-43	478
+guild11,19,13,5	duplicate(HealerG)	Buffs#hG2-44	478
+guild12,19,13,5	duplicate(HealerG)	Buffs#hG2-45	478
+guild13,19,13,5	duplicate(HealerG)	Buffs#hG2-46	478
+guild14,19,13,5	duplicate(HealerG)	Buffs#hG2-47	478
+guild15,19,13,5	duplicate(HealerG)	Buffs#hG2-48	478
+guild16,19,13,5	duplicate(HealerG)	Buffs#hG2-49	478
+guild17,19,13,5	duplicate(HealerG)	Buffs#hG2-50	478
+guild18,19,13,5	duplicate(HealerG)	Buffs#hG2-51	478
+guild19,19,13,5	duplicate(HealerG)	Buffs#hG2-52	478
+guild20,19,13,5	duplicate(HealerG)	Buffs#hG2-53	478
+guild21,19,13,5	duplicate(HealerG)	Buffs#hG2-54	478
+guild22,19,13,5	duplicate(HealerG)	Buffs#hG2-55	478
+guild23,19,13,5	duplicate(HealerG)	Buffs#hG2-56	478
+guild24,19,13,5	duplicate(HealerG)	Buffs#hG2-57	478
+guild25,19,13,5	duplicate(HealerG)	Buffs#hG2-58	478
+guild26,19,13,5	duplicate(HealerG)	Buffs#hG2-59	478
+guild27,19,13,5	duplicate(HealerG)	Buffs#hG2-60	478
+guild28,19,13,5	duplicate(HealerG)	Buffs#hG2-61	478
+guild29,19,13,5	duplicate(HealerG)	Buffs#hG2-62	478
+guild30,19,13,5	duplicate(HealerG)	Buffs#hG2-63	478
+guild31,19,13,5	duplicate(HealerG)	Buffs#hG2-67	478
+guild32,19,13,5	duplicate(HealerG)	Buffs#hG2-1022	478
+guild33,19,13,5	duplicate(HealerG)	Buffs#hG2-69	478
+guild34,19,13,5	duplicate(HealerG)	Buffs#hG2-70	478
+guild35,19,13,5	duplicate(HealerG)	Buffs#hG2-71	478
+guild36,19,13,5	duplicate(HealerG)	Buffs#hG2-72	478
+guild37,19,13,5	duplicate(HealerG)	Buffs#hG2-73	478
+guild38,19,13,5	duplicate(HealerG)	Buffs#hG2-74	478
+guild39,19,13,5	duplicate(HealerG)	Buffs#hG2-75	478
+guild40,19,13,5	duplicate(HealerG)	Buffs#hG2-76	478
+sec_in01,172,162,5	duplicate(HealerG)	Buffs#hG2-77	478
+guild41,19,13,5	duplicate(HealerG)	Buffs#hG2-78	478
+guild42,19,13,5	duplicate(HealerG)	Buffs#hG2-79	478
+guild43,19,13,5	duplicate(HealerG)	Buffs#hG2-80	478
+guild44,19,13,5	duplicate(HealerG)	Buffs#hG2-81	478
+guild45,19,13,5	duplicate(HealerG)	Buffs#hG2-83	478
+guild46,19,13,5	duplicate(HealerG)	Buffs#hG2-842	478
+guild47,19,13,5	duplicate(HealerG)	Buffs#hG2-858	478
+guild48,19,13,5	duplicate(HealerG)	Buffs#hG2-862	478
+guild49,19,13,5	duplicate(HealerG)	Buffs#hG2-872	478
+guild50,19,13,5	duplicate(HealerG)	Buffs#hG2-882	478
+guild51,19,13,5	duplicate(HealerG)	Buffs#hG2-892	478
+guild52,19,13,5	duplicate(HealerG)	Buffs#hG2-902	478
+guild53,19,13,5	duplicate(HealerG)	Buffs#hG2-91	478
+guild54,19,13,5	duplicate(HealerG)	Buffs#hG2-92	478
+guild55,19,13,5	duplicate(HealerG)	Buffs#hG2-93	478
+guild56,19,13,5	duplicate(HealerG)	Buffs#hG2-94	478
+guild57,19,13,5	duplicate(HealerG)	Buffs#hG2-95	478
+guild58,19,13,5	duplicate(HealerG)	Buffs#hG2-96	478
+guild59,19,13,5	duplicate(HealerG)	Buffs#hG2-97	478
+guild60,19,13,5	duplicate(HealerG)	Buffs#hG2-98	478
+
+
+prt_monk,220,174,5	duplicate(HealerG)	Buffs#hG2-86	478
+dic_dun03,97,145,5	duplicate(HealerG)	Buffs#hG2-87	478
+dic_dun03,193,112,5	duplicate(HealerG)	Buffs#hG2-288	478
+dic_dun03,89,51,5	duplicate(HealerG)	Buffs#hG2-289	478
+dic_dun03,25,192,5	duplicate(HealerG)	Buffs#hG2-88	478
+moc_para01,39,170,5	duplicate(HealerG)	Buffs#hG2-90	478
+
+//bossnia_01,31,208,5	duplicate(HealerG)	Buffs#hG2-3923	478
+//bossnia_01,31,30,5	duplicate(HealerG)	Buffs#hG2-393	478
+//bossnia_01,209,31,5	duplicate(HealerG)	Buffs#hG2-3932	478
+
+izlude,123,222,5	duplicate(HealerG)	Buffs#hG2-394	478
+//bossnia_02,31,208,5	duplicate(HealerG)	Buffs#hG2-395	478
+//bossnia_02,31,30,5	duplicate(HealerG)	Buffs#hG2-396	478
+//bossnia_02,209,31,5	duplicate(HealerG)	Buffs#hG2-397	478
+
+//bossnia_03,198,208,5	duplicate(HealerG)	Buffs#hG2-398	478
+//bossnia_03,31,208,5	duplicate(HealerG)	Buffs#hG2-399	478
+//bossnia_03,31,30,5	duplicate(HealerG)	Buffs#hG2-400	478
+//bossnia_03,209,31,5	duplicate(HealerG)	Buffs#hG2-401	478
+
+//bossnia_04,198,208,5	duplicate(HealerG)	Buffs#hG2-402	478
+//bossnia_04,31,208,5	duplicate(HealerG)	Buffs#hG2-403	478
+//bossnia_04,31,30,5	duplicate(HealerG)	Buffs#hG2-404	478
+//bossnia_04,209,31,5	duplicate(HealerG)	Buffs#hG2-405	478
+
+vip_lounge,143,121,4	duplicate(HealerG)	Curandeira#hG2-994	478
+neko_isle,116,127,4	duplicate(HealerG)	Curandeira#hG2-9941	478
+
+// Comando @curarbg com restrição de mapas e cooldown de 30 segundos
+function	script	F_CurarBG	{
+	// Lista de mapas permitidos
+	.@allowed_maps$[0] = "bat_c01";
+	.@allowed_maps$[1] = "bat_c02";
+	.@allowed_maps$[2] = "bat_c03";
+	.@allowed_maps$[3] = "bat_c04";
+	.@allowed_maps$[4] = "bat_c05";
+	.@allowed_maps$[5] = "bat_c06";
+	.@allowed_maps$[6] = "bat_c07";
+	.@allowed_maps$[7] = "bat_c08";
+	.@allowed_maps$[8] = "bat_g02";
+	.@allowed_maps$[9] = "bat_g01";
+
+	// Verificar se o jogador está em um dos mapas permitidos
+	.@current_map$ = strcharinfo(3);
+	.@is_allowed = 0;
+	for (.@i = 0; .@i < getarraysize(.@allowed_maps$); .@i++) {
+		if (.@current_map$ == .@allowed_maps$[.@i]) {
+			.@is_allowed = 1;
+			break;
+		}
+	}
+
+	// Se o jogador não estiver em um dos mapas permitidos, exibir uma mensagem e sair
+	if (!.@is_allowed) {
+		dispbottom "[Odin]: O comando @curarbg só pode ser usado nos mapas bat_c01 a bat_c08.";
+		end;
+	}
+
+	// Verificar cooldown de 240 segundos
+	.@current_time = gettimetick(2);
+	if (@last_curarbg > 0 && .@current_time - @last_curarbg < 30) {
+		dispbottom "[Odin]: Você precisa esperar mais " + (30 - (.@current_time - @last_curarbg)) + " segundos para usar o comando novamente.";
+		end;
+	}
+	// Atualizar o tempo do último uso do comando
+	@last_curarbg = .@current_time;
+
+	// Verificar status VIP e Premium
+	.@is_vip = getgroupid() >= 1 ? 1 : 0;
+	.@is_premium = callfunc("F_isPremium");
+
+	// Aplicar buffs e efeitos visuais
+	emotion 51;
+	specialeffect2 7;
+
+	if (.@is_premium == 1) {
+		callfunc("F_BuffPremium");
+		.@premium_message$ = "[Odin]: Você ainda possui %s de Buff Premium!";
+		dispbottom sprintf(.@premium_message$, callfunc("F_RemainingBuffTime"));
+	} else if (.@is_vip == 1) {
+		callfunc("F_BuffVip");
+	} else {
+		dispbottom "[Odin]: Você não é um jogador VIP, acesse www.odin.izludegames.com e saiba como conseguir os privilégios!";
+	}
+	
+	// Curar o jogador completamente
+
+	return;
+}
+
+// Registro do comando @curarbg
+-	script	curarbg_command	-1,{
+	OnInit:
+		bindatcmd "curarbg", strnpcinfo(0) + "::OnCurarBG";
+		end;
+
+	OnCurarBG:
+		callfunc("F_CurarBG");
+		end;
+}

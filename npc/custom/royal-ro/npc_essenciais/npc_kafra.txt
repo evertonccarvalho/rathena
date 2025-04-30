@@ -1,0 +1,118 @@
+-	shop	UtilVip	-1,578:700,611:-1,610:-1,12548:-1,517:-1,501:-1,502:-1,503:-1,504:-1,506:-1,645:-1,656:-1,657:-1,601:-1,602:-1,1065:-1,12581:2000,715:-1,716:800,717:-1,579:-1
+-	shop	UtilNorm2	-1,611:-1,517:-1,501:-1,502:-1,503:-1,504:-1,506:-1,645:-1,656:-1,657:-1,601:-1,602:-1,1065:-1,12581:2000,717:-1
+//prontera,137,203,5	shop	Visual por Zeny	715,35061:10000000,31599:15000000,31575:15000000,31573:15000000,31586:15000000,31585:15000000,31609:15000000,31571:15000000,31574:15000000,20764:20000000,18740:30000000
+sec_in01,177,175,5	shop	Munição	632,13200:-1,13201:-1,13202:-1,13228:-1,13229:-1,13230:-1,13231:-1,13232:-1
+sec_in01,177,172,5	shop	Ninja	637,13250:-1,13251:-1,13252:-1,13253:-1,13254:-1,7521:-1,7522:-1,7523:-1,7524:-1,13255:-1,13256:-1,13257:-1,13258:-1,13259:-1,13294:-1
+
+function	script	F_KafShops	{
+	if(getgroupid() >= 5) {
+	callshop "UtilVip";
+	end;
+	}
+	callshop "UtilNorm2";
+	end;
+	
+
+	
+} 
+
+
+prontera,142,179,5	script	Utilidades#hUti::Utilidades	10545,{
+	
+	callfunc "F_KafShops",5,0,1,20,600;
+
+end;
+
+OnInit:
+    .NPCName$ = callfunc("F_NpcInitStatus", "Loja");
+    setunitdata getnpcid(0), UNPC_GROUP_ID, 46;
+    end;
+
+}
+
+moc_para01,24,18,5	duplicate(Utilidades)	Utilidades#hUti-344	10545
+guild1,13,17,5	duplicate(Utilidades)	Utilidades#hUti-34	10545
+guild2,13,17,5	duplicate(Utilidades)	Utilidades#hUti-35	10545
+guild3,13,17,5	duplicate(Utilidades)	Utilidades#hUti-36	10545
+guild4,13,17,5	duplicate(Utilidades)	Utilidades#hUti-37	10545
+guild5,13,17,5	duplicate(Utilidades)	Utilidades#hUti-38	10545
+guild6,13,17,5	duplicate(Utilidades)	Utilidades#hUti-39	10545
+guild7,13,17,5	duplicate(Utilidades)	Utilidades#hUti-40	10545
+guild8,13,17,5	duplicate(Utilidades)	Utilidades#hUti-41	10545
+guild9,13,17,5	duplicate(Utilidades)	Utilidades#hUti-42	10545
+guild10,13,17,5	duplicate(Utilidades)	Utilidades#hUti-43	10545
+guild11,13,17,5	duplicate(Utilidades)	Utilidades#hUti-44	10545
+guild12,13,17,5	duplicate(Utilidades)	Utilidades#hUti-45	10545
+guild13,13,17,5	duplicate(Utilidades)	Utilidades#hUti-46	10545
+guild14,13,17,5	duplicate(Utilidades)	Utilidades#hUti-47	10545
+guild15,13,17,5	duplicate(Utilidades)	Utilidades#hUti-48	10545
+guild16,13,17,5	duplicate(Utilidades)	Utilidades#hUti-49	10545
+guild17,13,17,5	duplicate(Utilidades)	Utilidades#hUti-50	10545
+guild18,13,17,5	duplicate(Utilidades)	Utilidades#hUti-51	10545
+guild19,13,17,5	duplicate(Utilidades)	Utilidades#hUti-52	10545
+guild20,13,17,5	duplicate(Utilidades)	Utilidades#hUti-53	10545
+guild21,13,17,5	duplicate(Utilidades)	Utilidades#hUti-54	10545
+guild22,13,17,5	duplicate(Utilidades)	Utilidades#hUti-55	10545
+guild23,13,17,5	duplicate(Utilidades)	Utilidades#hUti-56	10545
+guild24,13,17,5	duplicate(Utilidades)	Utilidades#hUti-57	10545
+guild25,13,17,5	duplicate(Utilidades)	Utilidades#hUti-58	10545
+guild26,13,17,5	duplicate(Utilidades)	Utilidades#hUti-59	10545
+guild27,13,17,5	duplicate(Utilidades)	Utilidades#hUti-60	10545
+guild28,13,17,5	duplicate(Utilidades)	Utilidades#hUti-61	10545
+guild29,13,17,5	duplicate(Utilidades)	Utilidades#hUti-62	10545
+guild30,13,17,5	duplicate(Utilidades)	Utilidades#hUti-63	10545
+guild31,13,17,5	duplicate(Utilidades)	Utilidades#hUti-64	10545
+guild32,13,17,5	duplicate(Utilidades)	Utilidades#hUti-65	10545
+guild33,13,17,5	duplicate(Utilidades)	Utilidades#hUti-66	10545
+guild34,13,17,5	duplicate(Utilidades)	Utilidades#hUti-67	10545
+guild35,13,17,5	duplicate(Utilidades)	Utilidades#hUti-68	10545
+guild36,13,17,5	duplicate(Utilidades)	Utilidades#hUti-69	10545
+guild37,13,17,5	duplicate(Utilidades)	Utilidades#hUti-70	10545
+guild38,13,17,5	duplicate(Utilidades)	Utilidades#hUti-71	10545
+guild39,13,17,5	duplicate(Utilidades)	Utilidades#hUti-72	10545
+guild40,13,17,5	duplicate(Utilidades)	Utilidades#hUti-73	10545
+guild41,13,17,5	duplicate(Utilidades)	Utilidades#hUti-74	10545
+guild42,13,17,5	duplicate(Utilidades)	Utilidades#hUti-75	10545
+guild43,13,17,5	duplicate(Utilidades)	Utilidades#hUti-76	10545
+guild44,13,17,5	duplicate(Utilidades)	Utilidades#hUti-77	10545
+guild45,13,17,5	duplicate(Utilidades)	Utilidades#hUti-79	10545
+guild46,13,17,5	duplicate(Utilidades)	Utilidades#hUti-80	10545
+guild47,13,17,5	duplicate(Utilidades)	Utilidades#hUti-81	10545
+guild48,13,17,5	duplicate(Utilidades)	Utilidades#hUti-82	10545
+guild49,13,17,5	duplicate(Utilidades)	Utilidades#hUti-83	10545
+guild50,13,17,5	duplicate(Utilidades)	Utilidades#hUti-84	10545
+guild51,13,17,5	duplicate(Utilidades)	Utilidades#hUti-85	10545
+guild52,13,17,5	duplicate(Utilidades)	Utilidades#hUti-86	10545
+guild53,13,17,5	duplicate(Utilidades)	Utilidades#hUti-87	10545
+guild54,13,17,5	duplicate(Utilidades)	Utilidades#hUti-88	10545
+guild55,13,17,5	duplicate(Utilidades)	Utilidades#hUti-89	10545
+guild56,13,17,5	duplicate(Utilidades)	Utilidades#hUti-90	10545
+guild57,13,17,5	duplicate(Utilidades)	Utilidades#hUti-91	10545
+guild58,13,17,5	duplicate(Utilidades)	Utilidades#hUti-92	10545
+guild59,13,17,5	duplicate(Utilidades)	Utilidades#hUti-93	10545
+guild60,13,17,5	duplicate(Utilidades)	Utilidades#hUti-94	10545
+
+izlude,121,118,5	duplicate(Utilidades)	Utilidades#hUti-99	10545
+
+morocc,162,97,5	duplicate(Utilidades)	Utilidades#hUti-100	10545
+geffen,115,66,5	duplicate(Utilidades)	Utilidades#hUti-101	10545
+payon,169,231,5	duplicate(Utilidades)	Utilidades#hUti-102	10545
+alberta,198,151,5	duplicate(Utilidades)	Utilidades#hUti-103	10545
+xmas,154,134,5	duplicate(Utilidades)	Utilidades#hUti-104	10545
+comodo,201,148,5	duplicate(Utilidades)	Utilidades#hUti-105	10545
+yuno,162,43,5	duplicate(Utilidades)	Utilidades#hUti-106	10545
+amatsu,193,87,5	duplicate(Utilidades)	Utilidades#hUti-107	10545
+gonryun,166,122,5	duplicate(Utilidades)	Utilidades#hUti-108	10545
+umbala,97,163,5	duplicate(Utilidades)	Utilidades#hUti-109	10545
+niflheim,212,183,5	duplicate(Utilidades)	Utilidades#hUti-110	10545
+louyang,221,50,5	duplicate(Utilidades)	Utilidades#hUti-111	10545
+jawaii,254,132,5	duplicate(Utilidades)	Utilidades#hUti-112	10545
+ayothaya,145,120,5	duplicate(Utilidades)	Utilidades#hUti-113	10545
+einbroch,57,203,5	duplicate(Utilidades)	Utilidades#hUti-114	10545
+lighthalzen,167,100,5	duplicate(Utilidades)	Utilidades#hUti-115	10545
+einbech,67,106,5	duplicate(Utilidades)	Utilidades#hUti-116	10545
+hugel,101,145,5	duplicate(Utilidades)	Utilidades#hUti-117	10545
+rachel,124,117,5	duplicate(Utilidades)	Utilidades#hUti-118	10545
+veins,213,130,5	duplicate(Utilidades)	Utilidades#hUti-119	10545
+moscovia,225,198,5	duplicate(Utilidades)	Utilidades#hUti-120	10545
+aldebaran,134,118,5	duplicate(Utilidades)	Utilidades#hUti-1202	10545

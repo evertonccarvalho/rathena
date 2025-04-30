@@ -1,0 +1,16 @@
+-	script	dropespecialpvp	-1,{
+OnPCKillEvent:
+	if ( inarray(.map$, strcharinfo(3)) != -1 ) {
+		if (rand(100) <= .chance && killrid != getcharid(3) ) {
+			getitem 35142, 35;
+			getitem 7829, 25;
+			#CASHPOINTS += 10; // I forgot to add this
+			dispbottom "Você Ganhhou 10 Cash Points. Total de Cash : "+ #CASHPOINTS;
+		}
+	}
+	end;
+
+OnInit:
+	.chance = 100; // chance to get something
+	setarray .map$, "guild_vs2", "guild_vs4"; // map list
+}

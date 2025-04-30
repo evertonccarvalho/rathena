@@ -1,0 +1,36 @@
+-	script	News	-1,{
+    OnInit:
+        // Define the interval in milliseconds (5 minutes = 300000 milliseconds)
+        .interval = 300000;
+
+        // Define the messages to be announced
+        setarray .announces$[0],
+            "[Odin]: Para acessar informações sobre eventos, utilize o comando @eventos",
+            "[Odin]: Para obter acesso aos comandos disponíveis, utilize @commands",
+            "[Odin]: Mantenha-se atualizado sobre tudo o que acontece em nosso servidor, acessando nosso servidor Discord",
+            "[Odin]: Vote todos os dias e garanta seu status VIP",
+            "[Odin]: Fazer RMT fora do sistema de RMT é passível de banimento permanente.",
+            "[Odin]: Agradecemos pela confiança em nosso trabalho! Você é muito bem-vindo aqui",
+            "[Odin]: Caso tenha alguma reclamação, sugestão ou precise de suporte, utilize nosso Discord";
+
+        // Initialize the index
+        .index = 0;
+
+        // Start the timer
+        initnpctimer;
+        end;
+
+    OnTimer300000:
+        // Announce the current message
+        announce .announces$[.index], bc_all;
+
+        // Increment the index and reset if it reaches the end of the array
+        .index++;
+        if (.index >= getarraysize(.announces$)) {
+            .index = 0;
+        }
+
+        // Restart the timer
+        initnpctimer;
+        end;
+}

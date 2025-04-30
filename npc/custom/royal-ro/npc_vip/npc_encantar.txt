@@ -1,0 +1,80 @@
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Npc criado por: Douglas Santos
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Nome do Npc: Encantador de Armas
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Versão atual: 1.0
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Npc criado em: 25/01/2016
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Compatível com eAmod
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+sec_in01,162,172,4	script	Encantador	754,{
+
+set .@npcencantador$,"^339966[ Encantador ]^000000";
+set @PrecoEncantar,10000;	// Preço para encantar a arma
+	mes .@npcencantador$;
+	mes (gettime(3)>= 6&&gettime(3)<= 12?"Bom-dia":(gettime(3)>=13&&gettime(3)<=18?"Boa-tarde":"Boa-noite"))+", ^008aff"+strcharinfo(0)+"^000000 !";
+	mes "Para encantar sua arma irei cobrar uma taxa de: "+@PrecoEncantar+"z é um item.";
+	next;
+	if(select("^0084ff[»]^000000 Sim:^ff0000[»]^000000 Não")==2){
+	mes .@npcencantador$;
+	mes "Volte quando precisar.";
+	close;
+
+}
+	if(zeny < @PrecoEncantar){
+	mes .@npcencantador$;
+	mes "Você não tem o dinheiro suficiente.";
+	close;
+}
+	mes .@npcencantador$;
+	mes "Qual elemento você quer?";
+	next;
+	switch(select("^0084ff[»]^000000 Geada [1x Cristal Azul]:^0084ff[»]^000000 Chama [1x Sangue Escarlate]:^0084ff[»]^000000 Terremoto [1x Vida Verdejante]:^0084ff[»]^000000 Ventania [1x Frescor do Vento]:^0084ff[»]^000000 Sagrado [1x Água Benta]:^ff0000[»]^000000 Sair")){
+	case 1:
+		mes .@npcencantador$;
+		if(countitem(991) < 1) {mes "Você ainda não tem o item Cristal Azul."; end;}
+		sc_start SC_WATERWEAPON,700000,5;			// Encantar com Geada, Duração: 10 Minutos, Level 5
+		delitem 991,1;
+		set zeny,zeny-@PrecoEncantar;
+		npctalk "Sua arma foi encantada com sucesso";
+		close;
+	case 2:
+		mes .@npcencantador$;
+		if(countitem(990) < 1) {mes "Você ainda não tem o item Sangue Escarlete."; end;}
+		sc_start SC_FIREWEAPON,700000,5;			// Encantar com Chama, Duração: 10 Minutos, Level 5
+		delitem 990,1;
+		set zeny,zeny-@PrecoEncantar;
+		npctalk "Sua arma foi encantada com sucesso";
+		close;
+	case 3:
+		mes .@npcencantador$;
+		if(countitem(993) < 1) {mes "Você ainda não tem o item Vida Verdejante."; end;}
+		sc_start SC_EARTHWEAPON,700000,5;			// Encantar com Terremoto, Duração: 10 Minutos, Level 5
+		delitem 993,1;
+		set zeny,zeny-@PrecoEncantar;
+		npctalk "Sua arma foi encantada com sucesso";
+		close;
+	case 4:
+		mes .@npcencantador$;
+		if(countitem(992) < 1) {mes "Você ainda não tem o item Frescor do Vento."; end;}
+		sc_start SC_WINDWEAPON,700000,5;			// Encantar com Ventania, Duração: 10 Minutos, Level 5
+		delitem 992,1;
+		set zeny,zeny-@PrecoEncantar;
+		npctalk "Sua arma foi encantada com sucesso";
+		close;
+	case 5:
+		mes .@npcencantador$;
+		if(countitem(523) < 1) {mes "Você ainda não tem o item Água Benta."; end;}
+		sc_start SC_ASPERSIO,700000,5;				// Encantar com Sagrado, Duração: 10 Minutos, Level 5
+		delitem 523,1;
+		set zeny,zeny-@PrecoEncantar;
+		npctalk "Sua arma foi encantada com sucesso";
+		close;
+	case 6:
+		close;
+	}
+}
+
+vip_lounge,144,133,4	duplicate(Encantador)	Encantador#VIPPREMIUM	754

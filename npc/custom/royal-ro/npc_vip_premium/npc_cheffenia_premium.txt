@@ -1,0 +1,249 @@
+sec_in02,135,164,4	script	Premium	635,{
+
+set .vzeny,200000;
+set .vzenyn,400000;
+set .vzenyh,600000;
+set .vzenyin,1200000;
+
+	mes "[^4B0082Cheffenia^000000]";
+	mes "Deseja teleportar para a ^4B0082Cheffenia^000000?";
+	mes "Aceitamos pagamento em Cash ou Zeny.";
+	mes "Facil: ^fc0324200k^000000 Zeny ou ^fc0324500^000000 Cash.";
+	mes "Normal: ^fc0324400k^000000 Zeny ou ^fc0324500^000000 Cash.";
+	mes "Dificil: ^fc0324600k^000000 Zeny ou ^fc0324500^000000 Cash.";
+	mes "Insana: ^fc03241.200.000^000000 Zeny ou ^fc03241200^000000 Cash.";
+	next;
+	switch(select("^BA55D3[»]^000000 Entrar","^9400D3[»]^000000 Ainda não me preparei")){
+
+	case 1:	
+		mes "[^4B0082Cheffenia^000000]";
+		mes "Qual dificuldade você vai escolher dessa vez ?";
+		mes "^FF0000Atenção^000000";
+		mes "Nossa Cheffenia conta com um sistema de drop";
+		mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+		mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+		mes "de drop que o Killer";
+		switch(select("[»] Facil","[»] Normal","[»] Dificil","[»] Insana","[»] Nada")) {
+			
+			case 1:
+next;
+			menu "[»] Zeny",comzeny,"[»] Cash",comcash;
+				
+				comzeny:
+				if (Zeny < .vzeny) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzeny;
+				warp "dic_fild01",150,279;
+				end;
+	
+				comcash:
+				if(#CASHPOINTS < 500) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-500;
+				warp "dic_fild01",150,279;
+				end;	
+			
+			case 2:
+			next;
+			menu "[»] Zeny",comzenys,"[»] Cash",comcashs;
+			
+				comzenys:
+				if (Zeny < .vzenyn) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzenyn;
+				warp "dic_fild02",71,369;
+				end;
+				
+				comcashs:
+				if(#CASHPOINTS < 500) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-500;
+				warp "dic_fild02",71,369;
+				end;
+				
+			case 3:
+			next;
+			menu "[»] Zeny",comzenyss,"[»] Cash",comcashss;
+			
+				comzenyss:
+				if (Zeny < .vzenyh) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzenyh;
+				warp "gld2_ald",104,250;
+				end;
+				
+				comcashss:
+				if(#CASHPOINTS < 500) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-500;
+				warp "gld2_ald",104,250;
+				end;
+				
+			case 4:
+			next;
+			menu "[»] Spot 1",spot1,"[»] Spot 2",spot2,"[»] Spot 3",spot3;
+
+			spot1:
+			next;
+			menu "[»] Zeny",comzenysss,"[»] Cash",comcashsss;
+			
+				comzenysss:
+				if (Zeny < .vzenyin) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzenyin;
+				warp "gld2_prt",165,251;
+				end;
+				
+				comcashsss:
+				if(#CASHPOINTS < 1200) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-1200;
+				warp "gld2_prt",165,251;
+				end;
+			spot2:
+			next;
+			menu "[»] Zeny",comzenyssss,"[»] Cash",comcashssss;
+			
+				comzenyssss:
+				if (Zeny < .vzenyin) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzenyin;
+				warp "gld2_prt",239,151;
+				end;
+				
+				comcashssss:
+				if(#CASHPOINTS < 1200) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-1200;
+				warp "gld2_prt",239,151;
+				end;
+
+			spot3:
+				next;
+			menu "[»] Zeny",comzenysssss,"[»] Cash",comcashsssss;
+			
+				comzenysssss:
+				if (Zeny < .vzenyin) goto FALTA_ZENY;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				zeny -= .vzenyin;
+				warp "gld2_prt",93,128;
+				end;
+				
+				comcashsssss:
+				if(#CASHPOINTS < 1200) goto FALTA_CASH;
+				mes "[^4B0082Cheffenia^000000]";
+				mes "^FF0000Atenção^000000";
+				mes "Nossa Cheffenia conta com um sistema de drop";
+				mes "Especial que funciona para todos do grupo, sendo um drop com % individual";
+				mes "Por exemplo, Se você estiver de goma e o Killer não, Você tem uma % maior";
+				mes "de drop que o Killer";
+				close2;
+				set #CASHPOINTS, #CASHPOINTS-1200;
+				warp "gld2_prt",93,128;
+				end;
+
+
+			case 5:
+				mes "[^4B0082Cheffenia^000000]";
+				mes "Me avise quando estiver com tudo pronto.";
+				mes "Ai envio você até o ^C0392BCheffenia^000000.";
+				end;
+		}
+		
+	case 2:
+		next;
+		mes "[^4B0082Cheffenia^000000]";
+		mes "Me avise quando estiver com tudo pronto.";
+		mes "Ai envio você até o ^C0392BCheffenia^000000.";
+		close;
+	}
+
+		FALTA_ZENY:
+		next;
+		mes "[^4B0082Cheffenia^000000]";
+		mes "Requer: ^FFA500200.000^000000z Para o modo Facil";
+		mes "Requer: ^FF8C00400.000^000000z Para o modo Normal";
+		mes "Requer: ^FF4500600.000^000000z Para o modo Dificil";
+		mes "Requer: ^FF45001.200.000^000000z Para o modo Insana";
+	end;
+		FALTA_CASH:
+		next;
+		mes "[^4B0082Cheffenia^000000]";
+		mes "Requer: ^FFA500500^000000Cash Para o modo Facil";
+		mes "Requer: ^FF8C00500^000000Cash Para o modo Normal";
+		mes "Requer: ^FF4500500^000000Cash Para o modo Dificil";
+		mes "Requer: ^FF45001.200^000000Cash Para o modo Insana";
+	end;
+	
+	OnInit:
+    .NPCName$ = callfunc("F_NpcInitStatus", "Cheffenia");
+    setunitdata getnpcid(0), UNPC_GROUP_ID, 12;
+    end;
+
+}

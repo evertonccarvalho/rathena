@@ -1,0 +1,33 @@
+prontera,161,195,3	script	Aproveite os Benefícios	108,{
+		
+mes "^339966[ Aproveite os Benefícios ]^000000";
+mes "Bem-vindo, aventureiro! Escolha um dos benefícios que gostaria de acessar.";
+next;
+switch(select("[»] Acesso à Sala VIP Premium:^ff0000[»]^000000 Sair")) {
+
+case 1:
+	if (getgroupid() < 5) {
+		mes "^339966[ Aproveite os Benefícios ]^000000";
+		mes "Você precisa ser um jogador VIP Premium para acessar a sala.";
+		close;
+	} else {
+		mes "^339966[ Aproveite os Benefícios ]^000000";
+		mes "Bem-vindo à Sala VIP Premium!";
+		next;
+		warp "vip_lounge",151,140;
+		close;
+	}
+
+ case 2:
+	mes "^339966[ Aproveite os Benefícios ]^000000";
+	mes "Volte sempre que precisar de nossos serviços!";
+	end;
+
+OnInit:
+    .NPCName$ = callfunc("F_NpcInitStatus", "Sala VIP");
+    setunitdata getnpcid(0), UNPC_GROUP_ID, 52;
+
+end;
+
+}
+}

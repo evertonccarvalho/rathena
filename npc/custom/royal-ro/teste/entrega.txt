@@ -1,26 +1,40 @@
-// Script para entregar prêmios ao logar
 -	script	OnPCLoginEvent	-1,{
     OnPCLoginEvent:
-        // Recupera o account_id do jogador
         set .@account_id, getcharid(3);
+        query_sql("SELECT id, item_id, quantity, title, description FROM player_rewards WHERE account_id = "+.@account_id+" AND delivered = 0",
+                .@reward_id, .@item_id, .@quantity, .@title$, .@description$);
 
-        // Checa se o jogador tem prêmios pendentes
-        query_sql("SELECT id, item_id, quantity FROM player_rewards WHERE account_id = "+.@account_id+" AND delivered = 0", .@reward_id, .@item_id, .@quantity);
-
-        // Se houver prêmios pendentes
         if (getarraysize(.@item_id) > 0) {
+            // Mostra diretamente os itens disponíveis
             set .@i, 0;
             while (.@i < getarraysize(.@item_id)) {
-                // Entrega o prêmio ao jogador
-                getitem(.@item_id[.@i], .@quantity[.@i]);
-
-                // Marca como entregue no banco de dados usando o ID único do prêmio
-                query_sql("UPDATE player_rewards SET delivered = 1 WHERE id = "+.@reward_id[.@i]);
-
-                // Move para o próximo item
+                mes "--------------------------";
+                mes .@title$[.@i];
+                mes .@description$[.@i];
+                mes .@quantity[.@i]+" ^0000FF"+getitemname(.@item_id[.@i])+"^000000";
                 set .@i, .@i + 1;
             }
-        }
+            mes "--------------------------";
+            mes "Deseja receber estes itens?";
+            next;
 
-        close;
+            switch(select("Receber agora", "Deixar para depois")) {
+                case 1:
+                    set .@i, 0;
+                    while (.@i < getarraysize(.@item_id)) {
+                        getitem .@item_id[.@i], .@quantity[.@i];
+                        dispbottom ">> "+.@quantity[.@i]+" ^0000FF"+getitemname(.@item_id[.@i])+"^000000";
+                        query_sql("UPDATE player_rewards SET delivered = 1 WHERE id = "+.@reward_id[.@i]);
+                        set .@i, .@i + 1;
+                    }
+                    mes "Itens entregues com sucesso!";
+                    close;
+
+                case 2:
+                    mes "Você pode receber esses itens";
+                    mes "a qualquer momento ao relogar.";
+                    close;
+            }
+        }
+        end;
 }

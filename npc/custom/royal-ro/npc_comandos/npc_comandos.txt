@@ -1,0 +1,68 @@
+-	script	ComandoVIP	-1,{
+OnInit:
+	unbindatcmd "vip";
+	bindatcmd "vip",strnpcinfo(3)+"::OnVIP",0,100;
+	set .intervalo,30;	// Tempo de intervalo para usar o comando novamente
+	end;
+
+OnVIP:
+	// Verificar se o jogador está em um dos mapas restritos
+	if (strcharinfo(3) == "arena_room" || strcharinfo(3) == "prt_are_in" || strcharinfo(3) == "bat_c01") {
+		message strcharinfo(0), "O comando @vip não pode ser usado neste mapa.";
+		end;
+	}
+
+	// Verificar se o jogador é VIP PREMIUM
+	if(getgroupid() >= 5){
+		warp "vip_lounge",152,120;
+		end;
+	} else {
+		message strcharinfo(0), "Você precisa ser um player VIP para usar esse comando.";
+	}
+	end;
+}
+
+
+
+-	script	Comando Return	-1,{
+OnInit:
+	unbindatcmd "return";
+	bindatcmd "return",strnpcinfo(3)+"::OnReturn",0,100;
+    	set .intervalo,0;	// Tempo de intervalo para usar o comando novamente
+	end;
+
+OnReturn:
+	if (strcharinfo(3) == "arena_room" || strcharinfo(3) == "prt_are_in" || strcharinfo(3) == "bat_c01") {
+		message strcharinfo(0), "O comando @return não pode ser usado neste mapa.";
+		end;
+	}
+	warp "SavePoint",0,0;
+end;
+
+}
+
+prt_in	mapflag	nomemo
+prt_in	mapflag	noteleport
+prt_in	mapflag	nowarpto
+prt_in	mapflag	nowarp
+prt_in	mapflag	pvp	off
+prt_in	mapflag	gvg	off
+prt_in	mapflag	noskill
+prt_in	mapflag	nosave	SavePoint
+prt_in	mapflag	novending
+prt_in	mapflag	noicewall
+
+
+
+-	script	Comando Die	-1,{
+OnInit:
+	unbindatcmd "die";
+	bindatcmd "die",strnpcinfo(3)+"::OnDie",0,100;
+    	set .intervalo,0;	// Tempo de intervalo para usar o comando novamente
+	end;
+
+OnDie:
+	atcommand "@die";
+end;
+
+}

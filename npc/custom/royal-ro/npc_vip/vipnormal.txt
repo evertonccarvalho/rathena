@@ -1,0 +1,25 @@
+function	script	vip1	{
+
+if (getgroupid() == 1)
+    {
+        getitem 35005,1;
+        mes "[ Sistema VIP ]";
+        mes "Você já é um Jogador VIP NORMAL.";
+        mes " ";
+        mes "^696969(Ticket VIP devolvido)^000000";
+        close;
+    }
+	
+set $nivelVip, 1;
+set $diasVip, 1;
+
+    query_sql "UPDATE `login` SET `group_id` = "+$nivelVip+", `dt_vip` = DATE_ADD(CURDATE(),INTERVAL "+$diasVip+" DAY) WHERE `group_id` = 0 AND `account_id` = "+getcharid(3);
+
+    dispbottom "^1874CDVip inserido com sucesso!^000000 Relogue seu personagem para ativa-lo.";
+    mes "Vip inserido com sucesso! Relogue seu personagem para ativa-lo.";
+    mes "Obrigado por ajudar o nosso Servidor!";
+    sleep2 2000;
+    close;
+    end;
+	
+}
