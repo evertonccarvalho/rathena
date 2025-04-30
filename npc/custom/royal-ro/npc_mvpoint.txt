@@ -7,12 +7,12 @@
 
         // Lista de nomes dos monstros MVP
         setarray .@monsterName$,
-            "OsÃ­ris","BafomÃ©","Doppelganger","Abelha Rainha","Besouro-LadrÃ£o Dourado","Orc HerÃ³i","Drake","Eddga","Maya","Flor do Luar",
-            "FaraÃ³","Freonii","Senhor dos Orcs","Cavaleiro Tempestade","Senhor das Trevas","General Tartaruga","Senhor da Morte","DrÃ¡cula","Samurai Encarnado","Amon-RÃ¡", // Lista 1
+            "Osíris","Bafomé","Doppelganger","Abelha Rainha","Besouro-Ladrão Dourado","Orc Herói","Drake","Eddga","Maya","Flor do Luar",
+            "Faraó","Freonii","Senhor dos Orcs","Cavaleiro Tempestade","Senhor das Trevas","General Tartaruga","Senhor da Morte","Drácula","Samurai Encarnado","Amon-Rá", // Lista 1
             "Tao Gunka","Lady Branca","Egnigem Cenia","Vesper","Detardeurus","Kiel D-01","Valk Randgris","Pesar Noturno","Ktullanux","Atroce",
             "Ifrit","Bispo Decadente","Hatii","RSX-0806","Serpente Suprema","Lady Tanee","Gorynych","Belzebu","High Wizard Katrinn","Sniper Cecil","High Priest Magaleta","Whitesmith Harword","Assassin Cross Eremes","Lord Knight Seyren","Belzebu"; // Lista 32
 
-        // Verifica se o mapa Ã© Prontera ou qualquer um dos mapas de guilda de guild1 a guild60
+        // Verifica se o mapa é Prontera ou qualquer um dos mapas de guilda de guild1 a guild60
        	set .@currentMap$, strcharinfo(3);
         if (.@currentMap$ == "prontera" || .@currentMap$ == "mvp_room" || .@currentMap$ == "bossnia_01" || .@currentMap$ == "bossnia_02" || .@currentMap$ == "bossnia_03") {
             end;
@@ -36,7 +36,21 @@
                     set #mvpoints, #mvpoints + 1;
                 }
 
-                message strcharinfo(0), "[#Odin]: VocÃª possui " + #mvpoints + " ponto(s) de MvPs.";
+									// Log do kill do MVP
+								set .@char_id, getcharid(0);  // ID do personagem
+								set .@account_id, getcharid(3);  // ID da conta
+								set .@name$, strcharinfo(0);  // Nome do personagem
+								set .@mob_id, killedrid;  // ID do monstro morto
+								set .@mob_name$, .@monsterName$[.@i];  // Nome do monstro morto
+								set .@map$, strcharinfo(3);  // Mapa onde o evento ocorreu
+								set .@mvpexp, 100;  // Defina a quantidade de EXP ou pontos como preferir
+								set .@prize, 0;  // Defina o prêmio, por exemplo, se for um item ou valor
+
+								// Log na tabela `mvplog`
+								query_sql "INSERT INTO `mvplog` (`mvp_date`, `kill_char_id`, `monster_id`, `prize`, `mvpexp`, `map`) VALUES (NOW(), " + .@char_id + ", " + .@mob_id + ", " + .@prize + ", " + .@mvpexp + ", '" + .@map$ + "')";
+
+
+                message strcharinfo(0), "[#Odin]: Você possui " + #mvpoints + " ponto(s) de MvPs.";
                 announce "O jogador [" + strcharinfo(0) + "] matou o MVP " + .@monsterName$[.@i] + " no mapa " + strcharinfo(3), bc_all;
                 end;
             }
@@ -67,7 +81,7 @@ CREATE TABLE `mvp` (
 prontera,183,214,3	script	Rank MVP	655,{
 
 mes "^339966[ Rank MVP ]^000000";
-mes "Bem-vindo ao sistema de Rank MVP! O que vocÃª gostaria de fazer?";
+mes "Bem-vindo ao sistema de Rank MVP! O que você gostaria de fazer?";
 menu "^339966[>]^000000 Ver Rank",L_Rank,"^339966[>]^000000 Loja",L_Loja;
 
 L_Rank:
@@ -75,14 +89,14 @@ L_Rank:
 	if (getgroupid() > 90) {
 		mes "^339966[ Rank MVP ]^000000";
 		mes "O que deseja fazer?";
-		switch(select("Ver Top",(($a) ? "Desligar anÃºncio":"Ligar anÃºncio"),"Resetar Top MVP")) {
+		switch(select("Ver Top",(($a) ? "Desligar anúncio":"Ligar anúncio"),"Resetar Top MVP")) {
 			case 1:
 				next;
 				break;
 			case 2:
 				set $a, ($a) ? 0 : 1;
 				mes "^339966[ Rank MVP ]^000000";
-				mes "AnÃºncio " + (($a) ? "ligado" : "desligado") + ".";
+				mes "Anúncio " + (($a) ? "ligado" : "desligado") + ".";
 				close;
 			case 3:
 				query_sql "TRUNCATE `mvp`";
@@ -247,7 +261,7 @@ OnBuyItem:
 	copyarray .@q[3],getd(".q_"+.@q[0]+"[0]"),getarraysize(getd(".q_"+.@q[0]));
 	set .@q[2],.@q[1]*.@q[3];
 	if (!.@q[2] || .@q[2] > 30000) {
-		message strcharinfo(0),"NÃ£o foi possÃ­vel comprar tantos "+getitemname(.@q[0])+".";
+		message strcharinfo(0),"Não foi possível comprar tantos "+getitemname(.@q[0])+".";
 		end;
 	}
 	mes "[Loja MVP]";
