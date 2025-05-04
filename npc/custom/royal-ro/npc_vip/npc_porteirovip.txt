@@ -1,5 +1,5 @@
 prontera,161,195,3	script	Aproveite os Benefícios	108,{
-		
+
 mes "^339966[ Aproveite os Benefícios ]^000000";
 mes "Bem-vindo, aventureiro! Escolha um dos benefícios que gostaria de acessar.";
 next;
