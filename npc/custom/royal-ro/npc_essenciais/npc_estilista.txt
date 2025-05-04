@@ -1,51 +1,51 @@
 //=============================================
 -	script	Estilista	-1,{
- 
+
 //==============================================================
 //= Configurações do NPC
 //==============================================================
- 
+
         set .npcname$, "^339966[Estilista]^000000"; //Nome que irá aparecer nas falas do NPC
         set .vip_needed, 5; //Nível necessário de VIP para acessar os recursos especias do NPC
-       
+
         set .max_v_hstyle, 83; //Número máximo de estilos de cabelo para jogadores VIP
         set .max_v_hcolor, 253; //Número máximo de cores de cabelo para jogadores VIP
         set .max_v_ccolor, 553; //Número máximo de cores de roupa para jogadores VIP
-       
+
         set .novip_can_acess, 0; //Jogadores não-VIP poderão acessar os menus de salvamento e carregamento de estilos? (1 para sim, 0 para não)
-       
+
         set .max_hstyle, 83; //Número máximo de estilos de cabelo para jogadores comuns
         set .max_hcolor, 253; //Número máximo de cores de cabelo para jogadores comuns
         set .max_ccolor, 553;    //Número máximo de cores de roupa para jogadores comuns
-       
+
         //Número mínimo para estilos e cores para todos jogadores
         set .min_hstyle, 1;
         set .min_hcolor, 1;
         set .min_ccolor, 1;
-       
+
         set .max_sns, 10; //Número máximo de caracteres aceitos para os nomes dos estilos
- 
+
 //==============================================================
 //==============================================================
-       
+
 	   		//if ( countitem(65000) ||  countitem(65002) ||  countitem(65003) ||  countitem(65004) ||  countitem(65005) ||  countitem(65006) ||  countitem(65007) ||  countitem(65008) ) {
 		//mes .npcname$;
 		//mes "Olá ^FFA500"+strcharinfo(0)+"^000000. O que você deseja?";
 		//menu "^3CB371[»]^000000 Alterar estilo do cabelo.",c_hstyle,"^3CB371[»]^000000 Alterar cor da roupa.",c_ccolor,"^ff0000[»]^000000 Sair.",L_end;
 		//close;
 		//}
-		
+
         mes .npcname$;
 	mes (gettime(3)>= 6&&gettime(3)<= 12?"Bom-dia":(gettime(3)>=13&&gettime(3)<=18?"Boa-tarde":"Boa-noite"))+", ^008aff"+strcharinfo(0)+"^000000 !";
         mes "Eu sou o Estilista, eu posso alterar sua aparência com muitos e variados estilos e cores de roupa e cabelo.";
         next;
         goto menu1;
-       
+
         menu1 : {
                 set @hstyle, getlook (1);
                 set @hcolor, getlook (6);
                 set @ccolor, getlook (7);
-               
+
                 if (.novip_can_acess == 0) {
                         if (getgroupid() < .vip_needed) {
                                 set .save_style$, "";
@@ -67,7 +67,7 @@
                 next;
                 menu "^3CB371[»]^000000 Alterar estilo do cabelo.",c_hstyle,"^3CB371[»]^000000 Alterar cor do cabelo.",c_hcolor,"^3CB371[»]^000000 Alterar cor da roupa.",c_ccolor,.save_style$,save_style,.load_style$,load_style,"^ff0000[»]^000000 Sair.",L_end;
         }
-       
+
         c_hstyle: {
                 mes .npcname$;
                 mes "Seu estilo de cabelo atual é o de número : ^FF0000"+@hstyle+"^000000.";
@@ -171,7 +171,7 @@
                         }
                 }
         }
-       
+
         c_hcolor: {
                 mes .npcname$;
                 mes "Sua cor de cabelo atual é a de número : ^FF0000"+@hcolor+"^000000.";
@@ -275,7 +275,7 @@
                         }
                 }
         }
-       
+
         c_ccolor: {
                 mes .npcname$;
                 mes "Sua cor de roupa atual é a de número : ^FF0000"+@ccolor+"^000000.";
@@ -379,19 +379,19 @@
                         }
                 }
         }
-       
+
         save_style: {
                 if (style1$ == "") { set style1$, "Vazio"; }
                 if (style2$ == "") { set style2$, "Vazio"; }
                 if (style3$ == "") { set style3$, "Vazio"; }
                 if (style4$ == "") { set style4$, "Vazio"; }
                 if (style5$ == "") { set style5$, "Vazio"; }
-       
+
                 mes .npcname$;
                 mes "Escolha em qual slot você deseja salvar seu estilo atual.";
                 next;
                 menu "- Estilo 1 [ ^FF6C00"+style1$+"^000000 ]",style1_save,"- Estilo 2 [ ^FF6C00"+style2$+"^000000 ]",style2_save,"- Estilo 3 [ ^FF6C00"+style3$+"^000000 ]",style3_save,"- Estilo 4 [ ^FF6C00"+style4$+"^000000 ]",style4_save,"- Estilo 5 [ ^FF6C00"+style5$+"^000000 ]",style5_save,"- Voltar.",menu1,"- Sair.",L_end;
-               
+
                 style1_save: {
                         if (style1$ == "Vazio") {
                                 mes .npcname$;
@@ -551,19 +551,19 @@
                         menu "- Alterar aparência.",menu1,"- Sair.",L_end;
                 }
         }
-       
+
         load_style: {
                 if (style1$ == "") { set style1$, "Vazio"; }
                 if (style2$ == "") { set style2$, "Vazio"; }
                 if (style3$ == "") { set style3$, "Vazio"; }
                 if (style4$ == "") { set style4$, "Vazio"; }
                 if (style5$ == "") { set style5$, "Vazio"; }
-               
+
                 mes .npcname$;
                 mes "Escolha qual estilo deseja carregar.";
                 next;
                 menu "- Estilo 1 [ ^FF6C00"+style1$+"^000000 ]",style1_load,"- Estilo 2 [ ^FF6C00"+style2$+"^000000 ]",style2_load,"- Estilo 3 [ ^FF6C00"+style3$+"^000000 ]",style3_load,"- Estilo 4 [ ^FF6C00"+style4$+"^000000 ]",style4_load,"- Estilo 5 [ ^FF6C00"+style5$+"^000000 ]",style5_load,"- Voltar.",menu1,"- Sair.",L_end;
-               
+
                 style1_load: {
                         if (style1$ == "Vazio") {
                                 mes .npcname$;
@@ -577,7 +577,7 @@
                                 specialeffect2 54,strcharinfo(0);
                                 goto load_sucess;
                         }
-                }              
+                }
                 style2_load: {
                         if (style2$ == "Vazio") {
                                 mes .npcname$;
@@ -591,7 +591,7 @@
                                 specialeffect2 54,strcharinfo(0);
                                 goto load_sucess;
                         }
-                }              
+                }
                 style3_load: {
                         if (style3$ == "Vazio") {
                                 mes .npcname$;
@@ -634,7 +634,7 @@
                                 goto load_sucess;
                         }
                 }
-               
+
                 load_sucess: {
                         mes .npcname$;
                         mes "Estilo carregado com sucesso, deseja mais algo?";
@@ -642,7 +642,7 @@
                         menu "- Alterar aparência.",menu1,"- Carregar outro estilo.",load_style,"- Sair.",L_end;
                 }
         }
-       
+
         L_end: {
                 mes .npcname$;
                 mes "Tudo bem, volte quando precisar dos meus serviços.";
@@ -653,8 +653,9 @@ OnInit:
     .NPCName$ = callfunc("F_NpcInitStatus", "Escolha seu estilo");
     setunitdata getnpcid(0), UNPC_GROUP_ID, 57;
     end;
-		
+
 }
 sec_in01,175,167,3	duplicate(Estilista)	Estilista#aret	122
 vip_lounge,164,126,3	duplicate(Estilista)	Estilista#arets	122
-prontera,169,228,5	duplicate(Estilista)	Estilista#vip	122
+prontera,167,178,3	duplicate(Estilista)	Estilista#vip	122
+
