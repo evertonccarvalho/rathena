@@ -19,9 +19,24 @@
 // NPCs de Entrada
 //============================================================
 prontera,132,205,6	script	Equipe Bossnia#1	998,{
-	mes "[Riss]";
-	mes "...";
+
+	menu "Entrar na Cheffênia",acesso,"Loja",loja;
+
+
+	loja:
+	close2;
+	callshop "CHEFFNIA_ETCS", 1;
+	end;
+	acesso:
 	next;
+
+	if (.acesso == 0) {
+	mes "[Porteiro Cheffênia]";
+	mes "A Cheffênia está aberta somente aos Sábados e Domingos, das 18h às 22h.";
+	mes "Você precisa de 10kk";
+		close;
+	}
+
 	switch(select("Falar com Riss","Ver Ranking")) {
 		case 1: break;
 		case 2:
