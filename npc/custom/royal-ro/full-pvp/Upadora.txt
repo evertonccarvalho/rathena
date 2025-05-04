@@ -1,20 +1,20 @@
 prontera,144,184,5	script	Julie Upadora	955,{
 mes "[ ~Upadora~ ]";
-mes "Olï¿½ ^FF0000"+strcharinfo(0)+"^000000 , eu sou responsï¿½vel por dar leveis aos jogadores, gostaria de pegar o level mï¿½ximo?";
-menu "Sim",yessir,"- Nï¿½o",noting;
+mes "Olá ^FF0000"+strcharinfo(0)+"^000000 , eu sou responsável por dar leveis aos jogadores, gostaria de pegar o level máximo?";
+menu "Sim",yessir,"- Não",noting;
 yessir:
-set baselevel,baselevel +99; //
+set baselevel,baselevel +120; //
 set joblevel,joblevel +70; //
 next;
 mes "[ ~Upadora~ ]";
-mes "Level mï¿½ximo efetuado com sucesso!";
+mes "Level máximo efetuado com sucesso!";
 close;
 
 noting:
 next;
 mes "[ ~Upadora~ ]";
 mes "Tem a certeza?";
-menu "Sim",tessir2,"Nï¿½o",noting2;
+menu "Sim",tessir2,"Não",noting2;
 
 tessir2:
 mes "[ ~Upadora~ ]";
