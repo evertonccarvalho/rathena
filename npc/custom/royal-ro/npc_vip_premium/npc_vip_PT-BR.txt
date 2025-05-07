@@ -108,3 +108,18 @@ prontera,161,195,3	script	Central VIP	108,{
 			close;
 		}
 }
+
+vip_lounge,154,115,4	script	Sair	108,{
+
+	mes "[Voltar]";
+	mes "Deseja retornar para ^008affProntera^000000?";
+	if (select("^008affSim^000000", "Não") == 1) {
+		mes "Teleportando...";
+		close2;
+		warp "prontera", 155, 180;
+		end;
+	} else {
+		mes "Certo, fique à vontade!";
+		close;
+	}
+}
