@@ -1,187 +1,110 @@
 prontera,161,195,3	script	Central VIP	108,{
-
-OnTalk:
-	mes .npc$;
-	set .@hora, gettime(3);
-	mes ((.@hora >= 6 && .@hora <= 12) ? "Bom-dia" : ((.@hora >= 13 && .@hora <= 18) ? "Boa-tarde" : "Boa-noite"))+", ^008aff"+strcharinfo(0)+"^000000!";
-	mes "Bem-vindo à Central VIP.";
-
-	if (vip_status(1)) {
-		mes "^008affSeu acesso VIP expira em:^000000 " + callfunc("Time2Str", vip_status(2)) + ".";
-		mes " ";
-	}
-
-	mes "Em que posso ajudar?";
-	next;
-
-	set .@s, select(
-		.bcor$ + "Desejo ir à Central VIP.",
-		.bcor$ + ((vip_status(1)) ? "Desejo estender meu tempo ^008affVIP^000000." : "Desejo me tornar um jogador ^008affVIP^000000."),
-		.rcor$ + "Não quero nada."
-	);
-
-	switch (.@s) {
-		case 1:
-			if (!vip_status(1)) {
-				mes .npc$;
-				mes "Desculpe! O acesso à Central VIP é permitido somente a jogadores ^008affVIP^000000.";
-				mes "-----------------------------------";
-				mes "Visite nosso site e saiba como se tornar um jogador ^008affVIP^000000.";
-				close;
-			}
-			warp .map$, .cord[0], .cord[1];
-			end;
-
-		case 2:
-			mes .npc$;
-			mes "Quantos dias de acesso ^008affVIP^000000 você deseja adquirir?";
-			next;
-
-			set .@i, select(
-				.bcor$ + .vip_day[0] + " Dias.",
-				.bcor$ + .vip_day[1] + " Dias.",
-				.bcor$ + .vip_day[2] + " Dias."
-			) - 1;
-
-			mes .npc$;
-			mes "Você escolheu o plano de:";
-			mes "^4527A0VIP:^000000 " + .vip_day[.@i] + " Dias.";
-			mes "^4527A0Preço:^000000 " + F_InsertComma(.vip_cashpoint[.@i]) + " #CASHPOINTS.";
-			sleep2 1000;
-			mes " ";
-			mes "Deseja continuar?";
-			next;
-
-			if (select(.bcor$ + "Comprar", .rcor$ + "Cancelar") == 1) {
-				if (#CASHPOINTS < .vip_cashpoint[.@i]) {
-					mes .npc$;
-					mes "Você não possui ^008aff" + F_InsertComma(.vip_cashpoint[.@i]) + " #CASHPOINTS^000000.";
-					close;
-				}
-				#CASHPOINTS -= .vip_cashpoint[.@i];
-				vip_time(.vip_day[.@i] * 1440);
-				mes .npc$;
-				mes "Parabéns! Você adquiriu " + .vip_day[.@i] + " dias de acesso VIP.";
-				close;
-			} else {
-				mes .npc$;
-				mes "Tudo bem, volte sempre que quiser.";
-				close;
-			}
-
-		case 3:
-			mes .npc$;
-			mes "Certo, até a próxima.";
-			close;
-	}
-
-OnInit:
-	.npc$ = "^FF7F00[ Central VIP ]^000000";     // Nome do NPC
-	.bcor$ = "^008aff[»]^000000 ";		           // Option Button Symbol
-	.rcor$ = "^ff0000[»]^000000 ";					     // Cancel Button Symbol
-	setarray .vip_day, 7, 14, 30;                // Dias disponíveis para compra
-	setarray .vip_cashpoint, 4000, 7000, 10000;  // Preço correspondente por dias
-	.map$ = "vip_lounge"; 	                     // Mapa da sala VIP
-	setarray .cord, 152, 120;                    // Coordenadas da sala VIP
-
-	 .NPCName$ = callfunc("F_NpcInitStatus", "Sala VIP");
-    setunitdata getnpcid(0), UNPC_GROUP_ID, 52;
-	end;
-}
-
-
--	script	ComandoVIP	-1,{
-OnInit:
-	unbindatcmd "vip";
-	bindatcmd "vip", strnpcinfo(3) + "::OnVIP", 0, 100;
-
-	// Configurações
-	set .intervalo, 30; // segundos de cooldown
-	setarray .vip_day, 7, 14, 30;
-	setarray .vip_cashpoint, 4000, 7000, 10000;
-	.map$ = "vip_lounge";
-	setarray .cord, 152, 120;
-	.bcor$ = "^008aff[»]^000000 ";
-	.rcor$ = "^ff0000[»]^000000 ";
-	.npc$ = "^FF7F00[ Central VIP ]^000000";
-	end;
-
-OnVIP:
-	// Verificação de cooldown
-	if (@lastvip && gettimetick(2) - @lastvip < .intervalo) {
-		dispbottom "Espere " + (.intervalo - (gettimetick(2) - @lastvip)) + " segundos para usar o comando novamente.";
+	OnTalk:
+		callsub ShowMainMenu;
 		end;
-	}
-	@lastvip = gettimetick(2);
 
-	set .@hora, gettime(3);
-	mes .npc$;
-	mes ((.@hora >= 6 && .@hora <= 12) ? "Bom-dia" : ((.@hora >= 13 && .@hora <= 18) ? "Boa-tarde" : "Boa-noite")) + ", ^008aff" + strcharinfo(0) + "^000000!";
-	mes "Bem-vindo à Central VIP via comando.";
+	OnInit:
+		.npc_name$ = "^FF7F00[ Central VIP ]^000000";
+		.bcor$ = "^008aff[»]^000000 ";
+		.rcor$ = "^ff0000[»]^000000 ";
+		setarray .vip_days, 7, 14, 30;
+		setarray .vip_prices, 4000, 7000, 10000;
+		.vip_map$ = "vip_lounge";
+		setarray .vip_coords, 152, 120;
+		.cooldown = 30; // segundos
 
-	if (vip_status(1)) {
-		mes "^008affSeu acesso VIP expira em:^000000 " + callfunc("Time2Str", vip_status(2)) + ".";
-		mes " ";
-	}
+		// Bind do comando @vip
+		unbindatcmd "vip";
+		bindatcmd "vip", strnpcinfo(3) + "::OnVIP", 0, 100;
 
-	mes "O que deseja fazer?";
-	next;
+		callfunc("F_NpcInitStatus", "Sala VIP");
+		setunitdata getnpcid(0), UNPC_GROUP_ID, 52;
+		end;
 
-	set .@s, select(
-		.bcor$ + "Entrar na Central VIP.",
-		.bcor$ + ((vip_status(1)) ? "Estender tempo ^008affVIP^000000." : "Tornar-se ^008affVIP^000000."),
-		.rcor$ + "Sair"
-	);
-
-	switch (.@s) {
-		case 1:
-			if (!vip_status(1)) {
-				mes .npc$;
-				mes "Desculpe! O acesso à Central VIP é permitido somente a jogadores ^008affVIP^000000.";
-				mes "-----------------------------------";
-				mes "Visite nosso site e saiba como se tornar um jogador ^008affVIP^000000.";
-				close;
-			}
-			warp .map$, .cord[0], .cord[1];
+	OnVIP:
+		if (@lastvip && gettimetick(2) - @lastvip < .cooldown) {
+			dispbottom "Espere " + (.cooldown - (gettimetick(2) - @lastvip)) + " segundos para usar o comando novamente.";
 			end;
+		}
+		@lastvip = gettimetick(2);
 
-		case 2:
-			mes .npc$;
-			mes "Quantos dias de acesso ^008affVIP^000000 você deseja adquirir?";
-			next;
+		callsub ShowMainMenu;
+		end;
 
-			set .@i, select(
-				.bcor$ + .vip_day[0] + " Dias.",
-				.bcor$ + .vip_day[1] + " Dias.",
-				.bcor$ + .vip_day[2] + " Dias."
-			) - 1;
+	ShowMainMenu:
+		mes .npc_name$;
 
-			mes .npc$;
-			mes "Você escolheu:";
-			mes "^4527A0VIP:^000000 " + .vip_day[.@i] + " dias.";
-			mes "^4527A0Preço:^000000 " + F_InsertComma(.vip_cashpoint[.@i]) + " #CASHPOINTS.";
-			next;
+		set .@hora, gettime(3);
+		mes ((.@hora >= 6 && .@hora <= 12) ? "Bom dia" : ((.@hora >= 13 && .@hora <= 18) ? "Boa tarde" : "Boa noite")) + ", ^008aff" + strcharinfo(0) + "^000000!";
+		mes "Bem-vindo à Central VIP.";
 
-			if (select(.bcor$ + "Confirmar", .rcor$ + "Cancelar") == 1) {
-				if (#CASHPOINTS < .vip_cashpoint[.@i]) {
-					mes .npc$;
-					mes "Você não possui ^008aff" + F_InsertComma(.vip_cashpoint[.@i]) + " #CASHPOINTS^000000.";
+		if (vip_status(1)) {
+			mes "^008affSeu acesso VIP expira em:^000000 " + callfunc("Time2Str", vip_status(2)) + ".";
+			mes " ";
+		}
+
+		mes "O que deseja fazer?";
+		next;
+
+		set .@opt, select(
+			.bcor$ + "Entrar na Central VIP",
+			.bcor$ + ((vip_status(1)) ? "Estender tempo ^008affVIP^000000" : "Tornar-se jogador ^008affVIP^000000"),
+			.rcor$ + "Sair"
+		);
+
+		switch (.@opt) {
+			case 1:
+				if (!vip_status(1)) {
+					mes .npc_name$;
+					mes "Desculpe! O acesso à Central VIP é permitido somente a jogadores ^008affVIP^000000.";
 					close;
 				}
-				#CASHPOINTS -= .vip_cashpoint[.@i];
-				vip_time(.vip_day[.@i] * 1440);
-				mes .npc$;
-				mes "Parabéns! Você adquiriu " + .vip_day[.@i] + " dias de acesso VIP.";
+				warp .vip_map$, .vip_coords[0], .vip_coords[1];
+				end;
+
+			case 2:
+				callsub PurchaseVIP;
+				end;
+
+			case 3:
+				mes .npc_name$;
+				mes "Certo, até a próxima.";
 				close;
-			} else {
-				mes .npc$;
-				mes "Tudo bem, volte sempre que quiser.";
+		}
+
+	PurchaseVIP:
+		mes .npc_name$;
+		mes "Quantos dias de acesso ^008affVIP^000000 você deseja adquirir?";
+		next;
+
+		set .@i, select(
+			.bcor$ + .vip_days[0] + " Dias",
+			.bcor$ + .vip_days[1] + " Dias",
+			.bcor$ + .vip_days[2] + " Dias"
+		) - 1;
+
+		mes .npc_name$;
+		mes "Você escolheu:";
+		mes "^4527A0VIP:^000000 " + .vip_days[.@i] + " Dias";
+		mes "^4527A0Preço:^000000 " + F_InsertComma(.vip_prices[.@i]) + " #CASHPOINTS";
+		mes " ";
+		mes "Deseja continuar?";
+		next;
+
+		if (select(.bcor$ + "Confirmar compra", .rcor$ + "Cancelar") == 1) {
+			if (#CASHPOINTS < .vip_prices[.@i]) {
+				mes .npc_name$;
+				mes "Você não possui ^008aff" + F_InsertComma(.vip_prices[.@i]) + " #CASHPOINTS^000000.";
 				close;
 			}
-
-		case 3:
-			mes .npc$;
-			mes "Certo, até a próxima.";
+			#CASHPOINTS -= .vip_prices[.@i];
+			vip_time(.vip_days[.@i] * 1440);
+			mes .npc_name$;
+			mes "Parabéns! Você adquiriu " + .vip_days[.@i] + " dias de acesso VIP.";
 			close;
-	}
+		} else {
+			mes .npc_name$;
+			mes "Tudo bem, volte sempre que quiser.";
+			close;
+		}
 }
