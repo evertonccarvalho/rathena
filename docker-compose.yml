@@ -3,6 +3,7 @@ version: "3.8"
 services:
     mysql-ragnarok:
         build: .
+        command: --default-authentication-plugin=mysql_native_password
         container_name: db-ragnarok
         environment:
             MYSQL_ROOT_PASSWORD: ragnarok
@@ -13,6 +14,37 @@ services:
             - "3306:3306"
         volumes:
             - mysql_ragnarok_data:/var/lib/mysql
+        networks:
+            - private-network
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mysqladmin",
+                    "ping",
+                    "-h",
+                    "localhost",
+                    "-u",
+                    "root",
+                    "-pragnarok",
+                ]
+            interval: 5s
+            timeout: 10s
+            retries: 5
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin-ragnarok
+        depends_on:
+            mysql-ragnarok:
+                condition: service_healthy
+        environment:
+            PMA_HOST: mysql-ragnarok
+            PMA_PORT: 3306
+            PMA_USER: ragnarok
+            PMA_PASSWORD: ragnarok
+        ports:
+            - "8080:80"
         networks:
             - private-network
 
