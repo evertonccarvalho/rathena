@@ -1,27 +1,3 @@
--	script	ComandoVIP	-1,{
-OnInit:
-	unbindatcmd "vip";
-	bindatcmd "vip",strnpcinfo(3)+"::OnVIP",0,100;
-	set .intervalo,30;	// Tempo de intervalo para usar o comando novamente
-	end;
-
-OnVIP:
-	// Verificar se o jogador está em um dos mapas restritos
-	if (strcharinfo(3) == "arena_room" || strcharinfo(3) == "prt_are_in" || strcharinfo(3) == "bat_c01") {
-		message strcharinfo(0), "O comando @vip não pode ser usado neste mapa.";
-		end;
-	}
-
-	// Verificar se o jogador é VIP PREMIUM
-	if(getgroupid() >= 5){
-		warp "vip_lounge",152,120;
-		end;
-	} else {
-		message strcharinfo(0), "Você precisa ser um player VIP para usar esse comando.";
-	}
-	end;
-}
-
 
 
 -	script	Comando Return	-1,{
