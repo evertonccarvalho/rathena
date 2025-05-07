@@ -3,6 +3,11 @@ prontera,161,195,3	script	Central VIP	108,{
 		callsub ShowMainMenu;
 		end;
 
+	OnVIP:
+		@lastvip = gettimetick(2);
+		callsub ShowMainMenu;
+		end;
+
 	OnInit:
 		.npc_name$ = "^FF7F00[ Central VIP ]^000000";
 		.bcor$ = "^008aff[»]^000000 ";
@@ -19,16 +24,6 @@ prontera,161,195,3	script	Central VIP	108,{
 
 		callfunc("F_NpcInitStatus", "Sala VIP");
 		setunitdata getnpcid(0), UNPC_GROUP_ID, 52;
-		end;
-
-	OnVIP:
-		if (@lastvip && gettimetick(2) - @lastvip < .cooldown) {
-			dispbottom "Espere " + (.cooldown - (gettimetick(2) - @lastvip)) + " segundos para usar o comando novamente.";
-			end;
-		}
-		@lastvip = gettimetick(2);
-
-		callsub ShowMainMenu;
 		end;
 
 	ShowMainMenu:
