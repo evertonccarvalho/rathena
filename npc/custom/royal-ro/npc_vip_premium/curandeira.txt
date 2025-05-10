@@ -17,7 +17,7 @@
 // ---------------------------------------------------------------- --
 // CabeÃ§alho de script
 // ---------------------------------------------------------------- --
-prontera,159,193,3	script	Curandeira	874,{
+prontera,159,193,3	script	Curandeira	B_MAGALETA,{
 OnBuff:
 	specialeffect2 EF_HEAL2;
 	percentheal 100,100;
@@ -132,8 +132,34 @@ OnBuff:
 
 
 OnInit:
+  .NPCName$ = callfunc("F_NpcInitStatus", "Curandeira");
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 22;
 	bindatcmd "buff",strnpcinfo(3)+"::OnBuff";
+
+	.walk_min_x = 139;
+	.walk_max_x = 170;
+	.walk_min_y = 180;
+	.walk_max_y = 190;
+
+	// Falas da NPC
+	setarray .msgs$,
+		"A luz de Odin ilumina este lugar...",
+		"Alguém precisa de cura?",
+		"Permaneça firme e forte!",
+		"Ore e tenha fé.",
+		"Seja gentil com os outros.";
+
+	npcspeed 200;
+	initnpctimer;
+	end;
+
+OnTimer60000:
+	npcwalkto rand(.walk_min_x, .walk_max_x), rand(.walk_min_y, .walk_max_y);
+	npctalk .msgs$[rand(getarraysize(.msgs$))];
+	initnpctimer;
 	end;
 }
 
-vip_lounge,148,120,5	duplicate(Curandeira)	Curandeira#vip	874
+
+
+vip_lounge,148,120,5	duplicate(Curandeira)	Curandeira#vip	B_MAGALETA
