@@ -10,7 +10,7 @@
 //= One-click automatic mount rentals.
 //============================================================
 
-prontera,125,196,5	script	Montaria,Falcão e Cart#1	875,{
+prontera,138,178,5	script	Montaria,Falcão e Cart#1	875,{
 	if (ismounting()) {
 		message strcharinfo(0),"Você deve primeiro remover sua montaria";
 		end;

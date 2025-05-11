@@ -1,0 +1,99 @@
+-	shop	Cheffenia_Shop	-1,512:1
+prontera.gat,152,175,5	script	Loja da Cheffênia	411,{
+	set .name$,"[^FF0000Loja Cheffênia^000000]";
+	set @Currency, 6090; // Define o item 6090 como moeda de troca
+
+	mes .name$;
+	mes "Bem-vindo à Loja Exclusiva da Cheffênia!";
+	mes "Aqui você pode trocar seus ^FF0000"+getitemname(@Currency)+"^000000 por itens especiais.";
+	mes "Você possui atualmente ^FF0000"+countitem(@Currency)+" "+getitemname(@Currency)+"^000000.";
+
+	deletearray .ItemLists[0],getarraysize(.ItemLists);
+	deletearray .ItemPrice[0],getarraysize(.ItemPrice);
+	npcshopitem "Cheffenia_Shop",512,1;
+
+	select(
+		"^FF4500[ ]^000000 Equipamentos Premium",
+		"^1E90FF[ ]^000000 Itens de Aprimoramento",
+		"^DAA520[ ]^000000 Consumíveis Especiais",
+		"^8A2BE2[ ]^000000 Itens Raros",
+		"^228B22[ ]^000000 Pacotes Especiais"
+	);
+	callsub CaseCH,@menu;
+
+	npcshopdelitem "Cheffenia_Shop",512;
+	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
+		npcshopadditem "Cheffenia_Shop",.ItemLists[.@i],.ItemPrice[.@i];
+
+	close2;
+	callshop "Cheffenia_Shop",1;
+	npcshopattach "Cheffenia_Shop";
+	dispbottom "Você possui: "+countitem(@Currency)+" "+getitemname(@Currency);
+	end;
+
+OnBuyItem:
+	callsub CaseCH,@menu;
+	set @TotalCost,0;
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		for(set @j,0; @j < getarraysize(.ItemLists); set @j,@j+1) {
+			if(.ItemLists[@j] == @bought_nameid[@i]) {
+				set @TotalCost,@TotalCost + (.ItemPrice[@j] * @bought_quantity[@i]);
+			}
+		}
+	}
+
+	if (countitem(@Currency) < @TotalCost) {
+		mes .name$;
+		mes "Você precisa de ^FF0000"+@TotalCost+" "+getitemname(@Currency)+"^000000 para esta compra.";
+		mes "Atualmente você tem apenas ^FF0000"+countitem(@Currency)+"^000000.";
+		close;
+	}
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		getitem @bought_nameid[@i],@bought_quantity[@i];
+		dispbottom "Você adquiriu: "+getitemname(@bought_nameid[@i])+" x"+@bought_quantity[@i];
+	}
+
+	delitem @Currency,@TotalCost;
+	mes .name$;
+	mes "Obrigado por negociar na Cheffênia!";
+	mes "Saldo restante: ^FF0000"+countitem(@Currency)+" "+getitemname(@Currency)+"^000000";
+
+	set @TotalCost,0;
+	deletearray @bought_nameid[0],getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0],getarraysize(@bought_quantity);
+	close;
+
+CaseCH:
+	switch(getarg(0)) {
+		Case 1: // Equipamentos Premium
+			setarray .ItemLists[0], 5137,5467,5376,5374,5518; // Exemplos de itens
+			setarray .ItemPrice[0], 50,50,75,75,100; // Preços em 6090
+			return;
+
+		Case 2: // Itens de Aprimoramento
+			setarray .ItemLists[0], 12103,12104,12105,12106; // Pedras de refinaria
+			setarray .ItemPrice[0], 20,20,30,40;
+			return;
+
+		Case 3: // Consumíveis Especiais
+			setarray .ItemLists[0], 14592,14593,14594,14595; // Poções premium
+			setarray .ItemPrice[0], 10,15,20,25;
+			return;
+
+		Case 4: // Itens Raros
+			setarray .ItemLists[0], 2629,2630,2410,1530; // Itens valiosos
+			setarray .ItemPrice[0], 200,200,250,300;
+			return;
+
+		Case 5: // Pacotes Especiais
+			setarray .ItemLists[0], 14223,14224,14225; // Caixas misteriosas
+			setarray .ItemPrice[0], 150,200,250;
+			return;
+
+		default:
+			mes "Opção inválida.";
+			close;
+	}
+}

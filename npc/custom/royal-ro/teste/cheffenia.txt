@@ -6,17 +6,19 @@ prontera,132,203,6	script	Cheffênia	998,{
 
 	loja:
 	close2;
-	callshop "CHEFFNIA_ETCS", 1;
+	callshop "Cheffenia_Shop", 1;
 	end;
 
 	acesso:
 	next;
+
 	if (.acesso == 0) {
 		mes "[Porteiro Cheffênia]";
-	mes "A Cheffênia está aberta somente aos Sábados e Domingos, das 18h às 22h.";
-	mes "Você precisa de 10kk";
-		close;
+		mes "A Cheffênia está aberta todos os dias, das 18h às 22h.";
+		mes "Você precisa de 10kk";
+			close;
 	}
+
 	mes "[Porteiro Cheffênia]";
 	mes "Posso te levar a um lugar muito misterioso.. ";
 	mes "O lugar se chama Cheffênia!";
@@ -53,6 +55,7 @@ prontera,132,203,6	script	Cheffênia	998,{
 	mes "Boa sorte!";
 	set .@party_id, getcharid(1);
 	close2;
+	
 	if(.acesso == 1){
 		if(rentalcountitem(7227) > 0) {
 			warp "bossnia_0"+.@i,rand(202,204),rand(202,204);
@@ -99,16 +102,14 @@ item:
 	}
 end;
 
-OnSat1800:
-OnSun1800:
+On1200:
 	set .acesso,1;
 	delwaitingroom;
 	waitingroom "Cheffênia: [Aberta]",0;
 	announce "Os portões da Cheffênia estão abertos! Boa sorte a todos!",bc_all;
 	end;
 
-OnSat2200:
-OnSun2200:
+On2200:
 	set .acesso,0;
 	delwaitingroom;
 	waitingroom "Cheffênia: [Fechada]",0;
@@ -119,7 +120,8 @@ OnSun2200:
 	end;
 
 OnInit:
-if ((gettime(DT_DAYOFWEEK) == SATURDAY || gettime(DT_DAYOFWEEK) == SUNDAY) && gettime(DT_HOUR) > 17 && gettime(DT_HOUR) < 23)  {
+// Verifica horário de funcionamento (todos os dias)
+if (gettime(DT_HOUR) > 12 && gettime(DT_HOUR) < 23) {
 	set .acesso,1;
 	waitingroom "Cheffênia: [Aberta]",0;
 } else {
@@ -243,12 +245,16 @@ bossnia_04	mapflag	nosave	SavePoint
     end;
 
 OnKill:
-	setarray .@minerios, 35075;
-    if (rand(100) < 1) {
-		set .@dropminerio, .@minerios[rand(getarraysize(.@minerios))];
-		getitem .@dropminerio, 1;
-		announce "[Cheffênia]: O jogador " + strcharinfo(0) + " acaba de dropar o item " + getitemname(.@dropminerio) + "!", bc_all;
-	}
+    // Fácil: chances base
+    setarray .@itens, 6090, 6091, 6092;  // IDs dos itens
+    setarray .@chances, 10, 5, 1;       // Porcentagens base (10%, 5%, 1%)
+
+    for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
+        if (rand(100) < .@chances[.@i]) {
+            getitem .@itens[.@i], 1;
+            announce "[Cheffênia Fácil]: " + strcharinfo(0) + " obteve " + getitemname(.@itens[.@i]) + "!", bc_all;
+        }
+    }
 end;
 }
 
@@ -256,12 +262,16 @@ end;
     end;
 
 OnKill:
-	setarray .@minerioss, 35075;
-    if (rand(100) < 5) {
-		set .@dropminerio, .@minerioss[rand(getarraysize(.@minerioss))];
-		getitem .@dropminerio, 1;
-		announce "[Cheffênia]: O jogador " + strcharinfo(0) + " acaba de dropar o item " + getitemname(.@dropminerio) + "!", bc_all;
-	}
+    // Médio: dobra as chances
+    setarray .@itens, 6090, 6091, 6092;
+    setarray .@chances, 20, 10, 2;      // Chances dobradas (20%, 10%, 2%)
+
+    for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
+        if (rand(100) < .@chances[.@i]) {
+            getitem .@itens[.@i], 1;
+            announce "[Cheffênia Médio]: " + strcharinfo(0) + " obteve " + getitemname(.@itens[.@i]) + "!", bc_all;
+        }
+    }
 end;
 }
 
@@ -269,11 +279,15 @@ end;
     end;
 
 OnKill:
-	setarray .@mineriosss, 35075;
-    if (rand(100) < 10) {
-		set .@dropminerio, .@mineriosss[rand(getarraysize(.@mineriosss))];
-		getitem .@dropminerio, 1;
-		announce "[Cheffênia]: O jogador " + strcharinfo(0) + " acaba de dropar o item " + getitemname(.@dropminerio) + "!", bc_all;
-	}
+    // Difícil: quadruplica as chances base (dobra novamente)
+    setarray .@itens, 6090, 6091, 6092;
+    setarray .@chances, 40, 20, 4;      // Chances quadruplicadas (40%, 20%, 4%)
+
+    for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
+        if (rand(100) < .@chances[.@i]) {
+            getitem .@itens[.@i], 1;
+            announce "[Cheffênia Difícil]: " + strcharinfo(0) + " obteve " + getitemname(.@itens[.@i]) + "!", bc_all;
+        }
+    }
 end;
 }

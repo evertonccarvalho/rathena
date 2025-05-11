@@ -30,10 +30,10 @@
 
                 if ( .@name$ == "" ) {
                     query_sql "INSERT INTO `mvp` (`char_id`,`account_id`,`name`,`mvps`,`pontos`) VALUES (" + @CID + "," + getcharid(3) + ",'" + strcharinfo(0) + "',1,1)";
-                    set #mvpoints, 1;
+                    set #MVPPOINTS, 1;
                 } else {
                     query_sql "UPDATE `mvp` SET `mvps` = `mvps` + 1, `pontos` = `pontos` + 1 WHERE `char_id`=" + @CID;
-                    set #mvpoints, #mvpoints + 1;
+                    set #MVPPOINTS, #MVPPOINTS + 1;
                 }
 
 									// Log do kill do MVP
@@ -50,7 +50,7 @@
 								query_sql "INSERT INTO `mvplog` (`mvp_date`, `kill_char_id`, `monster_id`, `prize`, `mvpexp`, `map`) VALUES (NOW(), " + .@char_id + ", " + .@mob_id + ", " + .@prize + ", " + .@mvpexp + ", '" + .@map$ + "')";
 
 
-                message strcharinfo(0), "[#Odin]: Você possui " + #mvpoints + " ponto(s) de MvPs.";
+                message strcharinfo(0), "[#Odin]: Você possui " + #MVPPOINTS + " ponto(s) de MvPs.";
                 announce "O jogador [" + strcharinfo(0) + "] matou o MVP " + .@monsterName$[.@i] + " no mapa " + strcharinfo(3), bc_all;
                 end;
             }
@@ -72,10 +72,10 @@ CREATE TABLE `mvp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 */
 
--	pointshop	LojaMVPVip	-1,#mvpoints,7233:100
--	pointshop	LojaMVP	-1,#mvpoints,7233:100
--	pointshop	LojaMVPVip1	-1,#mvpoints,7233:100
--	pointshop	LojaMVP1	-1,#mvpoints,7233:100
+-	pointshop	LojaMVPVip	-1,#MVPPOINTS,7233:100
+-	pointshop	LojaMVP	-1,#MVPPOINTS,7233:100
+-	pointshop	LojaMVPVip1	-1,#MVPPOINTS,7233:100
+-	pointshop	LojaMVP1	-1,#MVPPOINTS,7233:100
 
 
 prontera,183,214,3	script	Rank MVP	655,{
@@ -185,7 +185,7 @@ OnInit:
 //	setarray .Points$[0],"<variable name>","<display name>";
 // -----------------------------------------------------------
 
-	setarray .Points$[0],"#mvpoints","Pontos MVP";
+	setarray .Points$[0],"#MVPPOINTS","Pontos MVP";
 
 // -----------------------------------------------------------
 //  Shop IDs -- to add shops, copy dummy data at bottom of file.
