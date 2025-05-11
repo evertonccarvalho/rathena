@@ -2,12 +2,7 @@ prontera,132,203,6	script	Cheffênia	998,{
 
 	mes "[Porteiro Cheffênia]";
 	mes "Olá, aventureiro(a)! O que você deseja?";
-	menu "Entrar na Cheffênia",acesso,"Loja",loja;
-
-	loja:
-	close2;
-	callshop "Cheffenia_Shop", 1;
-	end;
+	menu "Entrar na Cheffênia",acesso;
 
 	acesso:
 	next;
@@ -55,7 +50,7 @@ prontera,132,203,6	script	Cheffênia	998,{
 	mes "Boa sorte!";
 	set .@party_id, getcharid(1);
 	close2;
-	
+
 	if(.acesso == 1){
 		if(rentalcountitem(7227) > 0) {
 			warp "bossnia_0"+.@i,rand(202,204),rand(202,204);
