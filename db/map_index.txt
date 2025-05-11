@@ -7,7 +7,7 @@
 // Format:
 // mapname<tab>index <- specifies index for this map
 // mapname <- map will use index of previous map +1
-// Note that map index 0 is special and reserved for "error" status. 
+// Note that map index 0 is special and reserved for "error" status.
 
 alb_ship 1
 alb2trea
@@ -1272,6 +1272,8 @@ jor_sklf2
 cmd_bhole
 1@ep21c
 vip_lounge
+guildhall
+soularena
 
 //======================================================================================
 // - Other/Extra maps -
