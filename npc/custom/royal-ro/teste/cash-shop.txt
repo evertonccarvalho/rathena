@@ -1,9 +1,8 @@
-// Corrigido por Goddameit - Tradução para PT-BR
-
--	shop	Emistry_Shop	-1,512:15
+-	shop	Cash_Shop	-1,512:15
 
 prontera.gat,155,175,5	script	Loja de Rops	411,{
 	set .name$,"[^FF0000  Loja Cash  ^000000]";
+	set @Currency, -1;
 
 	mes .name$;
 	mes "Esta loja usa ^FF0000"+(@Currency == -1 ? "Pontos de Cash" : getitemname(@Currency))+"^000000 para comprar os itens.";
@@ -11,7 +10,7 @@ prontera.gat,155,175,5	script	Loja de Rops	411,{
 
 	deletearray .ItemLists[0],getarraysize(.ItemLists);
 	deletearray .ItemPrice[0],getarraysize(.ItemPrice);
-	npcshopitem "Emistry_Shop",512,1;
+	npcshopitem "Cash_Shop",512,1;
 
 	select(
 		"^FF4500[ ]^000000 Equipamentos de Cabeça",      // laranja
@@ -22,14 +21,14 @@ prontera.gat,155,175,5	script	Loja de Rops	411,{
 	);
 	callsub CaseCH,@menu;
 
-	npcshopdelitem "Emistry_Shop",512;
+	npcshopdelitem "Cash_Shop",512;
 	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
-			npcshopadditem "Emistry_Shop",.ItemLists[.@i],.ItemPrice[.@i];
+			npcshopadditem "Cash_Shop",.ItemLists[.@i],.ItemPrice[.@i];
 
 	close2;
 	callsub CaseCH,@menu;
-	callshop "Emistry_Shop",1;
-	npcshopattach "Emistry_Shop";
+	callshop "Cash_Shop",1;
+	npcshopattach "Cash_Shop";
 	dispbottom "Você possui atualmente "+(@Currency == -1 ? #CASHPOINTS : countitem(@Currency))+" "+(@Currency == -1 ? "Pontos de Votação" : getitemname(@Currency))+".";
 
 	end;
@@ -73,7 +72,7 @@ CaseCH:
 	switch(getarg(0)) {
 		Case 1:
 			set @Currency, -1; // Pontos de Cash
-			setarray .ItemLists[0],5137,5467,5376,5374,5518,5423,5013,5286,5277;
+			setarray .ItemLists[0],5137,5376,5374,5518,5423,5013,5286,5277;
 			setarray .ItemPrice[0],250,250,250,250,250,250,250,250,250;
 			return;
 		Case 2:
