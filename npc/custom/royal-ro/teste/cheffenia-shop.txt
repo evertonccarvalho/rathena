@@ -2,7 +2,7 @@
 
 prontera.gat,152,175,5	script	Loja da Cheffênia	411,{
 	set .name$,"[^FF0000Loja Cheffênia^000000]";
-	set @Currency, 6090; // Define o item 6090 como moeda de troca
+	set @Currency, 671; // Define o item 671 como moeda de troca
 
 	mes .name$;
 	mes "Bem-vindo à Loja Exclusiva da Cheffênia!";
@@ -70,7 +70,7 @@ CaseCH:
 	switch(getarg(0)) {
 		Case 1: // Equipamentos Premium
 			setarray .ItemLists[0], 5137,5376,5374,5518; // Exemplos de itens
-			setarray .ItemPrice[0], 50,50,75,75,100; // Preços em 6090
+			setarray .ItemPrice[0], 50,50,75,75,100; // Preços em 671
 			return;
 
 		Case 2: // Itens de Aprimoramento
