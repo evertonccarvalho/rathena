@@ -51,7 +51,7 @@ prontera,145,160,4	script	Vending Helper	-1,{
 	hideonnpc "#vend_slot"+ .@s;
 	donpcevent "#vend_slot"+ .@s +"::OnCheckAvailable";
 	sleep 100;
-	warp .@map$, .@x, .@y;	
+	warp .@map$, .@x, .@y;
 	end;
 OnInit:
 	setbattleflag "min_npc_vendchat_distance", 0;
@@ -100,7 +100,7 @@ OnInit:
 //	unitwalk getcharid(3), .@x, .@y;
 	hideonnpc strnpcinfo(0);
 	sleep2 100;
-	warp strcharinfo(3), .@x, .@y;	
+	warp strcharinfo(3), .@x, .@y;
 	donpcevent strnpcinfo(0)+"::OnCheckAvailable";
 	close;
 OnCheckAvailable:

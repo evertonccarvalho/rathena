@@ -1,12 +1,16 @@
--	shop	VOTEPOINTS_shop	-1,512:15
-prontera.gat,153,180,5	script	Loja de Votos	411,{
-	set .name$,"[^FF0000  Loja Vote  ^000000]";
-	set @Currency, -1;  // -1 = Vote Points, qualquer outro valor = ID do item
+-	shop	CASHPOINTS_shop	-1,512:15
+prontera.gat,150,180,5	script	Loja de ROPs	411,{
+
+	delwaitingroom;
+	waitingroom "Loja de ROPs",0;
+
+	set .name$,"[^FF0000  Loja Cash  ^000000]";
+	set @Currency, -1;  // -1 = Cash Points, qualquer outro valor = ID do item
 
 	mes .name$;
 	if (@Currency == -1) {
-		mes "Esta loja usa ^FF0000Pontos de Vote^000000 para comprar os itens.";
-		mes "Você possui atualmente "+#VOTEPOINTS+" Pontos de Vote.";
+		mes "Esta loja usa ^FF0000Pontos de Cash^000000 para comprar os itens.";
+		mes "Você possui atualmente "+#CASHPOINTS+" Pontos de Cash.";
 	} else {
 		mes "Esta loja usa ^FF0000"+getitemname(@Currency)+"^000000 para comprar os itens.";
 		mes "Você possui atualmente "+countitem(@Currency)+" "+getitemname(@Currency)+".";
@@ -14,7 +18,7 @@ prontera.gat,153,180,5	script	Loja de Votos	411,{
 
 	deletearray .ItemLists[0],getarraysize(.ItemLists);
 	deletearray .ItemPrice[0],getarraysize(.ItemPrice);
-	npcshopitem "VOTEPOINTS_shop",512,1;
+	npcshopitem "CASHPOINTS_shop",512,1;
 
 	select(
 		"^FF4500[ ]^000000 Equipamentos de Cabeça",
@@ -25,15 +29,15 @@ prontera.gat,153,180,5	script	Loja de Votos	411,{
 	);
 	callsub CaseCH,@menu;
 
-	npcshopdelitem "VOTEPOINTS_shop",512;
+	npcshopdelitem "CASHPOINTS_shop",512;
 	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
-		npcshopadditem "VOTEPOINTS_shop",.ItemLists[.@i],.ItemPrice[.@i];
+		npcshopadditem "CASHPOINTS_shop",.ItemLists[.@i],.ItemPrice[.@i];
 
 	close2;
-	callshop "VOTEPOINTS_shop",1;
-	npcshopattach "VOTEPOINTS_shop";
+	callshop "CASHPOINTS_shop",1;
+	npcshopattach "CASHPOINTS_shop";
 	if (@Currency == -1)
-		dispbottom "Você possui atualmente "+#VOTEPOINTS+" Pontos de Vote.";
+		dispbottom "Você possui atualmente "+#CASHPOINTS+" Pontos de Cash.";
 	else if (@Currency > 0)
 		dispbottom "Você possui atualmente "+countitem(@Currency)+" "+getitemname(@Currency)+".";
 
@@ -53,7 +57,7 @@ OnBuyItem:
 
 	// Verifica se tem moeda suficiente
 	if (@Currency == -1) {
-		if (#VOTEPOINTS < @TotalCost) {
+		if (#CASHPOINTS < @TotalCost) {
 			set @notEnough, 1;
 		}
 	} else if (@Currency > 0) {
@@ -69,12 +73,12 @@ OnBuyItem:
 		}
 		mes "^00FF00____________________________^000000";
 		if (@Currency == -1)
-			mes "Custo total : ^0000FF"+@TotalCost+" x Pontos de Vote^000000";
+			mes "Custo total : ^0000FF"+@TotalCost+" x Pontos de Cash^000000";
 		else
 			mes "Custo total : ^0000FF"+@TotalCost+" x "+getitemname(@Currency)+"^000000";
 		mes "^00FF00____________________________^000000";
 		if (@Currency == -1)
-			mes "[ ^FF0000X^000000 ] Você não possui ^0000FFPontos de Vote^000000 suficientes para realizar esta compra.";
+			mes "[ ^FF0000X^000000 ] Você não possui ^0000FFPontos de Cash^000000 suficientes para realizar esta compra.";
 		else
 			mes "[ ^FF0000X^000000 ] Você não possui ^0000FF"+getitemname(@Currency)+"^000000 suficientes para realizar esta compra.";
 	} else {
@@ -86,14 +90,14 @@ OnBuyItem:
 
 		// Deduz a moeda
 		if (@Currency == -1) {
-			set #VOTEPOINTS, #VOTEPOINTS - @TotalCost;
+			set #CASHPOINTS, #CASHPOINTS - @TotalCost;
 		} else if (@Currency > 0) {
 			delitem @Currency,@TotalCost;
 		}
 
 		mes "Obrigado pela compra!";
 		if (@Currency == -1)
-			mes "Agora você possui "+#VOTEPOINTS+" Pontos de Vote.";
+			mes "Agora você possui "+#CASHPOINTS+" Pontos de Cash.";
 		else
 			mes "Agora você possui "+countitem(@Currency)+" "+getitemname(@Currency)+".";
 	}
@@ -137,4 +141,10 @@ CaseCH:
 			mes "Seleção ou configuração inválida.";
 			close;
 	}
+
+		OnInit:
+	.NPCName$ = callfunc("F_NpcInitStatus", "Loja de ROPs");
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 57;
+	end;
+
 }
