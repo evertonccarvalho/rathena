@@ -1,8 +1,8 @@
 -	shop	CASHPOINTS_shop	-1,512:15
-prontera.gat,150,180,5	script	Loja de ROPs	411,{
+prontera.gat,150,180,5	script	Loja de ROPs	401,{
 
-	delwaitingroom;
-	waitingroom "Loja de ROPs",0;
+	//delwaitingroom;
+	//waitingroom "Loja de ROPs",0;
 
 	set .name$,"[^FF0000  Loja Cash  ^000000]";
 	set @Currency, -1;  // -1 = Cash Points, qualquer outro valor = ID do item
@@ -142,9 +142,9 @@ CaseCH:
 			close;
 	}
 
-		OnInit:
+	OnInit:
 	.NPCName$ = callfunc("F_NpcInitStatus", "Loja de ROPs");
-	setunitdata getnpcid(0), UNPC_GROUP_ID, 57;
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 12;
 	end;
 
 }

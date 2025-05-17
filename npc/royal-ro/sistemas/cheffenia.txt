@@ -241,8 +241,8 @@ bossnia_04	mapflag	nosave	SavePoint
 
 OnKill:
     // Fácil: chances base
-    setarray .@itens,    675,   671,   616,   607;  // IDs dos itens
-    setarray .@chances,  2000,    150,     100,  10000;   // 20%, 1.5%, 1%, 100%
+    setarray .@itens,    675,		616,	607;  // IDs dos itens
+    setarray .@chances,  2000,	100,  4000;   // 20%, 1%, 100%
 
     for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
         if (rand(10000) < .@chances[.@i]) {

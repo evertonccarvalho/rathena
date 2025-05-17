@@ -66,7 +66,7 @@ OnRMT:
 	}
 OnContinue:
 	disable_items;
-	.@rmt = countitem(810); // ID DO TICKET RMT
+	.@rmt = countitem(671); // ID DO TICKET RMT
 	if((.@rmt % 2) == 0){
 	   set .@valor, (.@rmt-.@rmt*150/1000);
 	}else{
@@ -113,8 +113,8 @@ OnContinue:
 						query_sql "select MAX(`id`) from `rmt_control` ",.@id;
 						set .@id_real,.@id+1;
 						query_sql("INSERT INTO `rmt_control` (`id`, `account_id`,`charid`, `nome_completo`,`char_name`,`valor`, `pix`, `data`, `status`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@nome_completo$+"','"+strcharinfo(0,getcharid(0))+"','"+.@valor+"', '"+.@pix$+"', '"+gettimestr("%Y-%m-%d %H:%M:%S",21)+"', '0')");
-						query_sql("INSERT INTO `rmt_log` (`id`, `account_id`,`charid`, `valor`, `quant_del`,`data`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@valor+"', '"+countitem(810)+"',now())");
-						delitem 810,.@rmt;
+						query_sql("INSERT INTO `rmt_log` (`id`, `account_id`,`charid`, `valor`, `quant_del`,`data`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@valor+"', '"+countitem(671)+"',now())");
+						delitem 671,.@rmt;
 						switch(select("^0084ff[>]^000000 Histórico de Transação:^2a2a2a[>]^000000 Sair")) {
 						case 1:
 						next;
@@ -200,15 +200,15 @@ OnContinue:
 			//query_sql("SELECT `valor`, `status` FROM `rmt_control` WHERE account_id = '"+getcharid(3)+"'",.@valor,.@data);
 			dispbottom "[RMT]   HISTÓRICO DE TRANSAÇÕES ================ ",0x40f1f9;
 			//dispbottom "  "+.@valor+", "+.@data+"",0xFF9B00;
-	
+
 			set .@size, query_sql("SELECT `id`, `pix`, `valor`, `status` FROM `rmt_control` WHERE account_id = '"+getcharid(3)+"' ORDER BY id DESC",.@id,.@px$,.@valor,.@status);
 				for (set .@c, 0; .@c < .@size; set .@c, .@c + 1)
-					dispbottom "   ID: " + .@id[.@c] +" | Transações no valor de R$" + .@valor[.@c] +",00 | Status: "+(.@status[.@c] > 0?"Concluído":"Em processamento")+"",0x40f1f9; 
-			end;			
+					dispbottom "   ID: " + .@id[.@c] +" | Transações no valor de R$" + .@valor[.@c] +",00 | Status: "+(.@status[.@c] > 0?"Concluído":"Pendente")+"",0x40f1f9;
+			end;
 		case 4:
 		end;
-	
-			
+
+
 			case 3:
 			next;
 			mes "Você desejar trocar sua moeda RMT em Moedas de Cash Points?";
@@ -220,7 +220,7 @@ OnContinue:
 	next;
 	mes "Quantas Moedas RMT você gostaria de trocar?";
 	input .@quantidade;
-	
+
 	if (.@quantidade <= 0) {
 		mes "Você deve trocar pelo menos 1 Moeda RMT.";
 		close;
@@ -236,10 +236,10 @@ OnContinue:
 
 	mes "Você trocou " + .@quantidade + " Moedas RMT por " + .@quantidade + " Moedas de Cash.";
 	end;
-	
+
 	nao:
 	close;
-	
+
 end;
 	}
 
@@ -251,13 +251,13 @@ OnPendente:
 	dispbottom "[RMT] HISTÓRICO DE RMT PENDENTE ================ ",0x40f1f9;
 	set .@size, query_sql("SELECT `id`, `valor`, `pix`,`charid`, `nome_completo` FROM `rmt_control` WHERE status = '0' ORDER BY id DESC",.@id,.@valor,.@pix$,.@char_id,.@nome$);
 		for (set .@c, 0; .@c < .@size; set .@c, .@c + 1)
-			dispbottom "   ID: " + .@id[.@c] +" | Nome: "+.@nome$[.@c]+" | Char: "+strcharinfo(0,.@char_id[.@c])+" | Valor: R$" + .@valor[.@c] +",00 | "+.@pix$[.@c]+"",0x40f1f9; 
+			dispbottom "   ID: " + .@id[.@c] +" | Nome: "+.@nome$[.@c]+" | Char: "+strcharinfo(0,.@char_id[.@c])+" | Valor: R$" + .@valor[.@c] +",00 | "+.@pix$[.@c]+"",0x40f1f9;
 	end;
 
 
 OnInit:
 	set .npc$, "^2F4F4F[Troca Moeda RMT]^000000"; // Nome do NPC
-	set .item_rmt, 810; // ID da Moeda RMT (substitua pelo ID correto)
+	set .item_rmt, 671; // ID da Moeda RMT (substitua pelo ID correto)
 	set .item_cash, 35004; // ID da Moeda de Cash (substitua pelo ID correto)
 	.NPCName$ = callfunc("F_NpcInitStatus", "Saque seu Dinheiro", 50);
 	set .qtt, 100;

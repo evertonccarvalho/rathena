@@ -1,9 +1,9 @@
 -	shop	Cheffenia_Shop	-1,512:1
 
-prontera.gat,154,180,5	script	Loja da Cheffênia	411,{
+prontera.gat,154,180,5	script	Loja da Cheffênia	998,{
 
-	delwaitingroom;
-	waitingroom "Loja da Cheffênia",0;
+	//delwaitingroom;
+	//waitingroom "Loja da Cheffênia",0;
 
 	set .name$,"[^FF0000Loja Cheffênia^000000]";
 	set @Currency, 671; // Define o item 671 como moeda de troca
@@ -104,6 +104,6 @@ CaseCH:
 
 	OnInit:
 	.NPCName$ = callfunc("F_NpcInitStatus", "Loja de Cheffênia");
-	setunitdata getnpcid(0), UNPC_GROUP_ID, 57;
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 9;
 	end;
 }
