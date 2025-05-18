@@ -29,10 +29,36 @@
 ###########################################################################
 
 Header:
-  Type: ITEM_CASH_DB
-  Version: 1
+    Type: ITEM_CASH_DB
+    Version: 1
 
-Footer:
-  Imports:
-    - Path: db/import/item_cash.yml
-    - Path: npc/royal-ro/db/item_cash.yml
+Body:
+    - Tab: New
+      Items:
+          - Item: ¿£µé·¹½ºÄÚÀÎ
+            Price: 1000
+          - Item: aura_ticket
+            Price: 1000
+          - Item: Bubble_Gum
+            Price: 200
+
+    - Tab: Consumables
+      Items:
+        # Enciclop�dia de Combate
+        - Item: HE_Battle_Manual
+          Price: 200
+        # Di�rio de Aventuras
+        - Item: Battle_Manual_X3
+          Price: 300
+        # Manual de Combate de Classe
+        - Item: Job_Manual50
+          Price: 200
+        # Medicina Milagrosa
+        - Item: Miracle_Medicine
+          Price: 500
+        # Chicle de Bola
+        - Item: HE_Bubble_Gum
+          Price: 300
+        # Goma de Mascar
+        - Item: Modea_RMT
+          Price: 1000
