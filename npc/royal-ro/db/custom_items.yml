@@ -88,9 +88,53 @@ Header:
     Type: ITEM_DB
     Version: 3
 
-Footer:
-    Imports:
-        - Path: db/pre-re/item_db_usable.yml
-        - Path: db/pre-re/item_db_equip.yml
-        - Path: db/pre-re/item_db_etc.yml
-        - Path: npc/royal-ro/db/custom_items.yml
+Body:
+    - Id: 12887
+      AegisName: C_Wing_Of_Fly
+      Name: Infinite Flywing
+      Type: Usable
+      Flags:
+          NoConsume: true
+      Trade:
+          Override: 100
+          NoDrop: true
+          NoTrade: true
+          NoSell: true
+          NoCart: true
+          NoStorage: true
+          NoGuildStorage: true
+          NoMail: true
+          NoAuction: true
+      Script: |
+          itemskill "AL_TELEPORT",1;
+    - Id: 35000
+      AegisName: aura_ticket
+      Name: Passe VIP 1
+      Type: Healing
+      Buy: 10
+      Weight: 2
+      EquipLevelMin: 1
+      Script: |
+          vip_time(60*24*1);
+    - Id: 810
+      AegisName: Modea_RMT
+      Name: RMT Coin
+      Type: Etc
+      Buy: 1
+      Weight: 0
+    - Id: 8001
+      AegisName: ¿£µé·¹½ºÄÚÀÎ
+      Name: Moeda Cash
+      Weight: 0
+      Type: Usable
+      Buy: 1000
+      Weight: 0
+      Script: |
+          set #CASHPOINTS, #CASHPOINTS + 1000;
+    - Id: 35004
+      AegisName: Loki_Coin_3
+      Name: Moeda de Cheffenia
+      Type: Etc
+      Buy: 1000
+      Weight: 0
+

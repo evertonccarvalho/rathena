@@ -66,7 +66,7 @@ OnRMT:
 	}
 OnContinue:
 	disable_items;
-	.@rmt = countitem(671); // ID DO TICKET RMT
+	.@rmt = countitem(810); // ID DO TICKET RMT
 	if((.@rmt % 2) == 0){
 	   set .@valor, (.@rmt-.@rmt*150/1000);
 	}else{
@@ -113,8 +113,8 @@ OnContinue:
 						query_sql "select MAX(`id`) from `rmt_control` ",.@id;
 						set .@id_real,.@id+1;
 						query_sql("INSERT INTO `rmt_control` (`id`, `account_id`,`charid`, `nome_completo`,`char_name`,`valor`, `pix`, `data`, `status`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@nome_completo$+"','"+strcharinfo(0,getcharid(0))+"','"+.@valor+"', '"+.@pix$+"', '"+gettimestr("%Y-%m-%d %H:%M:%S",21)+"', '0')");
-						query_sql("INSERT INTO `rmt_log` (`id`, `account_id`,`charid`, `valor`, `quant_del`,`data`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@valor+"', '"+countitem(671)+"',now())");
-						delitem 671,.@rmt;
+						query_sql("INSERT INTO `rmt_log` (`id`, `account_id`,`charid`, `valor`, `quant_del`,`data`) VALUES ('"+.@id_real+"', '"+getcharid(3)+"','"+getcharid(0)+"', '"+.@valor+"', '"+countitem(810)+"',now())");
+						delitem 810,.@rmt;
 						switch(select("^0084ff[>]^000000 Histórico de Transação:^2a2a2a[>]^000000 Sair")) {
 						case 1:
 						next;
@@ -257,8 +257,8 @@ OnPendente:
 
 OnInit:
 	set .npc$, "^2F4F4F[Troca Moeda RMT]^000000"; // Nome do NPC
-	set .item_rmt, 671; // ID da Moeda RMT (substitua pelo ID correto)
-	set .item_cash, 35004; // ID da Moeda de Cash (substitua pelo ID correto)
+	set .item_rmt, 810; // ID da Moeda RMT (substitua pelo ID correto)
+	set .item_cash, 8001; // ID da Moeda de Cash (substitua pelo ID correto)
 	.NPCName$ = callfunc("F_NpcInitStatus", "Saque seu Dinheiro", 50);
 	set .qtt, 100;
 	bindatcmd "rmtpendente",strnpcinfo(0)+"::OnPendente", 99,100;
