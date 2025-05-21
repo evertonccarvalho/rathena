@@ -89,6 +89,18 @@ Header:
     Version: 3
 
 Body:
+    - Id: 41005
+      AegisName: Zeny
+      Name: Zeny
+      Type: Etc
+      Buy: 2000
+      Weight: 1
+    - Id: 40723
+      AegisName: Cash
+      Name: Cash
+      Type: Etc
+      Buy: 2000
+      Weight: 1
     - Id: 12887
       AegisName: C_Wing_Of_Fly
       Name: Infinite Flywing
@@ -122,6 +134,7 @@ Body:
       Type: Etc
       Buy: 1
       Weight: 0
+
     - Id: 8001
       AegisName: ¿£µé·¹½ºÄÚÀÎ
       Name: Moeda Cash
@@ -131,21 +144,13 @@ Body:
       Weight: 0
       Script: |
           set #CASHPOINTS, #CASHPOINTS + 1000;
+
     - Id: 35004
       AegisName: Loki_Coin_3
       Name: Moeda de Cheffenia
       Type: Etc
       Buy: 1000
       Weight: 0
-    - Id: 40722
-      AegisName: Zeny
-      Name: Zeny
-      Type: Etc
-      Buy: 2000
-      Weight: 1
-    - Id: 40723
-      AegisName: Cash
-      Name: Cash
-      Type: Etc
-      Buy: 2000
-      Weight: 1
+
+
+
