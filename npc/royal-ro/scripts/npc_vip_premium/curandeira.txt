@@ -29,74 +29,53 @@ OnBuff:
 // VIP Econômico
 // ---------------------------------------------------------------- --
 	if (getgroupid() == 1) {
-		specialeffect2 EF_ANGELUS;
-		sc_start SC_ANGELUS,600000,10;
-		specialeffect2 EF_SUFFRAGIUM;
-		sc_start SC_SUFFRAGIUM,600000,3;
-		specialeffect2 EF_IMPOSITIO;
-		sc_start SC_IMPOSITIO,600000,5;
-		specialeffect2 EF_GLORIA;
-		sc_start SC_GLORIA,600000,5;
+  	specialeffect2 EF_ANGELUS;
+		sc_start SC_ANGELUS,600000,20;
 		specialeffect2 EF_MAGNIFICAT;
-		sc_start SC_MAGNIFICAT,600000,5;
-		specialeffect2 EF_CHEMICALPROTECTIOn;
-		sc_start SC_CP_WEAPON,600000,5;
-		sc_start SC_CP_ARMOR,600000,5;
-		sc_start SC_CP_SHIELD,600000,5;
-		sc_start SC_CP_HELM,600000,5;
-		specialeffect2 EF_ASSUMPTIO;
-		sc_start SC_ASSUMPTIO,600000,5;
-		sc_start SC_ADRENALINE2,600000,1;
-		specialeffect2 EF_MAXPOWER;
-		sc_start SC_MAXIMIZEPOWER,600000,5;
-		specialeffect2 EF_PERFECTION;
-		sc_start SC_WEAPONPERFECTION,600000,5;
-		specialeffect2 EF_ENDURE;
-		sc_start SC_ENDURE,600000,10;
-		sc_start SC_KAUPE,600000,3;
-		sc_start SC_KAITE,600000,7;
-		sc_start SC_STRFOOD,600000,5;
-		sc_start SC_AGIFOOD,600000,5;
-		sc_start SC_VITFOOD,600000,5;
-		sc_start SC_INTFOOD,600000,5;
-		sc_start SC_DEXFOOD,600000,5;
-		sc_start SC_LUKFOOD,600000,5;
+		sc_start SC_MAGNIFICAT,600000,10;
+		specialeffect2 154;
+		atcommand "@repairall";
+
+
 // ---------------------------------------------------------------- --
 // VIP Integral
 // ---------------------------------------------------------------- --
-	} else if (getgroupid() == 5) {
+	} else if (getgroupid() >= 5) {
 		specialeffect2 EF_ANGELUS;
+		specialeffect2 154;
+		atcommand "@repairall";
 		sc_start SC_ANGELUS,600000,20;
-		specialeffect2 EF_SUFFRAGIUM;
-		sc_start SC_SUFFRAGIUM,600000,6;
-		specialeffect2 EF_IMPOSITIO;
-		sc_start SC_IMPOSITIO,600000,10;
-		specialeffect2 EF_GLORIA;
-		sc_start SC_GLORIA,600000,10;
 		specialeffect2 EF_MAGNIFICAT;
 		sc_start SC_MAGNIFICAT,600000,10;
-		specialeffect2 EF_CHEMICALPROTECTIOn;
-		sc_start SC_CP_WEAPON,600000,10;
-		sc_start SC_CP_ARMOR,600000,10;
-		sc_start SC_CP_SHIELD,600000,10;
-		sc_start SC_CP_HELM,600000,10;
-		specialeffect2 EF_ASSUMPTIO;
-		sc_start SC_ASSUMPTIO,600000,10;
-		sc_start SC_ADRENALINE2,600000,2;
-		specialeffect2 EF_MAXPOWER;
-		sc_start SC_MAXIMIZEPOWER,600000,10;
-		specialeffect2 EF_PERFECTION;
-		sc_start SC_WEAPONPERFECTION,600000,10;
-		specialeffect2 EF_ENDURE;
-		sc_start SC_ENDURE,600000,20;
-		sc_start SC_KAUPE,600000,6;
-		sc_start SC_KAITE,600000,14;
-		sc_start SC_STRFOOD,600000,10;
-		sc_start SC_AGIFOOD,600000,10;
-		sc_start SC_VITFOOD,600000,10;
-		sc_start SC_INTFOOD,600000,10;
-		sc_start SC_DEXFOOD,600000,10;
-		sc_start SC_LUKFOOD,600000,10;
+		specialeffect2 EF_GLORIA;
+		sc_start SC_GLORIA,600000,10;
+		//specialeffect2 EF_ENDURE;
+		//sc_start SC_ENDURE,600000,20;
+		//specialeffect2 EF_SUFFRAGIUM;
+		//sc_start SC_SUFFRAGIUM,600000,6;
+		//specialeffect2 EF_IMPOSITIO;
+		//sc_start SC_IMPOSITIO,600000,10;
+		//specialeffect2 EF_CHEMICALPROTECTIOn;
+		//sc_start SC_CP_WEAPON,600000,10;
+		//sc_start SC_CP_ARMOR,600000,10;
+		//sc_start SC_CP_SHIELD,600000,10;
+		//sc_start SC_CP_HELM,600000,10;
+		//specialeffect2 EF_ASSUMPTIO;
+		//sc_start SC_ASSUMPTIO,600000,10;
+		//sc_start SC_ADRENALINE2,600000,2;
+		//specialeffect2 EF_MAXPOWER;
+		//sc_start SC_MAXIMIZEPOWER,600000,10;
+		//specialeffect2 EF_PERFECTION;
+		//sc_start SC_WEAPONPERFECTION,600000,10;
+		//sc_start SC_KAUPE,600000,6;
+		//sc_start SC_KAITE,600000,14;
+		//sc_start SC_STRFOOD,600000,10;
+		//sc_start SC_AGIFOOD,600000,10;
+		//sc_start SC_VITFOOD,600000,10;
+		//sc_start SC_INTFOOD,600000,10;
+		//sc_start SC_DEXFOOD,600000,10;
+		//sc_start SC_LUKFOOD,600000,10;
+
 
 		switch ( basejob ) {
 		case Job_Alchemist:				set .@spirit, 445; break;

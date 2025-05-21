@@ -24,8 +24,8 @@ prontera.gat,150,180,5	script	Loja de ROPs	401,{
 		"^FF4500[ ]^000000 Equipamentos de Cabeça",
 		"^1E90FF[ ]^000000 Equipamentos Médios",
 		"^DAA520[ ]^000000 Equipamentos Inferiores",
-		"^8A2BE2[ ]^000000 Caixas de Itens",
-		"^228B22[ ]^000000 Itens Godly"
+		"^8A2BE2[ ]^000000 Utilidades",
+		"^228B22[ ]^000000 Consumiveis"
 	);
 	callsub CaseCH,@menu;
 
@@ -113,29 +113,165 @@ CaseCH:
 	switch(getarg(0)) {
 		Case 1:  // Equipamentos de Cabeça
 			set @Currency, -1;
-			setarray .ItemLists[0],5137,5376,5374,5518,5423,5013,5286,5277;
-			setarray .ItemPrice[0],250,250,250,250,250,250,250,250;
+			setarray .ItemLists[0],
+				5013,   // Chifre de Lord Kaho
+				5137,   // Boneca de Alice
+				5277,   // Bandana de Mecânico
+				5286,   // Asas de PecoPeco
+				5374,   // Chifres Majestosos Gigantes
+				5376,   // Lendárias Asas de Demônio
+				5423,   // I LOVE CHINA
+				5518;   // Chifres Místicos de Bafomé
+			setarray .ItemPrice[0],
+				250,    // Chifre de Lord Kaho
+				250,    // Boneca de Alice
+				250,    // Bandana de Mecânico
+				250,    // Asas de PecoPeco
+				250,    // Chifres Majestosos Gigantes
+				250,    // Lendárias Asas de Demônio
+				250,    // I LOVE CHINA
+				250;    // Chifres Místicos de Bafomé
 			return;
+
 		Case 2:  // Equipamentos Médios
 			set @Currency, -1;
-			setarray .ItemLists[0],5788,2202,2204,5288,5786,5358,5401,5402,5389,5421,5325,20251,20304,20252,20256,20268,20205,20227,20280,20289,20322,20323,20308,20319;
-			setarray .ItemPrice[0],200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200;
+			setarray .ItemLists[0],
+				20205,  //
+				20227,  //
+				20251,  //
+				20252,  //
+				20256,  //
+				20268,  //
+				20280,  //
+				20289,  //
+				20304,  //
+				20308,  //
+				20319,  //
+				20322,  //
+				20323,  //
+				2202,   //
+				2204,   //
+				5288,   //
+				5325,   //
+				5358,   //
+				5389,   //
+				5401,   //
+				5421,   //
+				5788;   //
+			setarray .ItemPrice[0],
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200,    //
+				200;    //
 			return;
+
 		Case 3:  // Equipamentos Inferiores
 			set @Currency, -1;
-			setarray .ItemLists[0],5574,5361,5155,5548,5305,20238,20240,20271,20212,5377,20222,20207,20224,20228,20229,20236,20219,20265,20318;
-			setarray .ItemPrice[0],150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150;
+			setarray .ItemLists[0],
+				5155,   //
+				5305,   //
+				5361,   //
+				5377,   //
+				5548,   //
+				5574,   //
+				20207,  //
+				20212,  //
+				20219,  //
+				20222,  //
+				20224,  //
+				20228,  //
+				20229,  //
+				20236,  //
+				20238,  //
+				20240,  //
+				20265,  //
+				20271,  //
+				20318;  //
+			setarray .ItemPrice[0],
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150,    //
+				150;    //
 			return;
-		Case 4:  // Caixas de Itens
+
+		Case 4:  // Utilidades
 			set @Currency, -1;
-			setarray .ItemLists[0],12103,14175,13581,13577,13585,13589,13595,14223,13610,13611,13716,13718,13720,13742,13745,13751,13757,13871,13872,13873,13874,13875,13876,13926,13927,13928,13929,13930,13931,13945,13946,13947,13948,13949,13950,13973,14180,13995;
-			setarray .ItemPrice[0],5,5,20,25,25,25,25,25,20,20,25,10,10,15,15,30,30,70,70,70,70,70,70,75,75,75,75,75,75,80,80,80,80,80,80,15,15,5;
+			setarray .ItemLists[0],
+				12103,  // Galho Sangrento
+				12208,  // Manual de Combate
+				12210;  // Goma de Mascar 50%
+			setarray .ItemPrice[0],
+		    200,  // Galho Sangrento
+				200,  // Manual de Combate
+				200;  // Goma de Mascar 50%
+
 			return;
-		Case 5:  // Itens Godly
+
+		Case 5:  // Consumiveis
 			set @Currency, -1;
-			setarray .ItemLists[0],2629,2630,2410,1530,2541,2383,1161;
-			setarray .ItemPrice[0],500,500,500,500,500,500,500;
+			setarray .ItemLists[0],
+				12202,   //
+				12203,   //
+				12204,   //
+				12205,   //
+				12206,   //
+				12207,   //
+				12903,   //
+				12904,   //
+				12905,   //
+				12906,   //
+				12907,   //
+				12908;   //
+
+
+			setarray .ItemPrice[0],
+		    350,   //
+				350,   //
+				350,   //
+				350,   //
+				350,   //
+				350,   //
+				3000,   //
+				3000,   //
+				3000,   //
+				3000,   //
+				3000,   //
+				3000;   //
 			return;
+
 
 		default:
 			mes "Seleção ou configuração inválida.";
@@ -148,3 +284,25 @@ CaseCH:
 	end;
 
 }
+
+
+
+//	Case 5:  // Consumiveis
+//		set @Currency, -1;
+//		setarray .ItemLists[0],
+//			1161,   // Mjolnir
+//			1530,   // Sleipnir
+//			2383,   // Brisingamen
+//			2410,   // Megingjard
+//			2541,   // Asas de Loki
+//			2629,   // Brynhild
+//			2630;   // Aesprika
+//		setarray .ItemPrice[0],
+//			500,    // Mjolnir
+//			500,    // Sleipnir
+//			500,    // Brisingamen
+//			500,    // Megingjard
+//			500,    // Asas de Loki
+//			500,    // Brynhild
+//			500;    // Aesprika
+//		return;

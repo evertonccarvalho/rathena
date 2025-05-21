@@ -21,11 +21,8 @@ prontera.gat,162,180,5	script	Loja de Votos	402,{
 	npcshopitem "VOTEPOINTS_shop",512,1;
 
 	select(
-		"^FF4500[ ]^000000 Equipamentos de Cabeça",
-		"^1E90FF[ ]^000000 Equipamentos Médios",
-		"^DAA520[ ]^000000 Equipamentos Inferiores",
-		"^8A2BE2[ ]^000000 Caixas de Itens",
-		"^228B22[ ]^000000 Itens Godly"
+		"^FF4500[ ]^000000 Loja",
+		"^1E90FF[ ]^000000 Sair"
 	);
 	callsub CaseCH,@menu;
 
@@ -111,30 +108,42 @@ OnBuyItem:
 
 CaseCH:
 	switch(getarg(0)) {
-		Case 1:  // Equipamentos de Cabeça
+
+			Case 1:  // Itens
 			set @Currency, -1;
-			setarray .ItemLists[0],5137,5376,5374,5518,5423,5013,5286,5277;
-			setarray .ItemPrice[0],250,250,250,250,250,250,250,250;
+			setarray .ItemLists[0],
+				13989,     // Caixa de Bomba Ácida [10]
+				12208,     // Manual de Combate
+				13995,     // Caixa de Conversores [10]
+				12103,     // Galho Sangrento
+				12210,     // Goma de Mascar 50%
+				14004,     // Caixa de Veneno Mortal [10]
+				13718,     // Caixa de Poção Azul Compacta [10]
+				13720,     // Caixa de Poção Amarela Compacta [10]
+				7621,      // Amuleto de Ziegfried
+				13973,     // Caixa de Mega Resistência [5]
+				13716,     // Caixa de Poção Média de Vida [50]
+				13751,     // Caixa de Poção Branca Média [10]
+				13757;     // Caixa de Poção Azul Média [10]
+
+			setarray .ItemPrice[0],
+				2,    // Caixa de Bomba Ácida [10]
+				4,    // Manual de Combate
+				5,    // Caixa de Conversores [10]
+				5,    // Galho Sangrento
+				8,    // Goma de Mascar 50%
+				8,    // Caixa de Veneno Mortal [10]
+				10,   // Caixa de Poção Azul Compacta [10]
+				10,   // Caixa de Poção Amarela Compacta [10]
+				12,   // Amuleto de Ziegfried
+				15,   // Caixa de Mega Resistência [5]
+				25,   // Caixa de Poção Média de Vida [50]
+				30,   // Caixa de Poção Branca Média [10]
+				30;   // Caixa de Poção Azul Média [10]
 			return;
-		Case 2:  // Equipamentos Médios
-			set @Currency, -1;
-			setarray .ItemLists[0],5788,2202,2204,5288,5786,5358,5401,5402,5389,5421,5325,20251,20304,20252,20256,20268,20205,20227,20280,20289,20322,20323,20308,20319;
-			setarray .ItemPrice[0],200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200;
-			return;
-		Case 3:  // Equipamentos Inferiores
-			set @Currency, -1;
-			setarray .ItemLists[0],5574,5361,5155,5548,5305,20238,20240,20271,20212,5377,20222,20207,20224,20228,20229,20236,20219,20265,20318;
-			setarray .ItemPrice[0],150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150;
-			return;
-		Case 4:  // Caixas de Itens
-			set @Currency, -1;
-			setarray .ItemLists[0],12103,14175,13581,13577,13585,13589,13595,14223,13610,13611,13716,13718,13720,13742,13745,13751,13757,13871,13872,13873,13874,13875,13876,13926,13927,13928,13929,13930,13931,13945,13946,13947,13948,13949,13950,13973,14180,13995;
-			setarray .ItemPrice[0],5,5,20,25,25,25,25,25,20,20,25,10,10,15,15,30,30,70,70,70,70,70,70,75,75,75,75,75,75,80,80,80,80,80,80,15,15,5;
-			return;
-		Case 5:  // Itens Godly
-			set @Currency, -1;
-			setarray .ItemLists[0],2629,2630,2410,1530,2541,2383,1161;
-			setarray .ItemPrice[0],500,500,500,500,500,500,500;
+
+		Case 2:  // Sair
+			close;
 			return;
 
 		default:
