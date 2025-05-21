@@ -1,0 +1,118 @@
+// atcmd_vip.txt
+-	script	Comando_VIP	-1,{
+	OnInit:
+		// Unbind any previous @vip command to prevent conflicts
+		unbindatcmd "vip";
+
+		// Bind the @vip command to this script's OnVIP label
+		// The '0, 0' means it requires an NPC script, but has NO range limit
+		bindatcmd "vip", strnpcinfo(3) + "::OnVIP", 0, 0;
+
+		// No cooldown for the command binding itself
+		set .command_cooldown, 30; // Cooldown for using the command, in seconds
+	end;
+
+	OnVIP:
+		// Check for cooldown specific to the command
+		if (gettimetick(2) - @last_vip_command_use < .command_cooldown) {
+			dispbottom "Aguarde " + (.command_cooldown - (gettimetick(2) - @last_vip_command_use)) + " segundos para usar o comando @vip novamente.";
+			end;
+		}
+		@last_vip_command_use = gettimetick(2);
+
+		// Call the main VIP menu function
+		callsub ShowVIPMenuGlobal;
+		end;
+
+	ShowVIPMenuGlobal:
+		// This is where you put the entire "ShowMainMenu" logic from your original NPC
+		// Make sure all variables like .npc_name$, .bcor$, .rcor$ are defined here
+		// or passed as parameters if you prefer. For simplicity, define them here.
+
+		set .@npc_name$, "^FF7F00[ Central VIP ]^000000"; // Define NPC name here
+		set .@bcor$, "^008aff[»]^000000 ";
+		set .@rcor$, "^ff0000[»]^000000 ";
+
+		mes .@npc_name$;
+
+		set .@hora, gettime(3);
+		mes ((.@hora >= 6 && .@hora <= 12) ? "Bom dia" : ((.@hora >= 13 && .@hora <= 18) ? "Boa tarde" : "Boa noite")) + ", ^008aff" + strcharinfo(0) + "^000000!";
+		mes "Bem-vindo à Central VIP.";
+
+		if (vip_status(1)) {
+			mes "^008affSeu acesso VIP expira em:^000000 " + callfunc("Time2Str", vip_status(2)) + ".";
+			mes " ";
+		}
+
+		mes "O que deseja fazer?";
+		next;
+
+		set .@opt, select(
+			.@bcor$ + "Entrar na Central VIP",
+			.@bcor$ + ((vip_status(1)) ? "Estender tempo ^008affVIP^000000" : "Tornar-se jogador ^008affVIP^000000"),
+			.@rcor$ + "Sair"
+		);
+
+		switch (.@opt) {
+			case 1:
+				if (!vip_status(1)) {
+					mes .@npc_name$;
+					mes "Desculpe! O acesso à Central VIP é permitido somente a jogadores ^008affVIP^000000.";
+					close;
+				}
+				// These variables should be defined in this script's OnInit if you're not passing them
+				warp "vip_lounge", 152, 120; // Hardcode map/coords or define here
+				end;
+
+			case 2:
+				callsub PurchaseVIPGlobal; // Call the purchase sub in this script
+				end;
+
+			case 3:
+				mes .@npc_name$;
+				mes "Certo, até a próxima.";
+				close;
+		}
+
+	PurchaseVIPGlobal: // Renamed to avoid confusion with original NPC's sub
+		set .@npc_name$, "^FF7F00[ Central VIP ]^000000";
+		set .@bcor$, "^008aff[»]^000000 ";
+		set .@rcor$, "^ff0000[»]^000000 ";
+		setarray .@vip_days_global, 7, 14, 30; // Define these here
+		setarray .@vip_prices_global, 4000, 7000, 10000;
+
+		mes .@npc_name$;
+		mes "Quantos dias de acesso ^008affVIP^000000 você deseja adquirir?";
+		next;
+
+		set .@i, select(
+			.@bcor$ + .@vip_days_global[0] + " Dias",
+			.@bcor$ + .@vip_days_global[1] + " Dias",
+			.@bcor$ + .@vip_days_global[2] + " Dias"
+		) - 1;
+
+		mes .@npc_name$;
+		mes "Você escolheu:";
+		mes "^4527A0VIP:^000000 " + .@vip_days_global[.@i] + " Dias";
+		mes "^4527A0Preço:^000000 " + F_InsertComma(.@vip_prices_global[.@i]) + " #CASHPOINTS";
+		mes " ";
+		mes "Deseja continuar?";
+		next;
+
+		if (select(.@bcor$ + "Confirmar compra", .@rcor$ + "Cancelar") == 1) {
+			if (#CASHPOINTS < .@vip_prices_global[.@i]) {
+				mes .@npc_name$;
+				mes "Você não possui ^008aff" + F_InsertComma(.@vip_prices_global[.@i]) + " #CASHPOINTS^000000.";
+				close;
+			}
+			#CASHPOINTS -= .@vip_prices_global[.@i];
+			vip_time(.@vip_days_global[.@i] * 1440);
+			mes .@npc_name$;
+			mes "Parabéns! Você adquiriu " + .@vip_days_global[.@i] + " dias de acesso VIP.";
+			close;
+		} else {
+			mes .@npc_name$;
+			mes "Tudo bem, volte sempre que quiser.";
+			close;
+		}
+}

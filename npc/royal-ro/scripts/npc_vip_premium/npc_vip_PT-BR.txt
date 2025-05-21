@@ -1,15 +1,6 @@
 prontera,161,195,3	script	Central VIP	108,{
 	OnTalk:
-		callsub ShowMainMenu;
-		end;
-
-	OnVIP:
-		if (gettimetick(2) - @lastvip < .cooldown) {
-			dispbottom "Aguarde " + (.cooldown - (gettimetick(2) - @lastvip)) + " segundos para usar este comando novamente.";
-			end;
-		}
-		@lastvip = gettimetick(2);
-		callsub ShowMainMenu;
+		callsub ShowMainMenu; // Still calls the main menu
 		end;
 
 	OnInit:
@@ -20,16 +11,18 @@ prontera,161,195,3	script	Central VIP	108,{
 		setarray .vip_prices, 4000, 7000, 10000;
 		.vip_map$ = "vip_lounge";
 		setarray .vip_coords, 152, 120;
-		.cooldown = 30; // segundos
+		.cooldown = 30; // This cooldown is now only for OnTalk, not @vip
 
-		// Bind do comando @vip
-		unbindatcmd "vip";
-		bindatcmd "vip", strnpcinfo(3) + "::OnVIP", 0, 100;
+		// REMOVE OR COMMENT OUT THESE LINES:
+		// unbindatcmd "vip";
+		// bindatcmd "vip", strnpcinfo(3) + "::OnVIP", 0, 100;
 
 		callfunc("F_NpcInitStatus", "Sala VIP");
 		setunitdata getnpcid(0), UNPC_GROUP_ID, 52;
 		end;
 
+	// Keep ShowMainMenu and PurchaseVIP in this script
+	// for when the player talks to the physical NPC.
 	ShowMainMenu:
 		mes .npc_name$;
 
@@ -84,8 +77,7 @@ prontera,161,195,3	script	Central VIP	108,{
 
 		mes .npc_name$;
 		mes "Você escolheu:";
-		mes "^4527A0VIP:^000000 " + .vip_days[.@i] + " Dias";
-		mes "^4527A0Preço:^000000 " + F_InsertComma(.vip_prices[.@i]) + " #CASHPOINTS";
+		mes "^4527A0VIP:^000000 " + F_InsertComma(.vip_prices[.@i]) + " #CASHPOINTS";
 		mes " ";
 		mes "Deseja continuar?";
 		next;
