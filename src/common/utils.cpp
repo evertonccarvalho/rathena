@@ -2,7 +2,7 @@
 // For more information, see LICENCE in the main folder
 
 #include "utils.hpp"
-
+#include <locale.h>
 #include <cmath> // floor()
 #include <cstdlib>
 #include <cstring>
@@ -60,7 +60,7 @@ void ShowDump(const void* buffer, size_t length)
 
 	ShowDebug("--- 00-01-02-03-04-05-06-07-08-09-0A-0B-0C-0D-0E-0F   0123456789ABCDEF\n");
 	ascii[16] = 0;
-        
+
 	for( i = 0; i < length; i++ )
 	{
 		char c = RBUFB(buffer,i);
@@ -154,7 +154,7 @@ int32 check_filepath(const char* filepath)
 {
 	DWORD Attribute;
 
-	if (Attribute = GetFileAttributes(filepath)) {
+	if (Attribute = GetFileAttributesA(filepath)) {
 		if ((Attribute&INVALID_FILE_ATTRIBUTES) && GetLastError() == ERROR_FILE_NOT_FOUND) {
 			SetLastError(0);
 			return 3;
@@ -399,4 +399,34 @@ uint32 get_percentage_exp(const uint64 a, const uint64 b)
 	}
 
 	return (uint32)floor(result);
+}
+
+char *GetComma(unsigned long n)
+{
+	static int comma = '\0';
+	static char retbuf[30];
+	char *p = &retbuf[sizeof(retbuf)-1];
+	int i = 0;
+
+	if(comma == '\0') {
+		struct lconv *lcp = localeconv();
+		if(lcp != NULL) {
+			if(lcp->thousands_sep != NULL &&
+				*lcp->thousands_sep != '\0')
+				comma = *lcp->thousands_sep;
+			else	comma = ',';
+		}
+	}
+
+	*p = '\0';
+
+	do {
+		if(i%3 == 0 && i != 0)
+			*--p = comma;
+		*--p = '0' + n % 10;
+		n /= 10;
+		i++;
+	} while(n != 0);
+
+	return p;
 }

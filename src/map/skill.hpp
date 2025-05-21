@@ -2849,6 +2849,8 @@ enum sc_type skill_get_sc(int16 skill_id);
 void skill_reveal_trap_inarea(struct block_list *src, int32 range, int32 x, int32 y);
 int32 skill_get_time3(struct map_data *mapdata, uint16 skill_id, uint16 skill_lv);
 
+int skill_vending(struct map_session_data *sd, t_itemid nameid); //Extended Vending [Lilith]
+
 /// Variable name of copied skill by Plagiarism
 #define SKILL_VAR_PLAGIARISM "CLONE_SKILL"
 /// Variable name of copied skill level by Plagiarism

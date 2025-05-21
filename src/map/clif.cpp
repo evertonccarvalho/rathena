@@ -7588,6 +7588,13 @@ void clif_cart_delitem( map_session_data& sd, int32 index, int32 amount ){
 /// num:
 ///     number of allowed item slots
 void clif_openvendingreq( map_session_data& sd, uint16 num ){
+
+// Vending shouldn't open if vend_loot is 0 and extended vending is enabled [Easycore]
+if (battle_config.extended_vending && sd.vend_loot == 0) {
+	sd.state.prevend = 0;
+	return;
+}
+
 	PACKET_ZC_OPENSTORE packet{};
 
 	packet.packetType = HEADER_ZC_OPENSTORE;
@@ -13452,6 +13459,9 @@ void clif_parse_SelectArrow(int32 fd,map_session_data *sd) {
 		case NC_MAGICDECOY:
 			skill_magicdecoy(*sd,p->itemId);
 			break;
+		case MC_VENDING:
+			skill_vending(sd, p->itemId);
+			break;
 	}
 
 	clif_menuskill_clear(sd);
@@ -14189,11 +14199,18 @@ void clif_parse_OpenVending(int32 fd, map_session_data* sd){
 		return;
 	}
 
+	std::shared_ptr<item_data> item = item_db.find(sd->vend_loot);
 	int32 cmd = RFIFOW(fd,0);
 	struct s_packet_db* info = &packet_db[cmd];
 	int16 len = (int16)RFIFOW(fd,info->pos[0]);
 	const char* message = RFIFOCP(fd,info->pos[1]);
 	const uint8* data = (uint8*)RFIFOP(fd,info->pos[3]);
+	char out_msg[1024];
+
+	if (battle_config.extended_vending && battle_config.show_item_vending && sd->vend_loot) {
+		memset(out_msg, '\0', sizeof(out_msg));
+		strcat(strcat(strcat(strcat(out_msg, "["), item->ename.c_str()), "] "), message);
+	}
 
 	if(cmd == 0x12f){ // (CZ_REQ_OPENSTORE)
 		len -= 84;
@@ -14223,7 +14240,11 @@ void clif_parse_OpenVending(int32 fd, map_session_data* sd){
 	if( message[0] == '\0' ) // invalid input
 		return;
 
-	vending_openvending(*sd, message, data, len/8, nullptr);
+	if (battle_config.extended_vending && battle_config.show_item_vending && sd->vend_loot){
+		vending_openvending(*sd, out_msg, data, len / 8, nullptr);
+	}else{
+		vending_openvending(*sd, message, data, len / 8, nullptr);
+	}
 }
 
 
@@ -22765,6 +22786,85 @@ void clif_parse_refineui_refine( int32 fd, map_session_data* sd ){
 		achievement_update_objective( sd, AG_ENCHANT_FAIL, 1, 1 );
 	}
 #endif
+}
+
+/**
+* Extended Vending system [Lilith]
+* Att: 21/12/2024 [KWDev]
+**/
+int clif_vend(struct map_session_data* sd, int skill_lv) {
+	// Ensure the session data pointer is not null
+	nullpo_ret(sd);
+
+	// Check if the player's session is active
+	if (!session_isActive(sd->fd))
+		return 0;
+
+	// Prepare the main packet dynamically
+	PACKET_ZC_MAKINGARROW_LIST* packet = new PACKET_ZC_MAKINGARROW_LIST;
+	std::vector<PACKET_ZC_MAKINGARROW_LIST_sub> subItems;
+
+	int count = 0;
+
+	// Add Zeny item if configured
+	if (battle_config.item_zeny && item_db.find(battle_config.item_zeny)) {
+		PACKET_ZC_MAKINGARROW_LIST_sub subItem{};
+		subItem.itemId = client_nameid(battle_config.item_zeny);
+		subItems.push_back(subItem);
+		count++;
+	}
+
+	// Add Cash item if configured
+	if (battle_config.item_cash && item_db.find(battle_config.item_cash)) {
+		PACKET_ZC_MAKINGARROW_LIST_sub subItem{};
+		subItem.itemId = client_nameid(battle_config.item_cash);
+		subItems.push_back(subItem);
+		count++;
+	}
+
+	// Add vending items from the itemdb_vending
+	for (const auto& it : itemdb_vending) {
+		t_itemid nameid = it.first;
+
+		// Skip invalid items
+		if (!item_db.find(nameid))
+			continue;
+
+		// Skip duplicate entries for Zeny or Cash
+		if (nameid != battle_config.item_zeny && nameid != battle_config.item_cash) {
+			PACKET_ZC_MAKINGARROW_LIST_sub subItem{};
+			subItem.itemId = client_nameid(nameid);
+			subItems.push_back(subItem);
+			count++;
+		}
+	}
+
+	// Update packet size
+	packet->packetType = HEADER_ZC_MAKINGARROW_LIST;
+	packet->packetLength = sizeof(PACKET_ZC_MAKINGARROW_LIST) + count * sizeof(PACKET_ZC_MAKINGARROW_LIST_sub);
+
+	// Send the main packet
+	clif_send(packet, sizeof(*packet), &sd->bl, SELF);
+
+	// Send the sub-items if there are any
+	if (!subItems.empty()) {
+		clif_send(subItems.data(), subItems.size() * sizeof(PACKET_ZC_MAKINGARROW_LIST_sub), &sd->bl, SELF);
+	}
+
+	// Update the player's state if items were available; otherwise, fail the skill
+	if (count > 0) {
+		sd->menuskill_id = MC_VENDING;
+		sd->menuskill_val = skill_lv;
+	}
+	else {
+		clif_skill_fail(*sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+		return 0;
+	}
+
+	// Clean up dynamically allocated memory
+	delete packet;
+
+	return 1;
 }
 
 void clif_unequipall_reply( map_session_data* sd, bool failed ){

@@ -350,7 +350,7 @@ enum emotion_type {
 	ET_MAX
 };
 
-enum clr_type : uint8_t 
+enum clr_type : uint8_t
 {
 	CLR_OUTSIGHT = 0,
 	CLR_DEAD,
@@ -359,7 +359,7 @@ enum clr_type : uint8_t
 	CLR_TRICKDEAD,
 };
 
-enum map_property : uint8_t 
+enum map_property : uint8_t
 {// clif_map_property
 	MAPPROPERTY_NOTHING       = 0,
 	MAPPROPERTY_FREEPVPZONE   = 1,
@@ -370,7 +370,7 @@ enum map_property : uint8_t
 	MAPPROPERTY_DENYSKILLZONE = 6,
 };
 
-enum e_map_type : uint8_t 
+enum e_map_type : uint8_t
 {// clif_map_type
 	MAPTYPE_VILLAGE              = 0,
 	MAPTYPE_VILLAGE_IN           = 1,
@@ -399,7 +399,7 @@ enum e_map_type : uint8_t
 	MAPTYPE_UNUSED               = 29,
 };
 
-enum useskill_fail_cause : uint8_t 
+enum useskill_fail_cause : uint8_t
 {// clif_skill_fail
 	USESKILL_FAIL_LEVEL = 0,
 	USESKILL_FAIL_SP_INSUFFICIENT = 1,
@@ -591,7 +591,7 @@ enum e_clif_messages : uint16 {
 	MSI_SKILL_FAIL_MATERIAL_IDENTITY = 1581,
 
 	// [Bow] must be equipped.
-	MSI_FAIL_NEED_EQUIPPED_BOW = 1691,							
+	MSI_FAIL_NEED_EQUIPPED_BOW = 1691,
 
 #if (PACKETVER >= 20130807 && PACKETVER <= 20130814) && !defined(PACKETVER_ZERO)
 	// %d seconds left until you can use
@@ -1440,6 +1440,9 @@ void clif_equipswitch_reply( map_session_data* sd, bool failed );
 void clif_pet_evolution_result( map_session_data* sd, e_pet_evolution_result result );
 
 void clif_parse_skill_toid( map_session_data* sd, uint16 skill_id, uint16 skill_lv, int32 target_id );
+
+/// Extended Vending [Lilith]
+int clif_vend(struct map_session_data *sd, int skill_lv);
 
 void clif_inventory_expansion_info( map_session_data* sd );
 
