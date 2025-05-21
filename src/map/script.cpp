@@ -11170,6 +11170,13 @@ BUILDIN_FUNC(getexp){
 		base = (int64) cap_value(base * bonus, 0, MAX_EXP);
 	if (job)
 		job = (int64) cap_value(job * bonus, 0, MAX_EXP);
+	// custom rate [by [Snake]]
+	if (sd->custom_rate.state){
+		if (base)
+			base = (int64)cap_value(base * sd->custom_rate.base, 0, MAX_EXP);
+		if (job)
+			job = (int64)cap_value(job * sd->custom_rate.job, 0, MAX_EXP);
+	}
 
 	pc_gainexp(sd, nullptr, base, job, 1);
 #ifdef RENEWAL
@@ -11177,6 +11184,51 @@ BUILDIN_FUNC(getexp){
 		hom_gainexp(sd->hd, base * battle_config.homunculus_exp_gain / 100); // Homunculus only receive 10% of EXP
 #endif
 
+	return SCRIPT_CMD_SUCCESS;
+}
+// custom rate [by [Snake]]
+BUILDIN_FUNC(set_custom_rate)
+{
+	map_session_data* sd;
+	int base = script_getnum(st,2), job = script_getnum(st,3), drop = script_getnum(st,4), constant = script_getnum(st,5);
+
+	if(script_getnum(st,6)){
+		if( !script_charid2sd(6,sd) ) {
+			script_pushint(st,0);
+			return SCRIPT_CMD_FAILURE;
+		}
+	} else  {
+		if( !script_rid2sd(sd) )
+			return SCRIPT_CMD_FAILURE;
+	}
+	if(sd->custom_rate.efst)
+		clif_status_change(&sd->bl,sd->custom_rate.efst,0,INFINITE_TICK,0,0,0);
+	sd->custom_rate.state = true;
+	sd->custom_rate.base = base;
+	sd->custom_rate.job = job;
+	sd->custom_rate.drop = drop;
+	sd->custom_rate.efst = constant;
+	clif_status_change(&sd->bl,sd->custom_rate.efst,1,INFINITE_TICK,0,0,0);
+	script_pushint(st,sd->custom_rate.state);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(get_custom_rate)
+{
+	map_session_data* sd;
+	if(script_getnum(st,2)){
+		if( !script_charid2sd(2,sd) ) {
+			script_pushint(st,0);
+			return SCRIPT_CMD_FAILURE;
+		}
+	} else {
+		if( !script_rid2sd(sd) )
+			return SCRIPT_CMD_FAILURE;
+	}
+	pc_setreg(sd, add_str("@custom_rate_base"), sd->custom_rate.base);
+	pc_setreg(sd, add_str("@custom_rate_job"), sd->custom_rate.job);
+	pc_setreg(sd, add_str("@custom_rate_drop"), sd->custom_rate.drop);
+	script_pushint(st,sd->custom_rate.base);
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -28352,6 +28404,10 @@ struct script_function buildin_func[] = {
 	// Clan system
 	BUILDIN_DEF(clan_join,"i?"),
 	BUILDIN_DEF(clan_leave,"?"),
+
+	// custom rate [by [Snake]]
+	BUILDIN_DEF(set_custom_rate, "iiii?"),
+	BUILDIN_DEF(get_custom_rate, "?"),
 
 	BUILDIN_DEF2(montransform, "transform", "vi?????"), // Monster Transform [malufett/Hercules]
 	BUILDIN_DEF2(montransform, "active_transform", "vi?????"),

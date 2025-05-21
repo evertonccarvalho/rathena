@@ -1,0 +1,51 @@
+-	script	Custom Rate#main	-1,{
+OnInit:
+	// Lista de Rates
+	//		menu   <.CustomRates_1>,<.CustomRates_2>,<.CustomRates_3>
+	setarray .CustomRates$,"Rates 1x","Rates 25x","Rates 50x";
+
+	//			<base>,<job>,<drop>,<efst_icon>
+	setarray .CustomRates_1,     1,    1,	 50,      1600;
+	setarray .CustomRates_2,    25,   25,	 25,      1601;
+	setarray .CustomRates_3,    50,   50,	 10,      1602;
+
+
+	// Bind Commands
+	bindatcmd "cratereset", "Custom Rate#main::OnResetVar", 99, 99;
+	bindatcmd "cratecall", "Custom Rate#main::OnCallSet", 99, 99;
+	end;
+
+OnResetVar:
+	CUSTOM_RATE_STATE = 0;
+	CUSTOM_RATE_BASE = 1;
+	CUSTOM_RATE_JOB = 1;
+	CUSTOM_RATE_DROP = 1;
+	CUSTOM_RATE_EFST = 0;
+	set_custom_rate CUSTOM_RATE_BASE,CUSTOM_RATE_JOB,CUSTOM_RATE_DROP,CUSTOM_RATE_EFST;
+	dispbottom "[Servidor]: Rate resetada com sucesso.";
+	end;
+
+OneTimeSetRate:
+	if(CUSTOM_RATE_STATE == 1)
+		end;
+	mes "Selecione o rate desejado para seu personagem:";
+OnCallSet:
+	.@rates$ ="";
+	for(.@i=0;.@i<getarraysize(.CustomRates$);.@i++)
+		.@rates$ += .CustomRates$[.@i]+":";
+	.@r = select(.@rates$);
+	CUSTOM_RATE_BASE = getd(".CustomRates_"+.@r+"[0]");
+	CUSTOM_RATE_JOB = getd(".CustomRates_"+.@r+"[1]");
+	CUSTOM_RATE_DROP = getd(".CustomRates_"+.@r+"[2]");
+	CUSTOM_RATE_EFST = getd(".CustomRates_"+.@r+"[3]");
+	CUSTOM_RATE_STATE = 1;
+OnPCLoginEvent:
+	if(CUSTOM_RATE_STATE == 1){
+		set_custom_rate CUSTOM_RATE_BASE,CUSTOM_RATE_JOB,CUSTOM_RATE_DROP,CUSTOM_RATE_EFST;
+		message strcharinfo(0), "[Servidor]: Ajustando taxas para: "+CUSTOM_RATE_BASE+"x";
+		//message strcharinfo(0), "[Servidor]: Ajustando taxas para: "+CUSTOM_RATE_BASE+"x/"+CUSTOM_RATE_JOB+"x/"+CUSTOM_RATE_DROP+"x.";
+	}
+	else
+		goto OneTimeSetRate;
+	end;
+}

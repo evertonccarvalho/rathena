@@ -489,6 +489,14 @@ public:
 	struct s_storage storage, premiumStorage;
 	struct s_storage inventory;
 	struct s_storage cart;
+	// custom rate [by [Snake]]
+	struct{
+		bool state;
+		int base;
+		int job;
+		int drop;
+		int efst;
+	}custom_rate;
 
 	struct item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	int16 equip_index[EQI_MAX];
@@ -1372,7 +1380,7 @@ public:
 
 extern PlayerStatPointDatabase statpoint_db;
 
-/// Enum of Summoner Power of 
+/// Enum of Summoner Power of
 enum e_summoner_power_type {
 	SUMMONER_POWER_LAND = 0,
 	SUMMONER_POWER_LIFE,

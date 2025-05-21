@@ -266,7 +266,7 @@ static bool mobdb_searchname_sub(uint16 mob_id, const char * const str, bool ful
 
 	if (mob == nullptr)
 		return false;
-	
+
 	if( mobdb_checkid(mob_id) <= 0 )
 		return false; // invalid mob_id (includes clone check)
 	if (strcmpi(mob->sprite.c_str(), str) == 0)
@@ -275,7 +275,7 @@ static bool mobdb_searchname_sub(uint16 mob_id, const char * const str, bool ful
 		return false; // Monsters with no base/job exp and no spawn point are, by this criteria, considered "slave mobs" and excluded from search results
 	if( full_cmp ) {
 		// str must equal the db value
-		if( strcmpi(mob->name.c_str(), str) == 0 || 
+		if( strcmpi(mob->name.c_str(), str) == 0 ||
 			strcmpi(mob->jname.c_str(), str) == 0)
 			return true;
 	} else {
@@ -511,7 +511,7 @@ int32 mob_get_random_id(int32 type, enum e_random_monster_flags flag, int32 lv)
 
 	if (type == MOBG_BLOODY_DEAD_BRANCH && flag&RMF_MOB_NOT_BOSS)
 		flag = static_cast<e_random_monster_flags>(flag&~RMF_MOB_NOT_BOSS);
-	
+
 	if (!summon) {
 		ShowError("mob_get_random_id: Invalid type (%d) of random monster.\n", type);
 		return 0;
@@ -582,7 +582,7 @@ bool mob_ksprotected (struct block_list *src, struct block_list *target)
 		map_session_data *pl_sd; // Owner
 		struct map_data *mapdata = map_getmapdata(md->bl.m);
 		char output[128];
-		
+
 		if( mapdata->getMapFlag(MF_ALLOWKS) || mapdata_flag_ks(mapdata) )
 			return false; // Ignores GVG, PVP and AllowKS map flags
 
@@ -1638,7 +1638,7 @@ int32 mob_unlocktarget(struct mob_data *md, t_tick tick)
 	}
 	md->ud.state.attack_continue = 0;
 	md->ud.target_to = 0;
-	
+
 	if (!md->ud.state.ignore_cell_stack_limit && battle_config.official_cell_stack_limit > 0
 		&& (battle_config.mob_ai & 0x8)
 		&& map_count_oncell(md->bl.m, md->bl.x, md->bl.y, BL_CHAR | BL_NPC, 1) > battle_config.official_cell_stack_limit) {
@@ -1955,7 +1955,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 				) )
 			{ // Rude attacked
 				if (abl->id != md->bl.id //Self damage does not cause rude attack
-				&& md->state.attacked_count++ >= RUDE_ATTACKED_COUNT				
+				&& md->state.attacked_count++ >= RUDE_ATTACKED_COUNT
 				&& !mobskill_use(md, tick, MSC_RUDEATTACKED) && can_move
 				&& !tbl && unit_escape(&md->bl, abl, rnd()%10 +1))
 				{	//Escaped.
@@ -2486,7 +2486,7 @@ static void mob_item_drop(struct mob_data *md, std::shared_ptr<s_item_drop_list>
 	sd = map_charid2sd(dlist->first_charid);
 	if( sd == nullptr ) sd = map_charid2sd(dlist->second_charid);
 	if( sd == nullptr ) sd = map_charid2sd(dlist->third_charid);
-	test_autoloot = sd 
+	test_autoloot = sd
 		&& (drop_rate <= sd->state.autoloot || pc_isautolooting(sd, ditem->item_data.nameid))
 		&& (flag ? ((battle_config.homunculus_autoloot ? (battle_config.hom_idle_no_share == 0 || !pc_isidle_hom(sd)) : 0) || (battle_config.mercenary_autoloot ? (battle_config.mer_idle_no_share == 0 || !pc_isidle_mer(sd)) : 0)) :
 			(battle_config.idle_no_autoloot == 0 || DIFF_TICK(last_tick, sd->idletime) < battle_config.idle_no_autoloot));
@@ -2765,6 +2765,10 @@ int32 mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int
 
 			if (sd->sc.getSCE(SC_ITEMBOOST))
 				drop_rate_bonus += sd->sc.getSCE(SC_ITEMBOOST)->val1;
+			// custom rate [by [Snake]]
+			if (sd->custom_rate.state && sd->custom_rate.drop > 1)
+			drop_rate_bonus += sd->custom_rate.drop;
+
 			if (sd->sc.getSCE(SC_PERIOD_RECEIVEITEM_2ND))
 				drop_rate_bonus += sd->sc.getSCE(SC_PERIOD_RECEIVEITEM_2ND)->val1;
 
@@ -3013,6 +3017,12 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 				exp = apply_rate(exp, bonus);
 				exp = apply_rate(exp, map_getmapflag(m, MF_JEXP));
 				job_exp = (t_exp)cap_value(exp, 1, MAX_EXP);
+				// custom rate [by [Snake]]
+			if (tmpsd[i]->custom_rate.state){
+				base_exp = (t_exp)cap_value(base_exp * tmpsd[i]->custom_rate.base, 1, MAX_EXP);
+				job_exp = (t_exp)cap_value(job_exp * tmpsd[i]->custom_rate.job, 1, MAX_EXP);
+			}
+
 			}
 
 			if ((base_exp > 0 || job_exp > 0) && entry.flag == MDLF_HOMUN && homkillonly && battle_config.hom_idle_no_share && pc_isidle_hom(tmpsd[i]))
@@ -3602,14 +3612,14 @@ void mob_add_spawn(uint16 mob_id, const struct spawn_info& new_spawn)
 
 	std::vector<spawn_info>& spawns = mob_spawn_data[mob_id];
 	// Search if the map is already in spawns
-	auto itSameMap = std::find_if(spawns.begin(), spawns.end(), 
+	auto itSameMap = std::find_if(spawns.begin(), spawns.end(),
 		[&m] (const spawn_info &s) { return (s.mapindex == m); });
-	
+
 	if( itSameMap != spawns.end() )
 		itSameMap->qty += new_spawn.qty; // add quantity, if map is found
 	else
 		spawns.push_back(new_spawn); // else, add the whole spawn info
-	
+
 	// sort spawns by spawn quantity
 	std::sort(spawns.begin(), spawns.end(),
 		[](const spawn_info & a, const spawn_info & b) -> bool
@@ -4865,7 +4875,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.max_hp = hp;
 	}
-	
+
 	if (this->nodeExists(node, "Sp")) {
 		uint32 sp;
 
@@ -4874,7 +4884,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.max_sp = sp;
 	}
-	
+
 	if (this->nodeExists(node, "BaseExp")) {
 		t_exp exp;
 
@@ -4883,7 +4893,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->base_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.base_exp_rate / 100., 0, MAX_EXP));
 	}
-	
+
 	if (this->nodeExists(node, "JobExp")) {
 		t_exp exp;
 
@@ -4892,7 +4902,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->job_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.job_exp_rate / 100., 0, MAX_EXP));
 	}
-	
+
 	if (this->nodeExists(node, "MvpExp")) {
 		t_exp exp;
 
@@ -4910,7 +4920,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.rhw.atk = atk;
 	}
-	
+
 	if (this->nodeExists(node, "Attack2")) {
 		uint16 atk;
 
@@ -5032,7 +5042,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.rhw.range = range;
 	}
-	
+
 	if (this->nodeExists(node, "SkillRange")) {
 		uint16 range;
 
@@ -5041,7 +5051,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->range2 = range;
 	}
-	
+
 	if (this->nodeExists(node, "ChaseRange")) {
 		uint16 range;
 
@@ -5050,7 +5060,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->range3 = range;
 	}
-	
+
 	if (this->nodeExists(node, "Size")) {
 		std::string size;
 
@@ -5072,7 +5082,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.size = static_cast<e_size>(constant);
 	}
-	
+
 	if (this->nodeExists(node, "Race")) {
 		std::string race;
 
@@ -5184,7 +5194,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.adelay = cap_value(speed, MAX_ASPD_NOPC, MIN_ASPD);
 	}
-	
+
 	if (this->nodeExists(node, "AttackMotion")) {
 		uint16 speed;
 
@@ -5218,7 +5228,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 		mob->status.dmotion = speed;
 	}
-	
+
 	if (this->nodeExists(node, "DamageTaken")) {
 		uint16 damage;
 
@@ -6111,7 +6121,7 @@ uint64 MobChatDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		chat = std::make_shared<s_mob_chat>();
 		chat->msg_id = id;
 	}
-	
+
 	if (this->nodeExists(node, "Color")) {
 		std::string hex;
 
@@ -6447,7 +6457,7 @@ static int32 mob_read_sqlskilldb(void)
 			for( i = 0; i < 19; ++i )
 			{
 				Sql_GetData(mmysql_handle, i, &str[i], nullptr);
-				if( str[i] == nullptr ) 
+				if( str[i] == nullptr )
 					str[i] = dummy; // get rid of nullptr columns
 			}
 
@@ -6500,7 +6510,7 @@ uint64 MobItemRatioDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		data = std::make_shared<s_mob_item_drop_ratio>();
 		data->nameid = nameid;
 	}
-	
+
 	if (this->nodeExists(node, "Ratio")) {
 		uint32 ratio;
 
@@ -6930,7 +6940,7 @@ static void mob_skill_db_set_single(struct s_mob_skill_db *skill) {
 			mob_skill_db_set_single_sub(pair.second, skill);
 		}
 	}
-	
+
 }
 
 /**
@@ -6962,7 +6972,7 @@ static void mob_load(void)
 
 	mob_chat_db.load();	// load before mob_skill_db
 
-	for(int32 i = 0; i < ARRAYLENGTH(dbsubpath); i++){	
+	for(int32 i = 0; i < ARRAYLENGTH(dbsubpath); i++){
 		size_t n1 = strlen( db_path ) + strlen( dbsubpath[i] ) + 1;
 		size_t n2 = strlen( db_path ) + strlen( DBPATH ) + strlen( dbsubpath[i] ) + 1;
 

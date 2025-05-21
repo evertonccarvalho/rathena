@@ -364,7 +364,6 @@ int32 party_recv_info(struct party* sp, uint32 char_id)
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
 	}
-	
 	// If a player was renamed, make sure to resend the party information
 	if( rename ){
 		clif_party_info( *p );
@@ -445,6 +444,15 @@ bool party_invite( map_session_data& sd, map_session_data *tsd ){
 		clif_displaymessage( sd.fd, msg_txt( &sd, 81 ) ); // Your GM level doesn't authorize you to perform this action on the specified player.
 		return false;
 	}
+
+	// custom rate [by [Snake]]
+	if( tsd->custom_rate.base != sd.custom_rate.base )
+	{
+		clif_messagecolor(&sd.bl, 0,"You need to make party with your custom rate value", true, SELF);
+		clif_party_invite_reply( sd, tsd->status.name, PARTY_REPLY_REJECTED );
+		return false;
+	}
+
 
 	if( !battle_config.invite_request_check && ( tsd->guild_invite > 0 || tsd->state.trading || tsd->adopt_invite ) ){
 		clif_party_invite_reply( sd, tsd->status.name, PARTY_REPLY_JOIN_OTHER_PARTY );
