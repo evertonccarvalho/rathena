@@ -470,7 +470,7 @@ bool bg_team_delete(int32 bg_id)
 
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -726,7 +726,7 @@ void bg_send_message(map_session_data *sd, const char *mes, size_t len)
 
 	if (sd->bg_id == 0)
 		return;
-	
+
 	std::shared_ptr<s_battleground_data> bgteam = util::umap_find(bg_team_db, sd->bg_id);
 
 	if (bgteam)
@@ -1096,7 +1096,7 @@ void bg_queue_join_guild(const char *name, map_session_data *sd)
 		clif_bg_queue_apply_result(BG_APPLY_INVALID_APP, name, sd);
 		return; // Someone has bypassed the client check for being in a guild
 	}
-	
+
 	if (strcmp(sd->status.name, sd->guild->guild.master) != 0) {
 		clif_bg_queue_apply_result(BG_APPLY_PARTYGUILD_LEADER, name, sd);
 		return; // Not the guild leader

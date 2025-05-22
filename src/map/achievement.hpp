@@ -41,6 +41,18 @@ enum e_achievement_group {
 	AG_ENCHANT_SUCCESS,
 	AG_SPEND_ZENY,
 	AG_TAMING,
+	// Extended Battleground [Easycore]
+	AG_BG_WIN,
+	AG_BG_LOSE,
+	AG_BG_TIE,
+	AG_BG_KILL,
+	AG_BG_DIE,
+	AG_BG_DAMAGE,
+	AG_BG_HEAL,
+	AG_WOE_KILL,
+	AG_WOE_DIE,
+	AG_WOE_DAMAGE,
+	AG_WOE_HEAL,
 	AG_MAX
 };
 

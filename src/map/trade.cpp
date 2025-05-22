@@ -8,6 +8,7 @@
 
 #include <common/nullpo.hpp>
 #include <common/socket.hpp>
+#include <common/utils.hpp>
 
 #include "atcommand.hpp"
 #include "battle.hpp"
@@ -393,6 +394,13 @@ void trade_tradeadditem(map_session_data *sd, int16 index, int16 amount)
 	if( item->expire_time ) { // Rental System
 		clif_displaymessage (sd->fd, msg_txt(sd,260));
 		clif_tradeitemok(*sd, index, EXITEM_ADD_FAILED_CLOSED);
+		return;
+	}
+
+	if( item->card[0]==CARD0_CREATE && (MakeDWord(item->card[2],item->card[3])== (battle_config.bg_reserved_char_id || battle_config.woe_reserved_char_id )&& !battle_config.bg_can_trade) )
+	{	// "Battleground's Items"
+		clif_displaymessage (sd->fd, msg_txt(sd,260));
+		clif_tradeitemok(*sd, index+2, EXITEM_ADD_FAILED_CLOSED);
 		return;
 	}
 

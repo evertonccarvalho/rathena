@@ -2059,6 +2059,17 @@ void map_reqnickdb(map_session_data * sd, int32 charid)
 	map_session_data* tsd;
 
 	nullpo_retv(sd);
+	if (battle_config.bg_reserved_char_id && battle_config.bg_reserved_char_id == charid)
+	{
+		clif_solved_charname(sd->fd, charid, "Battleground");
+		return;
+	}
+
+	if (battle_config.woe_reserved_char_id && battle_config.woe_reserved_char_id == charid)
+	{
+		clif_solved_charname(sd->fd, charid, "WoE");
+		return;
+	}
 
 	tsd = map_charid2sd(charid);
 	if( tsd != nullptr )
@@ -2168,7 +2179,7 @@ int32 map_quit(map_session_data *sd) {
 	if (sd->npc_id)
 		npc_event_dequeue(sd);
 
-	if (sd->bg_id)
+	if (sd && sd->bg_id)
 		bg_team_leave(sd, true, true);
 
 	if (sd->bg_queue_id > 0)

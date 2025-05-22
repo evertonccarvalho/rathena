@@ -21595,6 +21595,15 @@ BUILDIN_FUNC(bg_get_data)
 			mapreg_setreg(add_str("$@arenamemberscount"), i);
 			script_pushint(st, i);
 			break;
+		case 2:
+			script_pushconststr(st, bg->g ? bg->g->name : "null");
+			break;
+		case 3:
+			script_pushconststr(st, bg->g ? bg->g->master : "null");
+			break;
+		case 4:
+			script_pushint(st, bg->color);
+			break;
 		default:
 			ShowError("script:bg_get_data: unknown data identifier %d\n", type);
 			break;

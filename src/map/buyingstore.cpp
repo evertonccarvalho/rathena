@@ -12,6 +12,7 @@
 #include <common/socket.hpp>  // RBUF*
 #include <common/strlib.hpp>  // safestrncpy
 #include <common/timer.hpp>  // gettick
+#include <common/utils.hpp>
 
 #include "atcommand.hpp"  // msg_txt
 #include "battle.hpp"  // battle_config.*
@@ -165,7 +166,7 @@ int8 buyingstore_create( map_session_data* sd, int32 zenylimit, unsigned char re
 		std::shared_ptr<item_data> id = item_db.find(item->itemId);
 
 		// invalid input
-		if( id == nullptr || item->amount == 0 ){	
+		if( id == nullptr || item->amount == 0 ){
 			break;
 		}
 
@@ -175,7 +176,7 @@ int8 buyingstore_create( map_session_data* sd, int32 zenylimit, unsigned char re
 		}
 
 		// restrictions: allowed and no character-bound items
-		if( !id->flag.buyingstore || !itemdb_cantrade_sub( id.get(), pc_get_group_level( sd ), pc_get_group_level( sd ) ) ){ 
+		if( !id->flag.buyingstore || !itemdb_cantrade_sub( id.get(), pc_get_group_level( sd ), pc_get_group_level( sd ) ) ){
 			break;
 		}
 
@@ -263,7 +264,7 @@ void buyingstore_close(map_session_data* sd) {
 	nullpo_retv(sd);
 
 	if( sd->state.buyingstore ) {
-		if( 
+		if(
 			Sql_Query( mmysql_handle, "DELETE FROM `%s` WHERE buyingstore_id = %d;", buyingstore_items_table, sd->buyer_id ) != SQL_SUCCESS ||
 			Sql_Query( mmysql_handle, "DELETE FROM `%s` WHERE `id` = %d;", buyingstores_table, sd->buyer_id ) != SQL_SUCCESS
 		) {
@@ -396,6 +397,13 @@ void buyingstore_trade( map_session_data* sd, uint32 account_id, uint32 buyer_id
 			return;
 		}
 
+		if (sd->inventory.u.items_inventory[index].card[0] == CARD0_CREATE && ((MakeDWord(sd->inventory.u.items_inventory[index].card[2], sd->inventory.u.items_inventory[index].card[3])) == (battle_config.bg_reserved_char_id || battle_config.woe_reserved_char_id) && !battle_config.bg_can_trade ))
+		{ // Items where creator's ID is important
+			clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, item->itemId);
+			clif_displaymessage(sd->fd, msg_txt(sd,2004)); // Cannot Trade event reserved Items (Battleground, WoE)
+			return;
+		}
+
 		int32 listidx;
 
 		ARR_FIND( 0, pl_sd->buyingstore.slots, listidx, pl_sd->buyingstore.items[listidx].nameid == item->itemId );
@@ -475,7 +483,7 @@ void buyingstore_trade( map_session_data* sd, uint32 account_id, uint32 buyer_id
 		chrif_save(sd, CSAVE_NORMAL|CSAVE_INVENTORY);
 		chrif_save(pl_sd, CSAVE_NORMAL|CSAVE_INVENTORY);
 	}
-	
+
 	// check whether or not there is still something to buy
 	int32 i;
 	ARR_FIND( 0, pl_sd->buyingstore.slots, i, pl_sd->buyingstore.items[i].amount != 0 );
@@ -714,7 +722,7 @@ void do_init_buyingstore_autotrade( void ) {
 				uidb_put(buyingstore_autotrader_db, at->char_id, at);
 			}
 			Sql_FreeResult(mmysql_handle);
-			
+
 			// Init items for each autotraders
 			iter = db_iterator(buyingstore_autotrader_db);
 			for (at = (struct s_autotrader *)dbi_first(iter); dbi_exists(iter); at = (struct s_autotrader *)dbi_next(iter)) {
@@ -736,7 +744,7 @@ void do_init_buyingstore_autotrade( void ) {
 					buyingstore_autotrader_remove(at, true);
 					continue;
 				}
-			
+
 				//Init the list
 				CREATE(at->entries, struct s_autotrade_entry *,at->count);
 

@@ -100,10 +100,24 @@ int32 chmapif_send(int32 fd, unsigned char *buf, uint32 len){
  * @return : 0 success
  */
 int32 chmapif_send_fame_list(int32 fd){
-	int32 i, len = 8;
+	int32 i, len = 12;
 	unsigned char buf[32000];
 
 	WBUFW(buf,0) = 0x2b1b;
+	for( i = 0; i < fame_list_size_woe && woe_fame_list[i].id; i++ )
+	{
+		memcpy(WBUFP(buf,len),&woe_fame_list[i],sizeof(struct fame_list));
+		len += sizeof(struct fame_list);
+	}
+	WBUFW(buf, 10) = len;
+
+	for( i = 0; i < fame_list_size_bg && bg_fame_list[i].id; i++ )
+	{
+		memcpy(WBUFP(buf,len),&bg_fame_list[i],sizeof(struct fame_list));
+		len += sizeof(struct fame_list);
+	}
+	WBUFW(buf, 8) = len;
+
 
 	for(i = 0; i < fame_list_size_smith && smith_fame_list[i].id; i++) {
 		memcpy(WBUFP(buf, len), &smith_fame_list[i], sizeof(struct fame_list));
@@ -493,7 +507,7 @@ int32 chmapif_parse_authok(int32 fd){
 
 			//Set char to "@ char select" in online db [Kevin]
 			char_set_charselect(account_id);
-			
+
 			std::shared_ptr<struct online_char_data> character = util::umap_find( char_get_onlinedb(), account_id );
 
 			if( character != nullptr ){
@@ -597,7 +611,7 @@ void chmapif_changemapserv_ack(int32 fd, bool nok){
     WFIFOHEAD( fd, 28 + MAP_NAME_LENGTH_EXT );
     WFIFOW(fd,0) = 0x2b06;
     memcpy( WFIFOP( fd, 2 ), RFIFOP( fd, 2 ), 26 + MAP_NAME_LENGTH_EXT );
-    if(nok) 
+    if(nok)
 	WFIFOL(fd,6) = 0; //Set login1 to 0.(not ok)
     WFIFOSET( fd, 28 + MAP_NAME_LENGTH_EXT );
 }
@@ -1097,7 +1111,7 @@ int32 chmapif_parse_reqauth(int32 fd, int32 id){
  * @return : 0 not enough data received, 1 success
  */
 int32 chmapif_parse_updmapip(int32 fd, int32 id){
-	if (RFIFOREST(fd) < 6) 
+	if (RFIFOREST(fd) < 6)
 		return 0;
 	map_server[id].ip = ntohl(RFIFOL(fd, 2));
 	ShowInfo("Updated IP address of map-server #%d to %d.%d.%d.%d.\n", id, CONVIP(map_server[id].ip));
@@ -1128,6 +1142,8 @@ int32 chmapif_parse_updfamelist(int32 fd){
 				case RANK_BLACKSMITH:	size = fame_list_size_smith;	list = smith_fame_list;		break;
 				case RANK_ALCHEMIST:	size = fame_list_size_chemist;	list = chemist_fame_list;	break;
 				case RANK_TAEKWON:		size = fame_list_size_taekwon;	list = taekwon_fame_list;	break;
+				case RANK_BG:			size = fame_list_size_bg;		list = bg_fame_list;		break;
+				case RANK_WOE:			size = fame_list_size_woe;		list = woe_fame_list;		break;
 				default:				size = 0;						list = nullptr;				break;
             }
 
@@ -1214,7 +1230,7 @@ int32 chmapif_parse_reqcharban(int32 fd){
 			Sql_GetData(sql_handle, 2, &data, nullptr); unban_time = atol(data);
 			Sql_FreeResult(sql_handle);
 
-			if(timediff<0 && unban_time==0) 
+			if(timediff<0 && unban_time==0)
 				return 1; //attemp to reduce time of a non banned account ?!?
 			else if(unban_time<now) unban_time=now; //new entry
 			unban_time += timediff; //alterate the time

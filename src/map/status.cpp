@@ -1002,7 +1002,7 @@ efst_type StatusDatabase::getIcon(sc_type type) {
 /**
  * Get flag of SC (SCB value) for status_calc_ flag
  * @param type: SC type
- * @return cal_flag: Calc value 
+ * @return cal_flag: Calc value
  **/
 std::bitset<SCB_MAX> StatusDatabase::getCalcFlag(sc_type type) {
 	std::shared_ptr<s_status_change_db> status = status_db.find(type);
@@ -1166,7 +1166,7 @@ status_change_entry * status_change::getSCE(enum sc_type type) {
 	// TODO: bounds check
 	if (type == lastStatus.first)
 		return lastStatus.second;
-	
+
 	lastStatus = {type, data[type]};
 	return lastStatus.second;
 }
@@ -1300,7 +1300,7 @@ int32 status_set_maxhp(struct block_list *bl, uint32 maxhp, int32 flag)
  * @param bl: Object whose SP will be set [PC|HOM|MER|ELEM]
  * @param sp: What the SP is to be set as
  * @param flag: Used in case final value is higher than current
- *		Use 2 to display healing effect		
+ *		Use 2 to display healing effect
  * @return heal or zapped SP if valid
  */
 int32 status_set_sp(struct block_list *bl, uint32 sp, int32 flag)
@@ -1405,7 +1405,7 @@ int32 status_set_maxap(struct block_list *bl, uint32 maxap, int32 flag)
  * Takes HP/SP from an Object
  * @param bl: Object who will have HP/SP taken [PC|MOB|HOM|MER|ELEM]
  * @param hp: How much HP to charge
- * @param sp: How much SP to charge	
+ * @param sp: How much SP to charge
  * @return hp+sp through status_damage()
  * Note: HP/SP are integer values, not percentages. Values should be
  *	 calculated either within function call or before
@@ -1601,6 +1601,10 @@ int32 status_damage(struct block_list *src,struct block_list *target,int64 dhp, 
 		elemental_heal(reinterpret_cast<s_elemental_data*>(target), hp, sp);
 		break;
 	}
+	
+	// Extended Features BG [Easycore]
+	if (src && src->type == BL_PC)
+		pc_record_damage(src,target,hp);
 
 	// Normal attack damage is logged in the monster's dmglog as attack damage
 	// This counts as exp tap and is used for determining the MVP
@@ -1841,8 +1845,8 @@ int32 status_heal(struct block_list *bl,int64 hhp,int64 hsp, int64 hap, int32 fl
  * @param sp_rate: Percentage of SP to modify. If > 0:percent is of current SP, if < 0:percent is of max SP
  * @param ap_rate: Percentage of AP to modify. If > 0:percent is of current AP, if < 0:percent is of max AP
  * @param flag: \n
- *		0: Heal target \n 
- *		1: Use status_damage \n 
+ *		0: Heal target \n
+ *		1: Use status_damage \n
  *		2: Use status_damage and make sure target must not die from subtraction
  * @return hp+sp+ap through status_heal()
  */
@@ -2562,7 +2566,7 @@ void status_calc_misc(struct block_list *bl, struct status_data *status, int32 l
 		status->cri = status->flee2 =
 		status->patk = status->smatk =
 		status->hplus = status->crate = 0;
-		
+
 		if (bl->type != BL_MOB)	// BL_MOB has values set when loading mob_db
 			status->res = status->mres = 0;
 	}
@@ -2878,7 +2882,7 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 		// Remove special AI when this is used by regular mobs.
 		if (mbl->type == BL_MOB && !((TBL_MOB*)mbl)->special_state.ai)
 			md->special_state.ai = AI_NONE;
-		if (ud) { 
+		if (ud) {
 			// Different levels of HP according to skill level
 			if(!ud->skill_id) // !FIXME: We lost the unit data for magic decoy in somewhere before this
 				ud->skill_id = ((TBL_PC*)mbl)->menuskill_id;
@@ -4108,7 +4112,7 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 			continue;
 		if (pc_is_same_equip_index((enum equip_index)i, sd->equip_index, index))
 			continue;
-		
+
 		if (sd->inventory_data[index]) {
 			for (uint8 j = 0; j < MAX_ITEM_RDM_OPT; j++) {
 				int16 opt_id = sd->inventory.u.items_inventory[index].option[j].id;
@@ -4485,7 +4489,7 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 #endif
 	if ((skill = pc_checkskill(sd, SHC_SHADOW_SENSE)) > 0)
 	{
-		if (sd->status.weapon == W_DAGGER || sd->status.weapon == W_DOUBLE_DD || 
+		if (sd->status.weapon == W_DAGGER || sd->status.weapon == W_DOUBLE_DD ||
 			sd->status.weapon == W_DOUBLE_DS || sd->status.weapon == W_DOUBLE_DA)
 			base_status->cri += 100 + skill * 40;
 		else if (sd->status.weapon == W_KATAR)
@@ -6010,7 +6014,7 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 #ifndef RENEWAL
 		int32 matk_min = status_base_matk_min(status);
 		int32 matk_max = status_base_matk_max(status);
-	
+
 		if (sd != nullptr) {
 			matk_min += sd->bonus.ematk;
 			matk_max += sd->bonus.ematk;
@@ -8534,10 +8538,10 @@ static uint32 status_calc_maxsp(struct block_list *bl, uint64 maxsp)
 	int32 rate = 100;
 
 	maxsp += status_get_spbonus(bl,STATUS_BONUS_FIX);
-	
+
 	if ((rate += status_get_spbonus(bl,STATUS_BONUS_RATE)) != 100)
 		maxsp = maxsp * rate / 100;
-	
+
 	return (uint32)cap_value(maxsp,1,UINT_MAX);
 }
 
@@ -8620,7 +8624,7 @@ static unsigned char status_calc_element_lv(struct block_list *bl, status_change
 		return 1;
 	if(sc->getSCE(SC__INVISIBILITY))
 		return 1;
-	if (sc->getSCE(SC_FLAMEARMOR_OPTION) || sc->getSCE(SC_CRYSTAL_ARMOR_OPTION) || sc->getSCE(SC_EYES_OF_STORM_OPTION) || 
+	if (sc->getSCE(SC_FLAMEARMOR_OPTION) || sc->getSCE(SC_CRYSTAL_ARMOR_OPTION) || sc->getSCE(SC_EYES_OF_STORM_OPTION) ||
 		sc->getSCE(SC_STRONG_PROTECTION_OPTION) || sc->getSCE(SC_POISON_SHIELD_OPTION))
 		return 1;
 
@@ -9057,7 +9061,7 @@ std::vector<e_race2> status_get_race2(struct block_list *bl)
 }
 
 /**
- * Checks if an object is dead 
+ * Checks if an object is dead
  * @param bl: Object to check [PC|MOB|HOM|MER|ELEM]
  * @return 1: Is dead or 0: Is alive
  */
@@ -9066,7 +9070,7 @@ bool status_isdead(block_list &bl){
 }
 
 /**
- * Checks if an object is immune to magic 
+ * Checks if an object is immune to magic
  * @param bl: Object to check [PC|MOB|HOM|MER|ELEM]
  * @return value of magic damage to be blocked
  */
@@ -9089,7 +9093,7 @@ int32 status_isimmune(struct block_list *bl)
 }
 
 /**
- * Get view data of an object 
+ * Get view data of an object
  * @param bl: Object whose view data to get [PC|MOB|PET|HOM|MER|ELEM|NPC]
  * @return view data structure bl->vd
  */
@@ -9111,7 +9115,7 @@ struct view_data* status_get_viewdata(struct block_list *bl)
 /**
  * Set view data of an object
  * This function deals with class, mount, and item views
- * SC views are set in clif_getareachar_unit() 
+ * SC views are set in clif_getareachar_unit()
  * @param bl: Object whose view data to set [PC|MOB|PET|HOM|MER|ELEM|NPC]
  * @param class_: class of the object
  */
@@ -10030,7 +10034,7 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 					successFlag|=1;
 					pc_unequipitem(sd,i,3); // Left-hand weapon
 				}
-	
+
 				i = sd->equip_index[EQI_HAND_R];
 				if (i>=0 && sd->inventory_data[i] && sd->inventory_data[i]->type == IT_WEAPON) {
 					successFlag|=2;
@@ -11647,7 +11651,7 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 			break;
 		case SC__UNLUCKY:
 		{
-			sc_type rand_eff; 
+			sc_type rand_eff;
 			switch(rnd() % 3) {
 				case 1: rand_eff = SC_BLIND; break;
 				case 2: rand_eff = SC_SILENCE; break;
@@ -13516,7 +13520,7 @@ int32 status_change_end(struct block_list* bl, enum sc_type type, int32 tid)
 			clif_specialeffect(bl, 223, AREA);
 			clif_specialeffect(bl, 330, AREA);
 			break;
-			
+
 		case SC_OVERED_BOOST:
 			switch (bl->type) {
 				case BL_HOM: {
@@ -13756,7 +13760,7 @@ TIMER_FUNC(status_change_timer){
 		ShowDebug("status_change_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
 		return 0;
 	}
-	
+
 	struct status_change_entry * const sce = sc->getSCE(type);
 	if(!sce) {
 		ShowDebug("status_change_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
@@ -13774,7 +13778,7 @@ TIMER_FUNC(status_change_timer){
 	std::function<void (t_tick)> sc_timer_next = [&sce, &bl, &data](t_tick t) {
 		sce->timer = add_timer(t, status_change_timer, bl->id, data);
 	};
-	
+
 	switch(type) {
 	case SC_MAXIMIZEPOWER:
 	case SC_CLOAKING:
@@ -13871,7 +13875,7 @@ TIMER_FUNC(status_change_timer){
 			status_fix_damage(bl, bl, damage, clif_damage(*bl, *bl, tick, 0, 1, damage, 1, DMG_NORMAL, 0, false),0);
 		}
 		break;
-		
+
 	case SC_TOXIN:
 		if (sce->val4 >= 0) { // Damage is every 10 seconds including 3%sp drain.
 			if (sce->val3 == 1) { // Target
@@ -13931,7 +13935,7 @@ TIMER_FUNC(status_change_timer){
 			}
 		}
 		break;
-		
+
 	case SC_PYREXIA:
 		if (sce->val4 >= 0) {
 			map_freeblock_lock();
@@ -13940,7 +13944,7 @@ TIMER_FUNC(status_change_timer){
 			unit_skillcastcancel(bl, 2);
 		}
 		break;
-		
+
 	case SC_LEECHESEND:
 		if (sce->val4 >= 0) {
 			int64 damage = status->vit * (sce->val1 - 3) + (int32)status->max_hp / 100; // {Target VIT x (New Poison Research Skill Level - 3)} + (Target HP/100)
@@ -14140,7 +14144,7 @@ TIMER_FUNC(status_change_timer){
 			sc_timer_next(10000+tick);
 		}
 		break;
-		
+
 	case SC_OBLIVIONCURSE:
 		if( --(sce->val4) >= 0 ) {
 			clif_emotion( *bl, ET_QUESTION );
@@ -14859,7 +14863,7 @@ int32 status_change_timer_sub(struct block_list* bl, va_list ap)
 			status_check_skilluse(src, bl, WZ_SIGHTBLASTER, 2))
 		{
 			if (sce) {
-				struct skill_unit *su = nullptr; 
+				struct skill_unit *su = nullptr;
 				if(bl->type == BL_SKILL)
 					su = (struct skill_unit *)bl;
 				if (skill_attack(BF_MAGIC,src,src,bl,WZ_SIGHTBLASTER,sce->val1,tick,0x1000000)
@@ -15487,7 +15491,7 @@ uint64 StatusDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			this->invalidWarning(node["Icon"], "Icon %s is invalid, defaulting to EFST_BLANK.\n", icon_name.c_str());
 			constant = EFST_BLANK;
 		}
-		
+
 		if (constant < EFST_BLANK || constant >= EFST_MAX) {
 			this->invalidWarning(node["Icon"], "Icon %s is out of bounds, defaulting to EFST_BLANK.\n", icon_name.c_str());
 			constant = EFST_BLANK;
@@ -15778,7 +15782,7 @@ uint64 StatusDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		if (!exists)
 			status->min_rate = 0;
 	}
-	
+
 	if (this->nodeExists(node, "MinDuration")) {
 		int64 duration;
 

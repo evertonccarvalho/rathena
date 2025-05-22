@@ -50,6 +50,8 @@ int32 char_fd=-1; //char file descriptor
 struct Schema_Config schema_config;
 struct CharServ_Config charserv_config;
 struct mmo_map_server map_server[MAX_MAP_SERVERS];
+int32 fame_list_size_bg = MAX_FAME_LIST;
+int32 fame_list_size_woe = MAX_FAME_LIST;
 //Custom limits for the fame lists. [Skotlex]
 int32 fame_list_size_chemist = MAX_FAME_LIST;
 int32 fame_list_size_smith = MAX_FAME_LIST;
@@ -58,6 +60,8 @@ int32 fame_list_size_taekwon = MAX_FAME_LIST;
 struct fame_list smith_fame_list[MAX_FAME_LIST];
 struct fame_list chemist_fame_list[MAX_FAME_LIST];
 struct fame_list taekwon_fame_list[MAX_FAME_LIST];
+struct fame_list bg_fame_list[MAX_FAME_LIST];
+struct fame_list woe_fame_list[MAX_FAME_LIST];
 
 #define CHAR_MAX_MSG 300	//max number of msg_conf
 static char* msg_table[CHAR_MAX_MSG]; // Login Server messages_conf
@@ -180,7 +184,7 @@ void char_set_char_offline(uint32 char_id, uint32 account_id){
 	std::shared_ptr<struct online_char_data> character = util::umap_find( char_get_onlinedb(), account_id );
 
 	// We don't free yet to avoid aCalloc/aFree spamming during char change. [Skotlex]
-	if( character != nullptr ){	
+	if( character != nullptr ){
 		if( character->server > -1 )
 			if( map_server[character->server].users > 0 ) // Prevent this value from going negative.
 				map_server[character->server].users--;
@@ -280,7 +284,7 @@ int32 char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		(p->job_level != cp->job_level) || (p->job_exp != cp->job_exp) ||
 		(p->zeny != cp->zeny) ||
 		( strncmp( p->last_point.map, cp->last_point.map, sizeof( p->last_point.map ) ) != 0 ) ||
-		(p->last_point.x != cp->last_point.x) || (p->last_point.y != cp->last_point.y) || (p->last_point_instanceid != cp->last_point_instanceid) || 
+		(p->last_point.x != cp->last_point.x) || (p->last_point.y != cp->last_point.y) || (p->last_point_instanceid != cp->last_point_instanceid) ||
 		( strncmp( p->save_point.map, cp->save_point.map, sizeof( p->save_point.map ) ) != 0 ) ||
 		( p->save_point.x != cp->save_point.x ) || ( p->save_point.y != cp->save_point.y ) ||
 		(p->max_hp != cp->max_hp) || (p->hp != cp->hp) ||
@@ -376,7 +380,85 @@ int32 char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			strcat(save_status, " mercenary");
 		else
 			errors++;
+
+	/* Player Battleground Stadistics */
+	if( memcmp(&p->bgstats, &cp->bgstats, sizeof(struct s_battleground_stats)) )
+	{
+		if( SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `char_bg` ("
+			"`char_id`, "
+			"`top_damage`, `damage_done`, `damage_received`, "
+			"`skulls`, `ti_wins`, `ti_lost`, `ti_tie`, "
+			"`eos_flags`, `eos_bases`, `eos_wins`, `eos_lost`, `eos_tie`, "
+			"`boss_killed`, `boss_damage`, `boss_flags`, `boss_wins`, `boss_lost`, `boss_tie`, "
+			"`dom_bases`, `dom_off_kills`, `dom_def_kills`, `dom_wins`, `dom_lost`, `dom_tie`, "
+			"`td_kills`, `td_deaths`, `td_wins`, `td_lost`, `td_tie`, "
+			"`sc_stole`, `sc_captured`, `sc_droped`, `sc_wins`, `sc_lost`, `sc_tie`, "
+			"`ctf_taken`, `ctf_captured`, `ctf_droped`, `ctf_wins`, `ctf_lost`, `ctf_tie`, "
+			"`emperium_kill`, `barricade_kill`, `gstone_kill`, `cq_wins`, `cq_lost`, "
+			"`ru_captures`, `ru_wins`, `ru_lost`, "
+			"`kill_count`, `death_count`, `win`, `lost`, `tie`, `leader_win`, `leader_lost`, `leader_tie`, `deserter`, `score`, `points`, `rank_points`, `rank_games`,"
+			"`sp_heal_potions`, `hp_heal_potions`, `yellow_gemstones`, `red_gemstones`, `blue_gemstones`, `poison_bottles`, `acid_demostration`, `acid_demostration_fail`, "
+			"`support_skills_used`, `healing_done`, `wrong_support_skills_used`, `wrong_healing_done`, "
+			"`sp_used`, `zeny_used`, `spiritb_used`, `ammo_used`, `showstats`)"
+			" VALUES "
+			"('%d',"
+			"'%u','%u','%u',"
+			"'%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d',"
+			"'%d','%u','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d',"
+			"'%d','%d','%d',"
+			"'%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d','%d','%d','%d',"
+			"'%d','%d','%d','%d',"
+			"'%d','%d','%d','%d','%d')",
+			p->char_id,
+			p->bgstats.top_damage, p->bgstats.damage_done, p->bgstats.damage_received,
+			p->bgstats.skulls,p->bgstats.ti_wins,p->bgstats.ti_lost,p->bgstats.ti_tie,
+			p->bgstats.eos_flags,p->bgstats.eos_bases,p->bgstats.eos_wins,p->bgstats.eos_lost,p->bgstats.eos_tie,
+			p->bgstats.boss_killed,p->bgstats.boss_damage,p->bgstats.boss_flags,p->bgstats.boss_wins,p->bgstats.boss_lost,p->bgstats.boss_tie,
+			p->bgstats.dom_bases,p->bgstats.dom_off_kills,p->bgstats.dom_def_kills,p->bgstats.dom_wins,p->bgstats.dom_lost,p->bgstats.dom_tie,
+			p->bgstats.td_kills,p->bgstats.td_deaths,p->bgstats.td_wins,p->bgstats.td_lost,p->bgstats.td_tie,
+			p->bgstats.sc_stole,p->bgstats.sc_captured,p->bgstats.sc_droped,p->bgstats.sc_wins,p->bgstats.sc_lost,p->bgstats.sc_tie,
+			p->bgstats.ctf_taken,p->bgstats.ctf_captured,p->bgstats.ctf_droped,p->bgstats.ctf_wins,p->bgstats.ctf_lost,p->bgstats.ctf_tie,
+			p->bgstats.emperium_kill,p->bgstats.barricade_kill,p->bgstats.gstone_kill,p->bgstats.cq_wins,p->bgstats.cq_lost,
+			p->bgstats.ru_captures,p->bgstats.ru_wins,p->bgstats.ru_lost,
+			p->bgstats.kill_count,p->bgstats.death_count,p->bgstats.win,p->bgstats.lost,p->bgstats.tie,p->bgstats.leader_win,p->bgstats.leader_lost,p->bgstats.leader_tie,p->bgstats.deserter,p->bgstats.score,p->bgstats.points,p->bgstats.rank_points,p->bgstats.rank_games,
+			p->bgstats.sp_heal_potions, p->bgstats.hp_heal_potions, p->bgstats.yellow_gemstones, p->bgstats.red_gemstones, p->bgstats.blue_gemstones, p->bgstats.poison_bottles, p->bgstats.acid_demostration, p->bgstats.acid_demostration_fail,
+			p->bgstats.support_skills_used, p->bgstats.healing_done, p->bgstats.wrong_support_skills_used, p->bgstats.wrong_healing_done,
+			p->bgstats.sp_used, p->bgstats.zeny_used, p->bgstats.spiritb_used, p->bgstats.ammo_used, p->bgstats.showstats) )
+		{
+			Sql_ShowDebug(sql_handle);
+			errors++;
+		} else
+			strcat(save_status, " bgstats");
 	}
+
+	/* WoE Stadistics */
+	if( memcmp(&p->wstats, &cp->wstats, sizeof(struct s_woestats)) )
+	{
+		if( SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `char_wstats` (`char_id`, `kill_count`, `death_count`, `score`, `top_damage`, `damage_done`, `damage_received`, `emperium_damage`, `guardian_damage`, `barricade_damage`, `gstone_damage`, "
+			"`emperium_kill`, `guardian_kill`, `barricade_kill`, `gstone_kill`, "
+			"`sp_heal_potions`, `hp_heal_potions`, `yellow_gemstones`, `red_gemstones`, `blue_gemstones`, `poison_bottles`, `acid_demostration`, `acid_demostration_fail`, "
+			"`support_skills_used`, `healing_done`, `wrong_support_skills_used`, `wrong_healing_done`, "
+			"`sp_used`, `zeny_used`, `spiritb_used`, `ammo_used`, `points`, `showstats`) "
+			"VALUES ('%d', '%d', '%d', '%d', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%d', '%d', '%d', '%d', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%d', '%d')",
+			p->char_id, p->wstats.kill_count, p->wstats.death_count, p->wstats.score, p->wstats.top_damage, p->wstats.damage_done, p->wstats.damage_received, p->wstats.emperium_damage, p->wstats.guardian_damage, p->wstats.barricade_damage, p->wstats.gstone_damage,
+			p->wstats.emperium_kill, p->wstats.guardian_kill, p->wstats.barricade_kill, p->wstats.gstone_kill,
+			p->wstats.sp_heal_potions, p->wstats.hp_heal_potions, p->wstats.yellow_gemstones, p->wstats.red_gemstones, p->wstats.blue_gemstones, p->wstats.poison_bottles, p->wstats.acid_demostration, p->wstats.acid_demostration_fail,
+			p->wstats.support_skills_used, p->wstats.healing_done, p->wstats.wrong_support_skills_used, p->wstats.wrong_healing_done,
+			p->wstats.sp_used, p->wstats.zeny_used, p->wstats.spiritb_used, p->wstats.ammo_used, p->wstats.points, p->wstats.showstats) )
+		{
+			Sql_ShowDebug(sql_handle);
+			errors++;
+		} else
+			strcat(save_status, " woestats");
+	}}
+
 
 	//memo points
 	if( memcmp(p->memo_point, cp->memo_point, sizeof(p->memo_point)) )
@@ -635,10 +717,10 @@ int32 char_memitemdata_to_sql(const struct item items[], int32 max, int32 id, en
 			&&  items[i].unique_id == item.unique_id
 			) {	//They are the same item.
 				int32 k;
-				
+
 				ARR_FIND( 0, MAX_SLOTS, j, items[i].card[j] != item.card[j] );
 				ARR_FIND( 0, MAX_ITEM_RDM_OPT, k, items[i].option[k].id != item.option[k].id || items[i].option[k].value != item.option[k].value || items[i].option[k].param != item.option[k].param );
-				
+
 				if( j == MAX_SLOTS &&
 					k == MAX_ITEM_RDM_OPT &&
 					items[i].amount == item.amount &&
@@ -1215,6 +1297,189 @@ int32 char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_
 	StringBuf_AppendStr(&msg_buf, " hotkeys");
 #endif
 
+	/* Character Battleground Standings */
+	if( SQL_ERROR == stmt.Prepare("SELECT `top_damage`,`damage_done`,`damage_received`,`skulls`,`ti_wins`,`ti_lost`,`ti_tie`,`eos_flags`,`eos_bases`,`eos_wins`,`eos_lost`,`eos_tie`,`boss_killed`,`boss_damage`,`boss_flags`,`boss_wins`,`boss_lost`,`boss_tie`,`td_kills`,`td_deaths`,`td_wins`,`td_lost`,`td_tie`,`dom_bases`,`dom_off_kills`,`dom_def_kills`,`dom_wins`,`dom_lost`,`dom_tie`,`sc_stole`,`sc_captured`,`sc_droped`,`sc_wins`,`sc_lost`,`sc_tie`,`ctf_taken`,`ctf_captured`,`ctf_droped`,`ctf_wins`,`ctf_lost`,`ctf_tie`,`emperium_kill`,`barricade_kill`,`gstone_kill`,`cq_wins`,`cq_lost`,`ru_wins`,`ru_lost`,`ru_captures`,`kill_count`,`death_count`,`win`,`lost`,`tie`,`leader_win`,`leader_lost`,`leader_tie`,`deserter`,`score`,`points`,`rank_points`,`rank_games`,`sp_heal_potions`,`hp_heal_potions`,`yellow_gemstones`,`red_gemstones`,`blue_gemstones`,`poison_bottles`,`acid_demostration`,`acid_demostration_fail`,`support_skills_used`,`healing_done`,`wrong_support_skills_used`,`wrong_healing_done`,`sp_used`,`zeny_used`,`spiritb_used`,`ammo_used`,`showstats` FROM `char_bg` WHERE `char_id` = ?")
+		|| SQL_ERROR == stmt.BindParam(0, SQLDT_INT, &char_id, 0)
+		|| SQL_ERROR == stmt.Execute()
+		|| SQL_ERROR == stmt.BindColumn(0, SQLDT_UINT,   &p->bgstats.top_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(1, SQLDT_UINT,   &p->bgstats.damage_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(2, SQLDT_UINT,   &p->bgstats.damage_received, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(3, SQLDT_USHORT, &p->bgstats.skulls, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(4, SQLDT_USHORT, &p->bgstats.ti_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(5, SQLDT_USHORT, &p->bgstats.ti_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(6, SQLDT_USHORT, &p->bgstats.ti_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(7, SQLDT_USHORT, &p->bgstats.eos_flags, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(8, SQLDT_USHORT, &p->bgstats.eos_bases, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(9, SQLDT_USHORT, &p->bgstats.eos_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(10, SQLDT_USHORT, &p->bgstats.eos_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(11, SQLDT_USHORT, &p->bgstats.eos_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(12, SQLDT_USHORT, &p->bgstats.boss_killed, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(13, SQLDT_UINT,   &p->bgstats.boss_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(14, SQLDT_USHORT, &p->bgstats.boss_flags, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(15, SQLDT_USHORT, &p->bgstats.boss_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(16, SQLDT_USHORT, &p->bgstats.boss_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(17, SQLDT_USHORT, &p->bgstats.boss_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(18, SQLDT_USHORT, &p->bgstats.td_kills, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(19, SQLDT_USHORT, &p->bgstats.td_deaths, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(20, SQLDT_USHORT, &p->bgstats.td_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(21, SQLDT_USHORT, &p->bgstats.td_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(22, SQLDT_USHORT, &p->bgstats.td_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(23, SQLDT_USHORT, &p->bgstats.dom_bases, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(24, SQLDT_USHORT, &p->bgstats.dom_off_kills, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(25, SQLDT_USHORT, &p->bgstats.dom_def_kills, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(26, SQLDT_USHORT, &p->bgstats.dom_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(27, SQLDT_USHORT, &p->bgstats.dom_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(28, SQLDT_USHORT, &p->bgstats.dom_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(29, SQLDT_USHORT, &p->bgstats.sc_stole, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(30, SQLDT_USHORT, &p->bgstats.sc_captured, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(31, SQLDT_USHORT, &p->bgstats.sc_droped, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(32, SQLDT_USHORT, &p->bgstats.sc_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(33, SQLDT_USHORT, &p->bgstats.sc_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(34, SQLDT_USHORT, &p->bgstats.sc_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(35, SQLDT_USHORT, &p->bgstats.ctf_taken, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(36, SQLDT_USHORT, &p->bgstats.ctf_captured, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(37, SQLDT_USHORT, &p->bgstats.ctf_droped, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(38, SQLDT_USHORT, &p->bgstats.ctf_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(39, SQLDT_USHORT, &p->bgstats.ctf_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(40, SQLDT_USHORT, &p->bgstats.ctf_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(41, SQLDT_USHORT, &p->bgstats.emperium_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(42, SQLDT_USHORT, &p->bgstats.barricade_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(43, SQLDT_USHORT, &p->bgstats.gstone_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(44, SQLDT_USHORT, &p->bgstats.cq_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(45, SQLDT_USHORT, &p->bgstats.cq_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(46, SQLDT_USHORT, &p->bgstats.ru_wins, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(47, SQLDT_USHORT, &p->bgstats.ru_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(48, SQLDT_USHORT, &p->bgstats.ru_captures, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(49, SQLDT_USHORT, &p->bgstats.kill_count, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(50, SQLDT_USHORT, &p->bgstats.death_count, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(51, SQLDT_USHORT, &p->bgstats.win, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(52, SQLDT_USHORT, &p->bgstats.lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(53, SQLDT_USHORT, &p->bgstats.tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(54, SQLDT_USHORT, &p->bgstats.leader_win, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(55, SQLDT_USHORT, &p->bgstats.leader_lost, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(56, SQLDT_USHORT, &p->bgstats.leader_tie, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(57, SQLDT_USHORT, &p->bgstats.deserter, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(58, SQLDT_USHORT, &p->bgstats.score, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(59, SQLDT_USHORT, &p->bgstats.points, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(60, SQLDT_USHORT, &p->bgstats.rank_points, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(61, SQLDT_USHORT, &p->bgstats.rank_games, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(62, SQLDT_UINT,   &p->bgstats.sp_heal_potions, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(63, SQLDT_UINT,   &p->bgstats.hp_heal_potions, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(64, SQLDT_UINT,   &p->bgstats.yellow_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(65, SQLDT_UINT,   &p->bgstats.red_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(66, SQLDT_UINT,   &p->bgstats.blue_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(67, SQLDT_UINT,   &p->bgstats.poison_bottles, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(68, SQLDT_UINT,   &p->bgstats.acid_demostration, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(69, SQLDT_UINT,   &p->bgstats.acid_demostration_fail, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(70, SQLDT_UINT,   &p->bgstats.support_skills_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(71, SQLDT_UINT,   &p->bgstats.healing_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(72, SQLDT_UINT,   &p->bgstats.wrong_support_skills_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(73, SQLDT_UINT,   &p->bgstats.wrong_healing_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(74, SQLDT_UINT,   &p->bgstats.sp_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(75, SQLDT_UINT,   &p->bgstats.zeny_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(76, SQLDT_UINT,   &p->bgstats.spiritb_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(77, SQLDT_UINT,   &p->bgstats.ammo_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(78, SQLDT_USHORT, &p->bgstats.showstats, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.NextRow() )
+	{
+		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `char_bg` ("
+			"`char_id`, "
+			"`top_damage`, `damage_done`, `damage_received`, "
+			"`skulls`, `ti_wins`, `ti_lost`, `ti_tie`, "
+			"`eos_flags`, `eos_bases`, `eos_wins`, `eos_lost`, `eos_tie`, "
+			"`boss_killed`, `boss_damage`, `boss_flags`, `boss_wins`, `boss_lost`, `boss_tie`, "
+			"`dom_bases`, `dom_off_kills`, `dom_def_kills`, `dom_wins`, `dom_lost`, `dom_tie`, "
+			"`td_kills`, `td_deaths`, `td_wins`, `td_lost`, `td_tie`, "
+			"`sc_stole`, `sc_captured`, `sc_droped`, `sc_wins`, `sc_lost`, `sc_tie`, "
+			"`ctf_taken`, `ctf_captured`, `ctf_droped`, `ctf_wins`, `ctf_lost`, `ctf_tie`, "
+			"`emperium_kill`, `barricade_kill`, `gstone_kill`, `cq_wins`, `cq_lost`, "
+			"`ru_captures`, `ru_wins`, `ru_lost`, "
+			"`kill_count`, `death_count`, `win`, `lost`, `tie`, `leader_win`, `leader_lost`, `leader_tie`, `deserter`, `score`, `points`, `rank_points`, `rank_games`,"
+			"`sp_heal_potions`, `hp_heal_potions`, `yellow_gemstones`, `red_gemstones`, `blue_gemstones`, `poison_bottles`, `acid_demostration`, `acid_demostration_fail`, "
+			"`support_skills_used`, `healing_done`, `wrong_support_skills_used`, `wrong_healing_done`, "
+			"`sp_used`, `zeny_used`, `spiritb_used`, `ammo_used`, `showstats`)"
+			" VALUES "
+			"('%d',"
+			"'0','0','0',"
+			"'0','0','0','0',"
+			"'0','0','0','0','0',"
+			"'0','0','0','0','0','0',"
+			"'0','0','0','0','0','0',"
+			"'0','0','0','0','0',"
+			"'0','0','0','0','0','0',"
+			"'0','0','0','0','0','0',"
+			"'0','0','0','0','0',"
+			"'0','0','0',"
+			"'0','0','0','0','0','0','0','0','0','0','0','0','0',"
+			"'0','0','0','0','0','0','0','0',"
+			"'0','0','0','0',"
+			"'0','0','0','0','0')",
+			char_id) )
+			Sql_ShowDebug(sql_handle);
+		p->bgstats.score = 2000;
+	}
+	StringBuf_AppendStr(&msg_buf, " bgstats");
+
+	/* Character WoE Standings */
+	if( SQL_ERROR == stmt.Prepare("SELECT `top_damage`, `damage_done`, `damage_received`, `emperium_damage`, `guardian_damage`, `barricade_damage`, `gstone_damage`, `emperium_kill`, `guardian_kill`, `barricade_kill`, `gstone_kill`, `sp_heal_potions`, `hp_heal_potions`, `yellow_gemstones`, `red_gemstones`, `blue_gemstones`, `poison_bottles`, `acid_demostration`, `acid_demostration_fail`, `support_skills_used`, `healing_done`, `wrong_support_skills_used`, `wrong_healing_done`, `sp_used`, `zeny_used`, `spiritb_used`, `ammo_used`, `kill_count`, `death_count`, `score`, `points`, `showstats` FROM `char_wstats` WHERE `char_id` = ?")
+		|| SQL_ERROR == stmt.BindParam(0, SQLDT_INT, &char_id, 0)
+		|| SQL_ERROR == stmt.Execute()
+		|| SQL_ERROR == stmt.BindColumn(0, SQLDT_UINT, &p->wstats.top_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(1, SQLDT_UINT, &p->wstats.damage_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(2, SQLDT_UINT, &p->wstats.damage_received, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(3, SQLDT_UINT, &p->wstats.emperium_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(4, SQLDT_UINT, &p->wstats.guardian_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(5, SQLDT_UINT, &p->wstats.barricade_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(6, SQLDT_UINT, &p->wstats.gstone_damage, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(7, SQLDT_USHORT, &p->wstats.emperium_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(8, SQLDT_USHORT, &p->wstats.guardian_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(9, SQLDT_USHORT, &p->wstats.barricade_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(10, SQLDT_USHORT, &p->wstats.gstone_kill, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(11, SQLDT_UINT, &p->wstats.sp_heal_potions, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(12, SQLDT_UINT, &p->wstats.hp_heal_potions, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(13, SQLDT_UINT, &p->wstats.yellow_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(14, SQLDT_UINT, &p->wstats.red_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(15, SQLDT_UINT, &p->wstats.blue_gemstones, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(16, SQLDT_UINT, &p->wstats.poison_bottles, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(17, SQLDT_UINT, &p->wstats.acid_demostration, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(18, SQLDT_UINT, &p->wstats.acid_demostration_fail, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(19, SQLDT_UINT, &p->wstats.support_skills_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(20, SQLDT_UINT, &p->wstats.healing_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(21, SQLDT_UINT, &p->wstats.wrong_support_skills_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(22, SQLDT_UINT, &p->wstats.wrong_healing_done, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(23, SQLDT_UINT, &p->wstats.sp_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(24, SQLDT_UINT, &p->wstats.zeny_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(25, SQLDT_UINT, &p->wstats.spiritb_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(26, SQLDT_UINT, &p->wstats.ammo_used, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(27, SQLDT_USHORT, &p->wstats.kill_count, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(28, SQLDT_USHORT, &p->wstats.death_count, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(29, SQLDT_USHORT, &p->wstats.score, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(30, SQLDT_USHORT, &p->wstats.points, 0, NULL, NULL)
+		|| SQL_ERROR == stmt.BindColumn(31, SQLDT_USHORT, &p->wstats.showstats, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.NextRow() )
+	{
+		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `char_wstats` ("
+			"`char_id`, "
+			"`top_damage`, `damage_done`, `damage_received`, "
+			"`emperium_damage`, `guardian_damage`, `barricade_damage`, `gstone_damage`, "
+			"`emperium_kill`, `guardian_kill`, `barricade_kill`, `gstone_kill`, "
+			"`sp_heal_potions`, `hp_heal_potions`, `yellow_gemstones`, `red_gemstones`, `blue_gemstones`, `poison_bottles`, `acid_demostration`, `acid_demostration_fail`, "
+			"`support_skills_used`, `healing_done`, `wrong_support_skills_used`, `wrong_healing_done`, "
+			"`sp_used`, `zeny_used`, `spiritb_used`, `ammo_used`, `kill_count`, `death_count`, `score`, `points`, `showstats`)"
+			" VALUES "
+			"('%d',"
+			"'0','0','0',"
+			"'0','0','0','0',"
+			"'0','0','0','0',"
+			"'0','0','0','0','0','0','0','0',"
+			"'0','0','0','0',"
+			"'0','0','0','0','0','0','0','0','0')",
+			char_id) )
+			Sql_ShowDebug(sql_handle);
+		p->wstats.score = 2000;
+	}
+	StringBuf_AppendStr(&msg_buf, " woestats");
+
 	/* Mercenary Owner DataBase */
 	mercenary_owner_fromsql(char_id, p);
 	StringBuf_AppendStr(&msg_buf, " mercenary");
@@ -1299,7 +1564,7 @@ int32 char_rename_char_sql(struct char_session_data *sd, uint32 char_id)
 		Sql_ShowDebug(sql_handle);
 		return 3;
 	}
-	
+
 	// Update party and party members with the new player name
 	if( char_dat.party_id )
 		inter_party_charname_changed(char_dat.party_id, char_id, sd->new_name);
@@ -1478,7 +1743,7 @@ int32 char_make_new_char( struct char_session_data* sd, char* name_, int32 str, 
 	}
 
 #if PACKETVER >= 20151001
-	if(!(start_job == JOB_NOVICE && (charserv_config.allowed_job_flag&1)) && 
+	if(!(start_job == JOB_NOVICE && (charserv_config.allowed_job_flag&1)) &&
 		!(start_job == JOB_SUMMONER && (charserv_config.allowed_job_flag&2)))
 		return -2; // Invalid job
 
@@ -1691,7 +1956,7 @@ enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_i
 	/* delete mail attachments (only received) */
 	if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `id` IN ( SELECT `id` FROM `%s` WHERE `dest_id`='%d' )", schema_config.mail_attachment_db, schema_config.mail_db, char_id))
 		Sql_ShowDebug(sql_handle);
-	
+
 	/* delete mails (only received) */
 	if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `dest_id`='%d'", schema_config.mail_db, char_id))
 		Sql_ShowDebug(sql_handle);
@@ -1723,6 +1988,14 @@ enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_i
 			schema_config.charlog_db, account_id, 0, char_id, esc_name) )
 			Sql_ShowDebug(sql_handle);
 	}
+
+	// Extended Features BG [Easycore]
+	// Delete records in char_bg table
+	if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `char_bg` WHERE `char_id` = '%d'", char_id))
+		Sql_ShowDebug(sql_handle);
+	// Delete records in char_wstats table
+	if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `char_wstats` WHERE `char_id` = '%d'", char_id))
+		Sql_ShowDebug(sql_handle);
 
 	/* delete character */
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id`='%d'", schema_config.char_db, char_id) )
@@ -1999,6 +2272,8 @@ void char_read_fame_list(void)
 	memset(smith_fame_list, 0, sizeof(smith_fame_list));
 	memset(chemist_fame_list, 0, sizeof(chemist_fame_list));
 	memset(taekwon_fame_list, 0, sizeof(taekwon_fame_list));
+	memset(bg_fame_list, 0, sizeof(bg_fame_list));
+	memset(woe_fame_list, 0, sizeof(woe_fame_list));
 	// Build Blacksmith ranking list
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`fame`,`name` FROM `%s` WHERE `fame`>0 AND (`class`='%d' OR `class`='%d' OR `class`='%d' OR `class`='%d' OR `class`='%d' OR `class`='%d' OR `class`='%d') ORDER BY `fame` DESC LIMIT 0,%d", schema_config.char_db, JOB_BLACKSMITH, JOB_WHITESMITH, JOB_BABY_BLACKSMITH, JOB_MECHANIC, JOB_MECHANIC_T, JOB_BABY_MECHANIC, JOB_MEISTER, fame_list_size_smith) )
 		Sql_ShowDebug(sql_handle);
@@ -2043,6 +2318,38 @@ void char_read_fame_list(void)
 		// name
 		Sql_GetData(sql_handle, 2, &data, &len);
 		memcpy(taekwon_fame_list[i].name, data, zmin(len, NAME_LENGTH));
+	}
+	Sql_FreeResult(sql_handle);
+	// Build BG ranking list
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_bg`.`char_id`, `char_bg`.`points`, `%s`.`name` FROM `char_bg` LEFT JOIN `%s` ON `%s`.`char_id` = `char_bg`.`char_id` WHERE `char_bg`.`points` > '0' ORDER BY `char_bg`.`points` DESC LIMIT 0,%d", schema_config.char_db, schema_config.char_db, schema_config.char_db, fame_list_size_bg) )
+		Sql_ShowDebug(sql_handle);
+	for( i = 0; i < fame_list_size_bg && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
+	{
+		// char_id
+		Sql_GetData(sql_handle, 0, &data, NULL);
+		bg_fame_list[i].id = atoi(data);
+		// fame
+		Sql_GetData(sql_handle, 1, &data, &len);
+		bg_fame_list[i].fame = atoi(data);
+		// name
+		Sql_GetData(sql_handle, 2, &data, &len);
+		memcpy(bg_fame_list[i].name, data, min(len, NAME_LENGTH));
+	}
+	Sql_FreeResult(sql_handle);
+	// Build WoE ranking list
+	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_wstats`.`char_id`, `char_wstats`.`points`, `%s`.`name` FROM `char_wstats` LEFT JOIN `%s` ON `%s`.`char_id` = `char_wstats`.`char_id` WHERE `char_wstats`.`points` > '0' ORDER BY `char_wstats`.`points` DESC LIMIT 0,%d", schema_config.char_db, schema_config.char_db, schema_config.char_db, fame_list_size_bg) )
+		Sql_ShowDebug(sql_handle);
+	for( i = 0; i < fame_list_size_bg && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
+	{
+		// char_id
+		Sql_GetData(sql_handle, 0, &data, NULL);
+		woe_fame_list[i].id = atoi(data);
+		// fame
+		Sql_GetData(sql_handle, 1, &data, &len);
+		woe_fame_list[i].fame = atoi(data);
+		// name
+		Sql_GetData(sql_handle, 2, &data, &len);
+		memcpy(woe_fame_list[i].name, data, min(len, NAME_LENGTH));
 	}
 	Sql_FreeResult(sql_handle);
 }
@@ -2180,7 +2487,7 @@ TIMER_FUNC(char_chardb_waiting_disconnect){
 	std::shared_ptr<struct online_char_data> character = util::umap_find( char_get_onlinedb(), static_cast<uint32>( id ) );
 
 	// Mark it offline due to timeout.
-	if( character != nullptr && character->waiting_disconnect == tid ){	
+	if( character != nullptr && character->waiting_disconnect == tid ){
 		character->waiting_disconnect = INVALID_TIMER;
 		char_set_char_offline(character->char_id, character->account_id);
 	}
@@ -2287,14 +2594,14 @@ int32 char_lan_config_read(const char *lancfgName) {
 bool char_checkdb(void){
 	int32 i;
 	const char* sqltable[] = {
-		schema_config.char_db, schema_config.hotkey_db, schema_config.scdata_db, schema_config.cart_db, 
+		schema_config.char_db, schema_config.hotkey_db, schema_config.scdata_db, schema_config.cart_db,
                 schema_config.inventory_db, schema_config.charlog_db,
                 schema_config.char_reg_str_table, schema_config.char_reg_num_table, schema_config.acc_reg_str_table,
                 schema_config.acc_reg_num_table, schema_config.skill_db, schema_config.interlog_db, schema_config.memo_db,
-		schema_config.guild_db, schema_config.guild_alliance_db, schema_config.guild_castle_db, 
-                schema_config.guild_expulsion_db, schema_config.guild_member_db, 
+		schema_config.guild_db, schema_config.guild_alliance_db, schema_config.guild_castle_db,
+                schema_config.guild_expulsion_db, schema_config.guild_member_db,
                 schema_config.guild_skill_db, schema_config.guild_position_db, schema_config.guild_storage_db,
-		schema_config.party_db, schema_config.pet_db, schema_config.friend_db, schema_config.mail_db, 
+		schema_config.party_db, schema_config.pet_db, schema_config.friend_db, schema_config.mail_db,
                 schema_config.auction_db, schema_config.quest_db,
                 schema_config.homunculus_db, schema_config.skill_homunculus_db, schema_config.skillcooldown_homunculus_db,
                 schema_config.mercenary_db, schema_config.mercenary_owner_db, schema_config.skillcooldown_mercenary_db,
@@ -2763,7 +3070,7 @@ void char_set_defaults(){
 	charserv_config.char_check_db =1;
 
 	// See const.hpp to change the default values
-	safestrncpy( charserv_config.start_point[0].map, MAP_DEFAULT_NAME, sizeof( charserv_config.start_point[0].map ) ); 
+	safestrncpy( charserv_config.start_point[0].map, MAP_DEFAULT_NAME, sizeof( charserv_config.start_point[0].map ) );
 	charserv_config.start_point[0].x = MAP_DEFAULT_X;
 	charserv_config.start_point[0].y = MAP_DEFAULT_Y;
 	charserv_config.start_point_count = 1;

@@ -185,7 +185,7 @@ struct npc_data {
 		struct {
 			struct script_code *script;
 			int16 xs,ys; // OnTouch area radius
-			int32 guild_id;
+			int32 guild_id, bg_id;
 			t_tick timer;
 			int32 timerid,timeramount,rid;
 			t_tick timertick;

@@ -58,7 +58,7 @@ void map_msg_reload(void);
 
 #define MAX_NPC_PER_MAP 512
 #define AREA_SIZE battle_config.area_size
-#ifndef DAMAGELOG_SIZE 
+#ifndef DAMAGELOG_SIZE
 	#define DAMAGELOG_SIZE 20
 #endif
 #define LOOTITEM_SIZE 10
@@ -685,6 +685,12 @@ enum e_mapflag : int16 {
 	MF_NOBANK,
 	MF_SPECIALPOPUP,
 	MF_NOMACROCHECKER,
+	// [BattleGround System] [Easycore]
+	MF_NOECALL,
+	MF_BG_CONSUME, // allows using BG consumables [Easycore]
+	MF_WOE_CONSUME, // allows using WoE consumables [Easycore]
+	MF_BG_TOPSCORE,
+	MF_BG_NOMOBMOVE,
 	MF_MAX
 };
 

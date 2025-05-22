@@ -28,7 +28,19 @@ struct s_battleground_data {
 	std::string logout_event; ///< NPC Event to call on log out events
 	std::string die_event; ///< NPC Event to call on death events
 	std::string active_event; ///< NPC Event to call on players joining an active battleground
+	//Extended Battleground [Easycore]
+	// Team Leader and BG Skills features
+	int32 leader_char_id;
+	int32 skill_block_timer[MAX_GUILDSKILL];
+	unsigned long color;
+	bool reveal_pos, afk_warning;
+	// Fake Guild
+	struct mmo_guild *g;
+	// Score Board
+	int32 team_score;
 };
+extern struct mmo_guild bg_guild[];
+extern const unsigned int bg_colors[];
 
 struct s_battleground_team {
 	uint16 warp_x, warp_y; ///< Team respawn coordinates
@@ -36,6 +48,7 @@ struct s_battleground_team {
 		death_event, ///< Team NPC Event to call on death events
 		active_event, ///< Team NPC Event to call on players joining an active battleground
 		bg_id_var; ///< Team NPC variable name
+		int32 guild_index; /// Fake Guild [Easycore]
 };
 
 struct s_battleground_map {
@@ -99,6 +112,7 @@ enum e_bg_queue_apply_ack : uint16 {
 	BG_APPLY_RECONNECT, ///< Reconnect then apply
 	BG_APPLY_PARTYGUILD_LEADER, ///< Only party/guild leader can apply
 	BG_APPLY_PLAYER_CLASS, ///< Your class can't apply
+	BG_QUEUE_CONFIRMATION, /// [Easycore]
 };
 
 /// Enum of script command bg_info types
@@ -157,5 +171,17 @@ void bg_send_message(map_session_data *sd, const char *mes, size_t len);
 
 void do_init_battleground(void);
 void do_final_battleground(void);
+// Extended Battleground [Easycore]
+struct mmo_guild* bg_guild_get(int bg_id);
+int bg_checkskill (struct s_battleground_data *bg, int id);
+bool bg_block_skill_status(struct s_battleground_data *bg, int skill_id);
+void bg_block_skill_start(struct s_battleground_data *bg, int skill_id, t_tick time);
+void guild_block_skill_status(map_session_data *sd, int skillid);
+int guild_skills_timer(map_session_data *sd, int skillid);
+void bg_team_getitem(int bg_id, int nameid, int amount, int reward);
+void bg_team_rewards(int bg_id, int nameid, int amount, int kafrapoints, int quest_id, const char *var, int add_value, int bg_arena, int bg_result, int fame);
+bool bg_queue_transfer_all(const char *queue_source, const char *queue_dest);
+void bg_queue_leave_all();
+std::shared_ptr<s_battleground_queue> bg_search_queue_id(int id);
 
 #endif /* BATTLEGROUND_HPP */

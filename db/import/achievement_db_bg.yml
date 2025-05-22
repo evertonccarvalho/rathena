@@ -45,11 +45,60 @@ Header:
   Type: ACHIEVEMENT_DB
   Version: 2
 
-Footer:
-  Imports:
-  - Path: db/pre-re/achievement_db.yml
-    Mode: Prerenewal
-  - Path: db/re/achievement_db.yml
-    Mode: Renewal
-  - Path: db/import/achievement_db.yml
-  - Path: db/import/achievement_db_bg.yml
+Body:
+  - Id: 220050
+    Group: BG_WIN
+    Name: Battleground Champion
+    Condition: " ARG0 >= 50 "
+    Targets:
+      - Id: 0
+        Count: 50
+    Score: 20
+  - Id: 220051
+    Group: BG_LOSE
+    Name: Battleground Perseverant
+    Condition: " ARG0 >= 50 "
+    Targets:
+      - Id: 0
+        Count: 50
+    Score: 5
+  - Id: 220052
+    Group: BG_TIE
+    Name: Battleground Tough
+    Condition: " ARG0 >= 50 "
+    Targets:
+      - Id: 0
+        Count: 50
+    Score: 10
+  - Id: 220053
+    Group: BG_KILL
+    Name: Battleground Killer
+    Condition: " ARG0 >= 500 "
+    Targets:
+      - Id: 0
+        Count: 500
+    Score: 20
+  - Id: 220054
+    Group: BG_DIE
+    Name: Battleground Victim
+    Condition: " ARG0 >= 500 "
+    Targets:
+      - Id: 0
+        Count: 500
+    Score: 5
+  - Id: 220055
+    Group: BG_HEAL
+    Name: Combat Medic
+    Condition: " ARG0 >= 500000 "
+    Targets:
+      - Id: 0
+        Count: 500000
+    Score: 20
+  - Id: 220056
+    Group: BG_DAMAGE
+    Name: Insane Fighter
+    Condition: " ARG0 >= 2500000 "
+    Targets:
+      - Id: 0
+        Count: 2500000
+    Score: 20

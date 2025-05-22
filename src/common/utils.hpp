@@ -24,6 +24,14 @@ bool exists(const char* filename);
 
 /// Apply rate for val, divided by per
 #define apply_rate2(val, rate, per) (((rate) == (per)) ? (val) : ((val) > 100000) ? ((val) / (per) * (rate)) : ((val) * (rate) / (per)))
+#define add2limit(a, b, max) \
+	do { \
+		if( (max - a) < b ) { \
+			a = max; \
+		} else { \
+			a += b; \
+		} \
+	} while(0)
 
 /// calculates the value of A / B, in percent (rounded down)
 uint32 get_percentage(const uint32 A, const uint32 B);

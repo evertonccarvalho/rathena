@@ -236,6 +236,7 @@ enum send_target : uint8_t {
 	BG_AREA_WOS,
 
 	CLAN,				// Clan System
+	BG_LISTEN,
 };
 
 enum broadcast_flags : uint8_t {
@@ -1504,6 +1505,19 @@ void clif_set_dialog_align(map_session_data& sd, int32 npcid, e_say_dialog_align
 void clif_set_npc_window_size(map_session_data& sd, int32 width, int32 height);
 void clif_set_npc_window_pos(map_session_data& sd, int32 x, int32 y);
 void clif_set_npc_window_pos_percent(map_session_data& sd, int32 x, int32 y);
+// Extended Battleground [Easycore]
+void clif_bg_belonginfo(map_session_data *sd);
+int clif_visual_guild_id(struct block_list *bl);
+int clif_visual_emblem_id(struct block_list *bl);
+void clif_bg_emblem(map_session_data *sd, struct mmo_guild *g);
+void clif_bg_memberlist(map_session_data *sd);
+void clif_bg_leave_single(map_session_data *sd, const char *name, const char *mes);
+//void clif_bg_expulsion_single(map_session_data *sd, const char *name, const char *mes);
+//void clif_bg_updatescore_team(struct battleground_data *bg);
+void clif_bg_leave_single(map_session_data *sd, const char *name, const char *mes);
+void clif_bg_basicinfo(map_session_data& sd);
+
+void clif_rank_info(map_session_data *sd, int points, int total, e_rank ranktype);
 
 void clif_noask_sub( map_session_data& sd, map_session_data& tsd, int32 type );
 

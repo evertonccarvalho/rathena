@@ -473,10 +473,10 @@ int32 chrif_changemapserverack(uint32 account_id, int32 login_id1, int32 login_i
 
 /**
  * Does the char_serv have validate our connection to him ?
- * If yes then 
+ * If yes then
  *  - Send all our mapname to charserv
  *  - Retrieve guild castle
- *  - Do OnInterIfInit and OnInterIfInitOnce on all npc 
+ *  - Do OnInterIfInit and OnInterIfInitOnce on all npc
  * 0x2af9 <errCode>B
  */
 int32 chrif_connectack(int32 fd) {
@@ -554,7 +554,7 @@ void chrif_on_ready(void) {
 
 	//Re-save any guild castles that were modified in the disconnection time.
 	guild_castle_reconnect(-1, CD_NONE, 0);
-	
+
 	// Charserver is ready for loading autotrader
 	if (!char_init_done)
 	{
@@ -742,7 +742,7 @@ void chrif_authfail(int32 fd) {/* HELLO WORLD. ip in RFIFOL 15 is not being used
  */
 int32 auth_db_cleanup_sub(DBKey key, DBData *data, va_list ap) {
 	struct auth_node *node = (struct auth_node *)db_data2ptr(data);
-	
+
 	if(DIFF_TICK(gettick(),node->node_created)>60000) {
 		const char* states[] = { "Login", "Logout", "Map change" };
 		switch (node->state) {
@@ -1101,7 +1101,7 @@ int32 chrif_ban(int32 fd) {
 	}
 
 	sd->login_id1++; // change identify, because if player come back in char within the 5 seconds, he can change its characters
-	if (res == 0) { 
+	if (res == 0) {
 		int32 ret_status = RFIFOL(fd,7); // status or final date of a banishment
 		if(0<ret_status && ret_status<=9)
 			clif_displaymessage(sd->fd, msg_txt(sd,411+ret_status));
@@ -1126,7 +1126,7 @@ int32 chrif_ban(int32 fd) {
 
 int32 chrif_req_charban(int32 aid, const char* character_name, int32 timediff){
 	chrif_check(-1);
-	
+
 	WFIFOHEAD(char_fd,10+NAME_LENGTH);
 	WFIFOW(char_fd,0) = 0x2b28;
 	WFIFOL(char_fd,2) = aid;
@@ -1138,7 +1138,7 @@ int32 chrif_req_charban(int32 aid, const char* character_name, int32 timediff){
 
 int32 chrif_req_charunban(int32 aid, const char* character_name){
 	chrif_check(-1);
-	
+
 	WFIFOHEAD(char_fd,6+NAME_LENGTH);
 	WFIFOW(char_fd,0) = 0x2b2a;
 	WFIFOL(char_fd,2) = aid;
@@ -1190,7 +1190,11 @@ int32 chrif_updatefamelist(map_session_data &sd, e_rank ranktype) {
 	WFIFOHEAD(char_fd, 11);
 	WFIFOW(char_fd,0) = 0x2b10;
 	WFIFOL(char_fd,2) = sd.status.char_id;
-	WFIFOL(char_fd,6) = sd.status.fame;
+	switch(ranktype) {
+		case RANK_BG: WFIFOL(char_fd,6) = sd.status.bgstats.points; break;
+		case RANK_WOE: WFIFOL(char_fd,6) = sd.status.wstats.points; break;
+		default: WFIFOL(char_fd,6) = sd.status.fame;
+	}
 	WFIFOB(char_fd,10) = ranktype;
 	WFIFOSET(char_fd,11);
 
@@ -1209,12 +1213,31 @@ int32 chrif_buildfamelist(void) {
 
 int32 chrif_recvfamelist(int32 fd) {
 	int32 num, size;
-	int32 total = 0, len = 8;
+	int32 total = 0, len = 12;
 
 	memset (smith_fame_list, 0, sizeof(smith_fame_list));
 	memset (chemist_fame_list, 0, sizeof(chemist_fame_list));
 	memset (taekwon_fame_list, 0, sizeof(taekwon_fame_list));
+	memset (bg_fame_list, 0, sizeof(bg_fame_list));
+	memset (woe_fame_list, 0, sizeof(woe_fame_list));
 
+	size = RFIFOW(fd,10); //WoE rank block size
+	for( num = 0; len < size && num < MAX_FAME_LIST; num++ )
+	{
+		memcpy(&woe_fame_list[num],RFIFOP(fd,len),sizeof(struct fame_list));
+		len += sizeof(struct fame_list);
+	}
+
+	total += num;
+
+	size = RFIFOW(fd,8); //BG rank block size
+	for( num = 0; len < size && num < MAX_FAME_LIST; num++ )
+	{
+		memcpy(&bg_fame_list[num],RFIFOP(fd,len),sizeof(struct fame_list));
+		len += sizeof(struct fame_list);
+	}
+
+	total += num;
 	size = RFIFOW(fd, 6); //Blacksmith block size
 
 	for (num = 0; len < size && num < MAX_FAME_LIST; num++) {
@@ -1257,6 +1280,8 @@ int32 chrif_updatefamelist_ack(int32 fd) {
 		case RANK_BLACKSMITH:	list = smith_fame_list;   break;
 		case RANK_ALCHEMIST:	list = chemist_fame_list; break;
 		case RANK_TAEKWON:		list = taekwon_fame_list; break;
+		case RANK_BG:			list = bg_fame_list;      break;
+		case RANK_WOE:			list = woe_fame_list;      break;
 		default: return 0;
 	}
 

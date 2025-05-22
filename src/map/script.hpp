@@ -2219,6 +2219,31 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_SUBTYPE,
 };
 
+/* Extended Battleground [Easycore] */
+enum rankpoints_type {
+	BGR_FAME,
+	BGR_SKULLS,
+	BGR_EOS_FLAGS,
+	BGR_SC_STOLE,
+	BGR_SC_CAPTURED,
+	BGR_SC_DROPPED,
+	BGR_CTF_TAKEN,
+	BGR_CTF_CAPTURED,
+	BGR_CTF_DROPPED,
+	BGR_DOM_BASES,
+	BGR_DOM_OFF_KILLS,
+	BGR_DOM_DEF_KILLS,
+	BGR_BARRICADE,
+	BGR_EMPERIUM,
+	BGR_GSTONE,
+	BGR_RU_CAPTURES,
+	BGR_BOSS_FLAGS,
+	BGR_BOSS_KILLED,
+	BGR_TD_KILL,
+	BGR_TD_DEATH,
+	BGR_MAX
+};
+
 /* geteleminfo script command */
 enum e_eleminfo : uint8 {
 	ELEMINFO_ID = 0,

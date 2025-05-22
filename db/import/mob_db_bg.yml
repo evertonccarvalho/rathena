@@ -56,7 +56,6 @@
 #   WalkSpeed               Walk speed. (Default: DEFAULT_WALK_SPEED)
 #   AttackDelay             Attack speed. (Default: 0)
 #   AttackMotion            Attack animation speed. (Default: 0)
-#   ClientAttackMotion      Client attack speed. (Default: AttackMotion)
 #   DamageMotion            Damage animation speed. (Default: 0)
 #   DamageTaken             Rate at which the monster will receive incoming damage. (Default: 100)
 #   Ai                      Aegis monster type AI behavior. (Default: 06)
@@ -80,11 +79,253 @@ Header:
   Type: MOB_DB
   Version: 4
 
-Footer:
-  Imports:
-  - Path: db/pre-re/mob_db.yml
-    Mode: Prerenewal
-  - Path: db/re/mob_db.yml
-    Mode: Renewal
-  - Path: db/import/mob_db.yml
-  - Path: db/import/mob_db_bg.yml
+Body:
+  - Id: 20400
+    AegisName: B_EMPEL_1
+    Name: Guardian Stone
+    Level: 90
+    Hp: 300
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Battlefield
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 20401
+    AegisName: B_EMPEL_2
+    Name: Guardian Stone
+    Level: 90
+    Hp: 300
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Battlefield
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 20402
+    AegisName: B_EMPERIUM
+    Name: Emperium
+    Level: 90
+    Hp: 100
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Guardian
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 20403
+    AegisName: OBJ_NEUTRAL2
+    Name: Neutrality Flag
+    Level: 90
+    Hp: 150
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Guardian
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 20404
+    AegisName: OBJ_FLAG_A2
+    Name: Lion Flag
+    Level: 90
+    Hp: 150
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Guardian
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 20405
+    AegisName: OBJ_FLAG_B2
+    Name: Eagle Flag
+    Level: 90
+    Hp: 150
+    Attack: 1
+    Attack2: 2
+    Defense: 100
+    MagicDefense: 99
+    Size: Large
+    Race: Formless
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 300
+    AttackDelay: 1288
+    AttackMotion: 288
+    DamageMotion: 384
+    Class: Guardian
+    Modes:
+      IgnoreMagic: true
+      IgnoreMelee: true
+      IgnoreMisc: true
+      IgnoreRanged: true
+      Detector: true
+      KnockBackImmune: true
+  - Id: 21406
+    AegisName: BAPHOMET_BOSSNIA
+    Name: Baphomet
+    Level: 81
+    Hp: 668000
+    BaseExp: 0
+    JobExp: 0
+    MvpExp: 0
+    Attack: 3220
+    Attack2: 4040
+    Defense: 35
+    MagicDefense: 45
+    Agi: 152
+    Vit: 30
+    Int: 85
+    Dex: 120
+    Luk: 95
+    AttackRange: 2
+    SkillRange: 10
+    ChaseRange: 12
+    Size: Large
+    Race: Demon
+    Element: Dark
+    ElementLevel: 3
+    WalkSpeed: 100
+    AttackDelay: 768
+    AttackMotion: 768
+    DamageMotion: 576
+    Ai: 21
+    Class: Boss
+    Modes:
+      Mvp: true
+  - Id: 21407
+    AegisName: LORD_OF_DEATH_BOSSNIA
+    Name: Lord of the Dead
+    JapaneseName: Lord of Death
+    Level: 94
+    Hp: 603383
+    BaseExp: 0
+    JobExp: 0
+    MvpExp: 0
+    Attack: 3430
+    Attack2: 4232
+    Defense: 77
+    MagicDefense: 73
+    Agi: 99
+    Vit: 30
+    Int: 109
+    Dex: 100
+    Luk: 106
+    AttackRange: 3
+    SkillRange: 10
+    ChaseRange: 12
+    Size: Large
+    Race: Demon
+    Element: Dark
+    ElementLevel: 3
+    WalkSpeed: 180
+    AttackDelay: 1446
+    AttackMotion: 1296
+    DamageMotion: 360
+    Ai: 21
+    Class: Boss
+    Modes:
+      Mvp: true
+  - Id: 21408
+    AegisName: THANATOS_BOSSNIA
+    Name: Memory of Thanatos
+    JapaneseName: Thanatos
+    Level: 98
+    Hp: 445660
+    BaseExp: 0
+    JobExp: 0
+    MvpExp: 0
+    Attack: 3812
+    Attack2: 7483
+    Defense: 35
+    MagicDefense: 35
+    Str: 100
+    Agi: 108
+    Vit: 30
+    Int: 86
+    Dex: 147
+    Luk: 32
+    AttackRange: 3
+    SkillRange: 10
+    ChaseRange: 12
+    Size: Large
+    Race: Demon
+    Element: Ghost
+    ElementLevel: 4
+    WalkSpeed: 120
+    AttackDelay: 115
+    AttackMotion: 816
+    DamageMotion: 504
+    Ai: 21
+    Class: Boss
+    Modes:
+      Mvp: true

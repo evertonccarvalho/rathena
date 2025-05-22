@@ -523,6 +523,20 @@
 	export_constant(MF_SPECIALPOPUP);
 	export_constant(MF_NOMACROCHECKER);
 
+	// Battleground Extended [Easycore]
+	export_constant(MF_NOECALL);
+	export_constant(MF_BG_CONSUME);
+	export_constant(MF_WOE_CONSUME);
+	export_constant(MF_BG_TOPSCORE);
+	export_constant(MF_BG_NOMOBMOVE);
+	// Required for Extended BG
+	export_constant(SCCB_BUFFS);
+	export_constant(SCCB_DEBUFFS);
+	export_constant(SCCB_REFRESH);
+	export_constant(SCCB_CHEM_PROTECT);
+	export_constant(SCCB_LUXANIMA);
+	export_constant(SCCB_HERMODE);
+
 	/* setcell types */
 	export_constant(CELL_WALKABLE);
 	export_constant(CELL_SHOOTABLE);
@@ -3804,7 +3818,7 @@
 	export_constant(MOB_ID);
 
 	// Renamed monsterinfo types - 2025-03-11
-	export_deprecated_constant2("MOB_ATK1",MOB_ATKMIN); 
+	export_deprecated_constant2("MOB_ATK1",MOB_ATKMIN);
 	export_deprecated_constant2("MOB_ATK2",MOB_ATKMAX);
 	export_deprecated_constant2("MOB_RANGE",MOB_ATKRANGE);
 	export_deprecated_constant2("MOB_RANGE2",MOB_SKILLRANGE);
@@ -4232,7 +4246,7 @@
 	export_constant(ADOPT_MORE_CHILDREN);
 	export_constant(ADOPT_LEVEL_70);
 	export_constant(ADOPT_MARRIED);
-	
+
 	/* directions */
 	export_constant(DIR_NORTH);
 	export_constant(DIR_NORTHWEST);
@@ -4302,7 +4316,7 @@
 	export_constant(IE_NOMEMBER);
 	export_constant(IE_NOINSTANCE);
 	export_constant(IE_OTHER);
-	
+
 	/* months */
 	export_constant(JANUARY);
 	export_constant(FEBRUARY);
@@ -4316,7 +4330,7 @@
 	export_constant(OCTOBER);
 	export_constant(NOVEMBER);
 	export_constant(DECEMBER);
-	
+
 	/* days of the week */
 	export_constant(SUNDAY);
 	export_constant(MONDAY);
@@ -4325,7 +4339,7 @@
 	export_constant(THURSDAY);
 	export_constant(FRIDAY);
 	export_constant(SATURDAY);
-	
+
 	/* date types */
 	export_constant(DT_SECOND);
 	export_constant(DT_MINUTE);
@@ -7182,6 +7196,19 @@
 	export_constant(AG_ENCHANT_SUCCESS);
 	export_constant(AG_SPEND_ZENY);
 	export_constant(AG_TAMING);
+
+	// Extended Battleground [Easycore]
+	export_constant(AG_BG_WIN);
+	export_constant(AG_BG_LOSE);
+	export_constant(AG_BG_TIE);
+	export_constant(AG_BG_KILL);
+	export_constant(AG_BG_DIE);
+	export_constant(AG_BG_DAMAGE);
+	export_constant(AG_BG_HEAL);
+	export_constant(AG_WOE_KILL);
+	export_constant(AG_WOE_DIE);
+	export_constant(AG_WOE_DAMAGE);
+	export_constant(AG_WOE_HEAL);
 
 	/* achievement info */
 	export_constant(ACHIEVEINFO_COUNT1);
@@ -10716,6 +10743,28 @@
 	export_constant(MER_DIETER);
 	export_constant(MER_ELEANOR);
 
+	/* Extended Battleground [Easycore] */
+	export_constant(BGR_FAME);
+	export_constant(BGR_SKULLS);
+	export_constant(BGR_EOS_FLAGS);
+	export_constant(BGR_SC_STOLE);
+	export_constant(BGR_SC_CAPTURED);
+	export_constant(BGR_SC_DROPPED);
+	export_constant(BGR_CTF_TAKEN);
+	export_constant(BGR_CTF_CAPTURED);
+	export_constant(BGR_CTF_DROPPED);
+	export_constant(BGR_DOM_BASES);
+	export_constant(BGR_DOM_OFF_KILLS);
+	export_constant(BGR_DOM_DEF_KILLS);
+	export_constant(BGR_BARRICADE);
+	export_constant(BGR_EMPERIUM);
+	export_constant(BGR_GSTONE);
+	export_constant(BGR_RU_CAPTURES);
+	export_constant(BGR_BOSS_FLAGS);
+	export_constant(BGR_BOSS_KILLED);
+	export_constant(BGR_TD_KILL);
+	export_constant(BGR_TD_DEATH);
+
 	/* searchstore constants */
 	export_constant(SEARCHSTORE_EFFECT_NORMAL);
 	export_constant(SEARCHSTORE_EFFECT_REMOTE);
@@ -10723,7 +10772,7 @@
 	export_constant(GROUP_ALGORITHM_RANDOM);
 	export_constant(GROUP_ALGORITHM_SHAREDPOOL);
 	export_constant(GROUP_ALGORITHM_ALL);
-	
+
 	/* guildinfo script command */
 	export_constant(GUILDINFO_NAME);
 	export_constant(GUILDINFO_LEVEL);

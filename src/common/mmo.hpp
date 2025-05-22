@@ -559,6 +559,120 @@ struct hotkey {
 };
 #endif
 
+
+// Extended Battleground [Easycore]
+struct s_battleground_stats {
+	unsigned int
+		top_damage,
+		damage_done,
+		damage_received,
+		boss_damage;
+	unsigned short
+		// Triple Inferno
+		skulls,
+		ti_wins, ti_lost, ti_tie,
+		// Tierra EoS
+		eos_flags,
+		eos_bases,
+		eos_wins, eos_lost, eos_tie,
+		// Tierra Bossnia
+		boss_killed,
+		boss_flags,
+		boss_wins, boss_lost, boss_tie,
+		// Tierra Domination
+		dom_bases,
+		dom_off_kills,
+		dom_def_kills,
+		dom_wins, dom_lost, dom_tie,
+		// Flavius TD
+		td_kills,
+		td_deaths,
+		td_wins, td_lost, td_tie,
+		// Flavius SC
+		sc_stole,
+		sc_captured,
+		sc_droped,
+		sc_wins, sc_lost, sc_tie,
+		// Flavius CTF
+		ctf_taken,
+		ctf_captured,
+		ctf_droped,
+		ctf_wins, ctf_lost, ctf_tie,
+		// Conquest
+		emperium_kill,
+		barricade_kill,
+		gstone_kill,
+		cq_wins, cq_lost,
+		// Rush
+		ru_captures,
+		ru_wins, ru_lost;
+
+	unsigned int // Ammo
+		sp_heal_potions,
+		hp_heal_potions,
+		yellow_gemstones,
+		red_gemstones,
+		blue_gemstones,
+		poison_bottles,
+		acid_demostration,
+		acid_demostration_fail,
+		support_skills_used,
+		healing_done,
+		wrong_support_skills_used,
+		wrong_healing_done,
+		sp_used,
+		zeny_used,
+		spiritb_used,
+		ammo_used;
+	unsigned short
+		kill_count,
+		death_count,
+		win, lost, tie,
+		leader_win, leader_lost, leader_tie,
+		deserter, rank_games;
+
+	int score, points, rank_points, showstats;
+};
+
+struct s_woestats {
+	int score;
+	unsigned short
+		kill_count,
+		death_count;
+	unsigned int
+		top_damage,
+		damage_done,
+		damage_received;
+	unsigned int
+		emperium_damage,
+		guardian_damage,
+		barricade_damage,
+		gstone_damage;
+	unsigned short
+		emperium_kill,
+		guardian_kill,
+		barricade_kill,
+		gstone_kill;
+	unsigned int // Ammo
+		sp_heal_potions,
+		hp_heal_potions,
+		yellow_gemstones,
+		red_gemstones,
+		blue_gemstones,
+		poison_bottles,
+		acid_demostration,
+		acid_demostration_fail,
+		support_skills_used,
+		healing_done,
+		wrong_support_skills_used,
+		wrong_healing_done,
+		sp_used,
+		zeny_used,
+		spiritb_used,
+		ammo_used;
+	int points, showstats;
+};
+
 struct mmo_charstatus {
 	uint32 char_id;
 	uint32 account_id;
@@ -599,6 +713,9 @@ struct mmo_charstatus {
 
 	uint32 mapip;
 	uint16 mapport;
+
+	struct s_battleground_stats bgstats; // Extended Feature [Easycore]
+	struct s_woestats wstats;
 
 	struct s_point_str last_point;
 	int32 last_point_instanceid;
@@ -1135,7 +1252,9 @@ enum e_rank {
 	RANK_BLACKSMITH = 0,
 	RANK_ALCHEMIST = 1,
 	RANK_TAEKWON = 2,
-	RANK_KILLER = 3
+	RANK_KILLER = 3,
+	RANK_BG = 4,
+	RANK_WOE = 5
 };
 
 struct clan_alliance {

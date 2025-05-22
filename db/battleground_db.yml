@@ -209,3 +209,4 @@ Body:
 Footer:
   Imports:
   - Path: db/import/battleground_db.yml
+  - Path: db/import/battleground_db_ex.yml

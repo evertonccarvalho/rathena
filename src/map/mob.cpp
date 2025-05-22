@@ -2023,6 +2023,8 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 		if( md->bg_id && mode&MD_CANATTACK ) {
 			if( md->ud.walktimer != INVALID_TIMER )
 				return true;/* we are already moving */
+			if (map_getmapflag(md->bl.m, MF_BG_NOMOBMOVE)) // Extended Battleground [Easycore]
+				return true;
 			map_foreachinallrange (mob_ai_sub_hard_bg_ally, &md->bl, view_range, BL_PC, md, &tbl, mode);
 			if( tbl ) {
 				if( distance_blxy(&md->bl, tbl->x, tbl->y) <= 3 || unit_walktobl(&md->bl, tbl, 1, 1) )
@@ -3421,6 +3423,8 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 			// The master or Mercenary can increase the kill count, if the monster level is greater or equal than half the baselevel of the master
 			if (sd->md && src && (src->type == BL_PC || src->type == BL_MER) && mob->lv >= sd->status.base_level / 2)
 				mercenary_kills(sd->md);
+			// Easycore eBG
+			pc_record_mobkills(sd,md);
 		}
 
 		if( md->npc_event[0] && !md->state.npc_killmonster ) {
@@ -5341,7 +5345,10 @@ void MobDatabase::loadingFinished() {
 				mob->status.mode = static_cast<e_mode>(mob->status.mode | MD_STATUSIMMUNE);
 				break;
 			case CLASS_BATTLEFIELD:
-				mob->status.mode = static_cast<e_mode>(mob->status.mode | (MD_STATUSIMMUNE | MD_SKILLIMMUNE));
+				if (battle_config.bg_monsters_skillimmune)
+					mob->status.mode = static_cast<e_mode>(mob->status.mode | (MD_STATUSIMMUNE | MD_SKILLIMMUNE));
+				else
+					mob->status.mode = static_cast<e_mode>(mob->status.mode | MD_STATUSIMMUNE );
 				break;
 			case CLASS_EVENT:
 				mob->status.mode = static_cast<e_mode>(mob->status.mode | MD_FIXEDITEMDROP);
