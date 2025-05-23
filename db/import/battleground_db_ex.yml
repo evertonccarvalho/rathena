@@ -191,7 +191,7 @@ Body:
           ActiveEvent: Flavius_SC::OnTeam2Active
           Variable: $@BG_Team2
   - Id: 9
-    Name: Team Death Match
+    Name: Team DeathMatch
     MinPlayers: 1
     MinLevel: 80
     Locations:

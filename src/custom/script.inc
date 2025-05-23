@@ -742,7 +742,7 @@ BUILDIN_FUNC(bg_emotion)
 	}
 
 	for (const auto &member : bg->members)
-		clif_emotion(&member.sd->bl, type);
+		clif_emotion(member.sd->bl, static_cast<emotion_type>(type));
 
 	return SCRIPT_CMD_SUCCESS;
 }

@@ -77,7 +77,7 @@
 
 Header:
   Type: MOB_DB
-  Version: 4
+  Version: 3
 
 Body:
   - Id: 20400

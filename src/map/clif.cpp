@@ -8942,7 +8942,7 @@ void clif_guild_positionnamelist(map_session_data *sd)
 	WFIFOW(fd, 0)=0x166;
 	for(i=0;i<MAX_GUILDPOSITION;i++){
 		WFIFOL(fd,i*28+4)=i;
-		afestrncpy(WFIFOCP(fd,i*28+8),g.position[i].name,NAME_LENGTH);
+		safestrncpy(WFIFOCP(fd,i*28+8),g.position[i].name,NAME_LENGTH);
 	}
 	WFIFOW(fd,2)=i*28+4;
 	WFIFOSET(fd,WFIFOW(fd,2));
@@ -17749,6 +17749,9 @@ void clif_bossmapinfo( map_session_data& sd, mob_data* md, e_bossmap_info flag )
 
 	clif_send( &p, sizeof( p ), &sd.bl, SELF );
 }
+#define CS_EQUIPMENT 1 //FIX Check Equip extended [SNAKE]
+#define CS_BG 2 //FIX Check Equip extended [SNAKE]
+#define CS_WOE 3 //FIX Check Equip extended [SNAKE]
 
 /// Check Equip extended [Easycore]
 /// 0442 <Length>.W <count>.L <Skill_list>.W (ZC_SKILL_SELECT_REQUEST).
@@ -20182,7 +20185,8 @@ void clif_parse_SkillSelectMenu(int32 fd, map_session_data *sd) {
 					else if( tsd->status.show_equip || pc_has_permission(sd, PC_PERM_VIEW_EQUIPMENT) )
 						clif_viewequip_ack(*sd, *tsd);
 					else
-						clif_msg(sd, MSI_OPEN_EQUIPEDITEM_REFUSED);
+						// clif_msg(sd, MSI_OPEN_EQUIPEDITEM_REFUSED);
+						clif_msg(*sd, MSI_OPEN_EQUIPEDITEM_REFUSED); //Fix [Snake]
 					break;
 				case CS_BG:
 					pc_battle_stats(sd,tsd,1);
@@ -23154,7 +23158,7 @@ void clif_parse_refineui_refine( int32 fd, map_session_data* sd ){
 * Extended Vending system [Lilith]
 * Att: 21/12/2024 [KWDev]
 **/
-int clif_vend(struct map_session_data* sd, int skill_lv) {
+int clif_vend(map_session_data* sd, int skill_lv) {
 	// Ensure the session data pointer is not null
 	nullpo_ret(sd);
 

@@ -88,11 +88,14 @@ Header:
   Type: ITEM_DB
   Version: 3
 
-Footer:
-  Imports:
-  - Path: db/pre-re/item_db.yml
-    Mode: Prerenewal
-  - Path: db/re/item_db.yml
-    Mode: Renewal
-  - Path: db/import/item_db.yml
-  - Path: db/import/item_db_bg.yml
+Body:
+  - Id: 8965
+    AegisName: Blue_Skull
+    Name: Blue Skull
+    Type: Etc
+    Weight: 0
+  - Id: 8966
+    AegisName: Red_Skull
+    Name: Red Skull
+    Type: Etc
+    Weight: 0

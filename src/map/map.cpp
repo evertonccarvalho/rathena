@@ -2061,13 +2061,15 @@ void map_reqnickdb(map_session_data * sd, int32 charid)
 	nullpo_retv(sd);
 	if (battle_config.bg_reserved_char_id && battle_config.bg_reserved_char_id == charid)
 	{
-		clif_solved_charname(sd->fd, charid, "Battleground");
+		// clif_solved_charname(sd->fd, charid, "Battleground");
+		clif_solved_charname(*sd, charid, "Battleground");
 		return;
 	}
 
 	if (battle_config.woe_reserved_char_id && battle_config.woe_reserved_char_id == charid)
 	{
-		clif_solved_charname(sd->fd, charid, "WoE");
+		// clif_solved_charname(sd->fd, charid, "WoE");
+		clif_solved_charname(*sd, charid, "WoE");
 		return;
 	}
 
