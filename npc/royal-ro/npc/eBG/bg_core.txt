@@ -27,10 +27,10 @@ OnInit:
 	// Comment // to disable a game mode
 	setarray $@BG_Names$[0],
 				"Conquest",    "6",
-				"Flavius_CTF", "7",
+				//"Flavius_CTF", "7",
 				"Flavius_SC",  "8",
 				"Flavius_TD",  "9",
-				"Tierra_Boss","10",
+			  //Tierra_Boss","10",
 				"Rush",       "11",
 				"Tierra_DOM", "12",
 				"Tierra_TI",  "13";

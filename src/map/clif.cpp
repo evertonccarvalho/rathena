@@ -491,6 +491,7 @@ int32 clif_send(const void* buf, int32 len, struct block_list* bl, enum send_tar
 	switch(type) {
 
 	case ALL_CLIENT: //All player clients.
+	case BG_LISTEN:
 		iter = mapit_getallusers();
 		while( ( tsd = (map_session_data*)mapit_next( iter ) ) != nullptr ){
 			if (type == BG_LISTEN && tsd->state.bg_listen)
@@ -17749,6 +17750,7 @@ void clif_bossmapinfo( map_session_data& sd, mob_data* md, e_bossmap_info flag )
 
 	clif_send( &p, sizeof( p ), &sd.bl, SELF );
 }
+
 #define CS_EQUIPMENT 1 //FIX Check Equip extended [SNAKE]
 #define CS_BG 2 //FIX Check Equip extended [SNAKE]
 #define CS_WOE 3 //FIX Check Equip extended [SNAKE]

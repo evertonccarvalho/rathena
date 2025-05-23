@@ -1443,7 +1443,7 @@ void clif_pet_evolution_result( map_session_data* sd, e_pet_evolution_result res
 void clif_parse_skill_toid( map_session_data* sd, uint16 skill_id, uint16 skill_lv, int32 target_id );
 
 /// Extended Vending [Lilith]
-int clif_vend(struct map_session_data *sd, int skill_lv);
+int clif_vend(map_session_data *sd, int skill_lv);
 
 void clif_inventory_expansion_info( map_session_data* sd );
 
