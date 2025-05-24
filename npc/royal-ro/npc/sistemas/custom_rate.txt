@@ -25,8 +25,9 @@ OnInit:
 
 	// Bind Commands
 	bindatcmd "cratereset", "Custom Rate#main::OnResetVar", 99, 99;
-	bindatcmd "crateinfo", "Custom Rate#main::OnShowInfo", 99, 99;
-	bindatcmd "cratecall", "Custom Rate#main::OnCallSet", 99, 99;
+	bindatcmd "crates", "Custom Rate#main::OnCallSet", 99, 99;
+	bindatcmd "crateinfo", "Custom Rate#main::OnShowInfo";
+
 	end;
 
 OnResetVar:
@@ -51,6 +52,10 @@ OneTimeSetRate:
 	mes "^FF4500[»]^000000 Compatível com jogo em grupo";
 	mes "^FF4500[›]^000000 ^FF0000ATENÇÃO: Esta escolha é permanente!^000000";
 	next;
+
+	// Chamando o sub-rotina OnCallSet
+	callsub OnCallSet;
+	end; // Adicionei um end aqui para terminar o script após a seleção
 
 OnShowInfo:
 	mes "^FF4500[====================]^000000";
