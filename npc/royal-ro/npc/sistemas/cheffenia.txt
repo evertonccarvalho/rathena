@@ -1,5 +1,12 @@
 prontera,132,203,6	script	Cheffênia	998,{
+// ========== CONFIGURAÇÕES GLOBAIS ==========
+	set .PasseID, 7227;                // ID do item do Passe da Cheffênia
+	set .EntradasMax, 4;               // Máximo de entradas permitidas por passe
+	set .PrecoPasse, 2500000;         // Preço do passe (em Zeny)
+	set .DuracaoPasse, 14400;          // Duração do passe em segundos (4 horas)
+	set .HorarioAcesso, 1;             // 0 = fechado, 1 = aberto
 
+// ========== INÍCIO DO SCRIPT ==========
 	mes "[Porteiro Cheffênia]";
 	mes "Olá, aventureiro(a)! O que você deseja?";
 	menu "Entrar na Cheffênia",acesso;
@@ -7,47 +14,47 @@ prontera,132,203,6	script	Cheffênia	998,{
 	acesso:
 	next;
 
-	if (.acesso == 0) {
+	if (.HorarioAcesso == 0) {
 		mes "[Porteiro Cheffênia]";
 		mes "A Cheffênia está aberta todos os dias, das 18h às 22h.";
-		mes "Você precisa de 10kk";
-			close;
+		mes "Você precisa de "+.PrecoPasse+" Zeny para comprar o passe.";
+		close;
 	}
 
 	mes "[Porteiro Cheffênia]";
-	mes "Posso te levar a um lugar muito misterioso.. ";
+	mes "Posso te levar a um lugar muito misterioso..";
 	mes "O lugar se chama Cheffênia!";
-	mes "É um lugar infestado MVPs.";
+	mes "É um lugar infestado de MVPs.";
 	next;
 	mes "[Porteiro Cheffênia]";
 	mes "Deseja acessar a Cheffênia?";
 	next;
 	menu "Entrar na Cheffênia",sim,
 		"Mudei de ideia...",nao,
-		"Comprar o passe para Cheffenia",item;
+		"Comprar o passe para Cheffênia",item;
 
 	sim:
-    if(rentalcountitem(7227) < 1){
+	if(rentalcountitem(.PasseID) < 1){
 		mes "[Porteiro Cheffênia]";
 		mes "Hmm...";
 		next;
 		mes "[Porteiro Cheffênia]";
-		mes "Para entrar na Cheffênia preciso que tenha um "+getitemname(7227);
+		mes "Para entrar na Cheffênia preciso que tenha um "+getitemname(.PasseID);
 		next;
 		mes "[Porteiro Cheffênia]";
 		mes "Sem isso não posso te levar até lá.";
-		mes "Volte quando conseguir um "+getitemname(7227);
+		mes "Volte quando conseguir um "+getitemname(.PasseID);
 		close;
 	}
 
-	set .@restantes, 4 - #cheffenia_entradas;
+	set .@restantes, .EntradasMax - #cheffenia_entradas;
 	mes "[Porteiro Cheffênia]";
 	mes "Você possui ^00FF00" + .@restantes + "^000000 entrada(s) restante(s) com este passe.";
-		if (#cheffenia_entradas >= 4) {
-			mes "[Porteiro Cheffênia]";
-			mes "Você já utilizou as 4 entradas permitidas com este passe.";
-			mes "Por favor, adquira um novo para continuar acessando a Cheffênia.";
-			close;
+	if (#cheffenia_entradas >= .EntradasMax) {
+		mes "[Porteiro Cheffênia]";
+		mes "Você já utilizou as "+.EntradasMax+" entradas permitidas com este passe.";
+		mes "Por favor, adquira um novo para continuar acessando a Cheffênia.";
+		close;
 	}
 
 	next;
@@ -59,24 +66,23 @@ prontera,132,203,6	script	Cheffênia	998,{
 	mes "[Porteiro Cheffênia]";
 	mes "Tenha cuidado, na Cheffênia nada é o que parece!";
 	mes "Boa sorte!";
-	set .@party_id, getcharid(1);
 	close2;
 
-	if(.acesso == 1){
-		if(rentalcountitem(7227) > 0) {
+	if(.HorarioAcesso == 1){
+		if(rentalcountitem(.PasseID) > 0) {
 			set #cheffenia_entradas, #cheffenia_entradas + 1;
-			  if (#cheffenia_entradas >= 4) {
-        delitem 7227, 1;
-        set #cheffenia_entradas, 0;
-        announce strcharinfo(0)+" utilizou todas as 4 entradas do Passe da Cheffênia!", bc_blue | bc_self;
-            }
+			if (#cheffenia_entradas >= .EntradasMax) {
+				delitem .PasseID, 1;
+				set #cheffenia_entradas, 0;
+				announce strcharinfo(0)+" utilizou todas as "+.EntradasMax+" entradas do Passe da Cheffênia!", bc_blue | bc_self;
+			}
 			warp "bossnia_0"+.@i,rand(202,204),rand(202,204);
 			end;
 		} else {
 			mes "Você não possui o Passe da Cheffênia";
 		}
 	}
-    end;
+	end;
 
 nao:
 	mes "[Porteiro Cheffênia]";
@@ -85,26 +91,26 @@ nao:
 
 item:
 	mes "[Porteiro Cheffênia]";
-	mes "O passe custa ^FF000010kk";
-	mes "O passe ficará no seu inventário por ^FF00004h^000000.";
+	mes "O passe custa ^FF0000"+.PrecoPasse+" Zeny^000000";
+	mes "O passe ficará no seu inventário por ^FF0000"+.DuracaoPasse/3600+"h^000000.";
 	next;
-	mes "Deseja adquirir o passe por ^FF000010kk^000000?";
+	mes "Deseja adquirir o passe por ^FF0000"+.PrecoPasse+" Zeny^000000?";
 	switch(select("Sim:Não")) {
 		case 1:
-			if (Zeny < 10000000) {
+			if (Zeny < .PrecoPasse) {
 				mes "[Porteiro Cheffênia]";
-				mes "Você não tem Zeny suficiente para comprar essa quantidade.";
+				mes "Você não tem Zeny suficiente para comprar o passe.";
 				close2;
 			} else {
-				if(rentalcountitem(7227) > 0){
+				if(rentalcountitem(.PasseID) > 0){
 					mes "Você já possui um passe no seu inventário.";
 					close;
 				}
 				mes "[Porteiro Cheffênia]";
 				mes "Aqui está o Passe para Cheffênia.";
-				rentitem 7227, 14400;
+				rentitem .PasseID, .DuracaoPasse;
 				set #cheffenia_entradas, 0;
-				Zeny -= 10000000;
+				Zeny -= .PrecoPasse;
 				close2;
 			}
 		end;
@@ -123,12 +129,12 @@ OnInit:
 	set .@dia, gettime(DT_DAYOFMONTH); // Pega o dia atual do mês (1-31)
 
 	if ((.@dia % 2) == 0) {  // Se o dia for par (aberto)
-		set .acesso, 1;
+		set .HorarioAcesso, 1;
 		delwaitingroom;
 		waitingroom "Cheffênia: [Aberta]", 0;
 		announce "Os portões da Cheffênia estão abertos hoje! Boa sorte a todos!", bc_all;
 	} else { // Se o dia for ímpar (fechado)
-		set .acesso, 0;
+		set .HorarioAcesso, 0;
 		delwaitingroom;
 		waitingroom "Cheffênia: [Fechada]", 0;
 		announce "Os portões da Cheffênia estão fechados hoje. Volte amanhã!", bc_all;
