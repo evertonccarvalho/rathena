@@ -39,6 +39,17 @@ prontera,132,203,6	script	Cheffênia	998,{
 		mes "Volte quando conseguir um "+getitemname(7227);
 		close;
 	}
+
+	set .@restantes, 4 - #cheffenia_entradas;
+	mes "[Porteiro Cheffênia]";
+	mes "Você possui ^00FF00" + .@restantes + "^000000 entrada(s) restante(s) com este passe.";
+		if (#cheffenia_entradas >= 4) {
+			mes "[Porteiro Cheffênia]";
+			mes "Você já utilizou as 4 entradas permitidas com este passe.";
+			mes "Por favor, adquira um novo para continuar acessando a Cheffênia.";
+			close;
+	}
+
 	next;
 	mes "[Porteiro Cheffênia]";
 	mes "Está certo que quer ir até lá?";
@@ -53,6 +64,12 @@ prontera,132,203,6	script	Cheffênia	998,{
 
 	if(.acesso == 1){
 		if(rentalcountitem(7227) > 0) {
+			set #cheffenia_entradas, #cheffenia_entradas + 1;
+			  if (#cheffenia_entradas >= 4) {
+        delitem 7227, 1;
+        set #cheffenia_entradas, 0;
+        announce strcharinfo(0)+" utilizou todas as 4 entradas do Passe da Cheffênia!", bc_blue | bc_self;
+            }
 			warp "bossnia_0"+.@i,rand(202,204),rand(202,204);
 			end;
 		} else {
@@ -86,6 +103,7 @@ item:
 				mes "[Porteiro Cheffênia]";
 				mes "Aqui está o Passe para Cheffênia.";
 				rentitem 7227, 14400;
+				set #cheffenia_entradas, 0;
 				Zeny -= 10000000;
 				close2;
 			}
@@ -97,34 +115,25 @@ item:
 	}
 end;
 
-On1200:
-	set .acesso,1;
-	delwaitingroom;
-	waitingroom "Cheffênia: [Aberta]",0;
-	announce "Os portões da Cheffênia estão abertos! Boa sorte a todos!",bc_all;
-	end;
-
-On2200:
-	set .acesso,0;
-	delwaitingroom;
-	waitingroom "Cheffênia: [Fechada]",0;
-	mapwarp "bossnia_01","prontera",156,191,0;
-	mapwarp "bossnia_02","prontera",156,191,0;
-	mapwarp "bossnia_03","prontera",156,191,0;
-	announce "Os portões da cheffênia foram fechados!",bc_all;
+OnClock0000:
+	donpcevent strnpcinfo(0) + "::OnInit";
 	end;
 
 OnInit:
-// Verifica horário de funcionamento (todos os dias)
-if (gettime(DT_HOUR) > 12 && gettime(DT_HOUR) < 23) {
-	set .acesso,1;
-	waitingroom "Cheffênia: [Aberta]",0;
-} else {
-	set .acesso,0;
-	waitingroom "Cheffênia: [Fechada]",0;
-}
-end;
+	set .@dia, gettime(DT_DAYOFMONTH); // Pega o dia atual do mês (1-31)
 
+	if ((.@dia % 2) == 0) {  // Se o dia for par (aberto)
+		set .acesso, 1;
+		delwaitingroom;
+		waitingroom "Cheffênia: [Aberta]", 0;
+		announce "Os portões da Cheffênia estão abertos hoje! Boa sorte a todos!", bc_all;
+	} else { // Se o dia for ímpar (fechado)
+		set .acesso, 0;
+		delwaitingroom;
+		waitingroom "Cheffênia: [Fechada]", 0;
+		announce "Os portões da Cheffênia estão fechados hoje. Volte amanhã!", bc_all;
+	}
+end;
 }
 
 // Warp Portals
@@ -244,9 +253,15 @@ bossnia_04	mapflag	nosave	SavePoint
     end;
 
 OnKill:
-    // Fácil: chances base
-    setarray .@itens,    35004,		616,	607;  // IDs dos itens
-    setarray .@chances,  2000,	100,  5000;   // 20%, 1%, 50%
+    // Fácil: chances base (Tier 3 - 1 ponto)
+    set .@cash_min, 15;
+    set .@cash_max, 25;
+    set .@cash_amount, rand(.@cash_min, .@cash_max);
+    set #FREECASHPOINTS, #FREECASHPOINTS + .@cash_amount;
+
+    // Itens
+    setarray .@itens,    35004,    616,    607;  // IDs dos itens
+    setarray .@chances,  2000,    100,  5000;   // 20%, 1%, 50%
 
     for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
         if (rand(10000) < .@chances[.@i]) {
@@ -262,9 +277,15 @@ OnKill:
     end;
 
 OnKill:
-    // Médio: dobra as chances (com precisão decimal)
-    setarray .@itens, 35004,	616, 607;  // IDs dos itens
-    setarray .@chances, 3000,	500, 7500; // 20%, 5%, 100% (dobro da versão fácil)
+    // Médio: Tier 2 - 3 pontos
+    set .@cash_min, 25;
+    set .@cash_max, 50;
+    set .@cash_amount, rand(.@cash_min, .@cash_max);
+    set #FREECASHPOINTS, #FREECASHPOINTS + .@cash_amount;
+
+    // Itens
+    setarray .@itens, 35004,    616, 607;  // IDs dos itens
+    setarray .@chances, 3000,    500, 7500; // 20%, 5%, 100% (dobro da versão fácil)
 
     for(set .@i, 0; .@i < getarraysize(.@itens); set .@i, .@i + 1) {
         if (rand(10000) < .@chances[.@i]) {
@@ -280,7 +301,13 @@ OnKill:
     end;
 
 OnKill:
-    // Difícil: quadruplica as chances (com precisão decimal)
+    // Difícil: Tier 1 - 5 pontos
+    set .@cash_min, 50;
+    set .@cash_max, 75;
+    set .@cash_amount, rand(.@cash_min, .@cash_max);
+    set #FREECASHPOINTS, #FREECASHPOINTS + .@cash_amount;
+
+    // Itens
     setarray .@itens, 35004, 616, 607;  // IDs dos itens
     setarray .@chances, 10000,  1000, 10000; // 50%, 10%, 10% (quádruplo da versão fácil)
 
