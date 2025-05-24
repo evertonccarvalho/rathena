@@ -1,17 +1,31 @@
 -	script	Custom Rate#main	-1,{
 OnInit:
 	// Lista de Rates
-	//		menu   <.CustomRates_1>,<.CustomRates_2>,<.CustomRates_3>
-	setarray .CustomRates$,"Rates 1x","Rates 25x","Rates 50x";
+	setarray .CustomRates$,
+		"^FF4500[»]^000000 Rate 1x ^FF0000(Hardcore)^000000",
+		"^FF4500[»]^000000 Rate 3x ^FFA500(Balanceado)^000000",
+		"^FF4500[»]^000000 Rate 8x ^009900(Acelerado)^000000",
+		"^FF4500[»]^000000 Rate 15x ^00BFFF(Rápido)^000000",
+		"^FF4500[»]^000000 Rate 25x ^9932CC(Ultra)^000000";
 
-	//			<base>,<job>,<drop>,<efst_icon>
-	setarray .CustomRates_1,     1,    1,	 50,      1600;
-	setarray .CustomRates_2,    25,   25,	 25,      1601;
-	setarray .CustomRates_3,    50,   50,	 1,       1602;
+	// Descrições detalhadas
+	setarray .CustomRatesDesc$,
+		"^FF4500[›]^000000 ^FF0000Bônus Exclusivos:^000000\n^FF4500[»]^000000 +50% ^FFA500Drop Rate^000000\n^FF4500[»]^000000 50% ^FFA500desconto Cheffenia^000000\n^FF4500[»]^000000 +25% ^FFA500Pontos Cheffenia^000000\n^FF4500[»]^000000 3x ^FFA500Pontos Presença^000000",
+		"^FF4500[›]^000000 ^FFA500Bônus Intermediários:^000000\n^FF4500[»]^000000 +25% ^009900Drop Rate^000000\n^FF4500[»]^000000 15% ^009900desconto Cheffenia^000000\n^FF4500[»]^000000 +15% ^009900Pontos Cheffenia^000000",
+		"^FF4500[›]^000000 ^009900Bônus Básicos:^000000\n^FF4500[»]^000000 +10% ^00BFFFDrop Rate^000000\n^FF4500[»]^000000 +5% ^00BFFFPontos Cheffenia^000000",
+		"^FF4500[›]^000000 ^00BFFFBônus Mínimos:^000000\n^FF4500[»]^000000 +5% ^9932CCDrop Rate^000000",
+		"^FF4500[›]^000000 ^9932CCSem Bônus Adicionais^000000\n^FF4500[»]^000000 Apenas EXP máxima";
 
+	// Configurações: <base>,<job>,<drop>,<efst_icon>
+	setarray .CustomRates_1,     1,    1,    50,      1600;
+	setarray .CustomRates_2,     3,    3,    25,      1601;
+	setarray .CustomRates_3,     8,    8,    10,      1602;
+	setarray .CustomRates_4,    15,   15,     5,      1603;
+	setarray .CustomRates_5,    25,   25,     0,      1604;
 
 	// Bind Commands
 	bindatcmd "cratereset", "Custom Rate#main::OnResetVar", 99, 99;
+	bindatcmd "crateinfo", "Custom Rate#main::OnShowInfo", 99, 99;
 	bindatcmd "cratecall", "Custom Rate#main::OnCallSet", 99, 99;
 	end;
 
@@ -22,28 +36,74 @@ OnResetVar:
 	CUSTOM_RATE_DROP = 1;
 	CUSTOM_RATE_EFST = 0;
 	set_custom_rate CUSTOM_RATE_BASE,CUSTOM_RATE_JOB,CUSTOM_RATE_DROP,CUSTOM_RATE_EFST;
-	dispbottom "[Servidor]: Rate resetada com sucesso.";
+	dispbottom "^FF4500[›]^000000 ^FF0000Rate resetada com sucesso!^000000";
 	end;
 
 OneTimeSetRate:
 	if(CUSTOM_RATE_STATE == 1)
 		end;
-	mes "Selecione o rate desejado para seu personagem:";
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[  SELECIONE SUA RATE  ]^000000";
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[›]^000000 Cada jogador pode personalizar sua experiência";
+	mes "^FF4500[»]^000000 Adaptação ao estilo de jogo";
+	mes "^FF4500[»]^000000 Recompensas variáveis conforme a rate";
+	mes "^FF4500[»]^000000 Compatível com jogo em grupo";
+	mes "^FF4500[›]^000000 ^FF0000ATENÇÃO: Esta escolha é permanente!^000000";
+	next;
+
+OnShowInfo:
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[  INFORMAÇÕES RATES  ]^000000";
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[›]^000000 ^00BFFFItens de bônus somam às rates:^000000";
+	mes "^FF4500[»]^000000 Chance base 0.10% +50% (Rate 1x) = ^0099000.15%^000000";
+	mes "^FF4500[»]^000000 Com Goma de Mascar (+50%) = ^0099000.20%^000000";
+	next;
+	.@s = select(implode(.CustomRates$,":")) -1;
+	if(.@s == 5) close;
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[  DETALHES DA RATE  ]^000000";
+	mes "^FF4500[====================]^000000";
+	mes .CustomRatesDesc$[.@s];
+	next;
+	goto OnShowInfo;
+
 OnCallSet:
-	.@rates$ ="";
+	.@rates$ = "";
 	for(.@i=0;.@i<getarraysize(.CustomRates$);.@i++)
 		.@rates$ += .CustomRates$[.@i]+":";
 	.@r = select(.@rates$);
+
+	// Confirmação
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[  CONFIRMAÇÃO RATE  ]^000000";
+	mes "^FF4500[====================]^000000";
+	mes "^FF4500[›]^000000 Selecionado: ^FF0000"+.CustomRates$[.@r-1]+"^000000";
+	mes .CustomRatesDesc$[.@r-1];
+	mes "^FF4500[›]^000000 Detalhes:";
+	mes "^FF4500[»]^000000 Base EXP: ^009900"+getd(".CustomRates_"+.@r+"[0]")+"x^000000";
+	mes "^FF4500[»]^000000 Job EXP: ^009900"+getd(".CustomRates_"+.@r+"[1]")+"x^000000";
+	mes "^FF4500[»]^000000 Drop Bonus: ^009900+"+getd(".CustomRates_"+.@r+"[2]")+"%^000000";
+	mes "^FF4500[›]^000000 ^FF0000Esta escolha é permanente!^000000";
+	next;
+
+	if(select("^FF4500[›]^000000 ^009900Confirmar^000000:^FF0000[›]^000000 ^FF0000Cancelar^000000") == 2) {
+		mes "^FF4500[›]^000000 Seleção cancelada.";
+		close;
+	}
+
 	CUSTOM_RATE_BASE = getd(".CustomRates_"+.@r+"[0]");
 	CUSTOM_RATE_JOB = getd(".CustomRates_"+.@r+"[1]");
 	CUSTOM_RATE_DROP = getd(".CustomRates_"+.@r+"[2]");
 	CUSTOM_RATE_EFST = getd(".CustomRates_"+.@r+"[3]");
 	CUSTOM_RATE_STATE = 1;
+
 OnPCLoginEvent:
 	if(CUSTOM_RATE_STATE == 1){
 		set_custom_rate CUSTOM_RATE_BASE,CUSTOM_RATE_JOB,CUSTOM_RATE_DROP,CUSTOM_RATE_EFST;
-		message strcharinfo(0), "[Servidor]: Ajustando taxas para: "+CUSTOM_RATE_BASE+"x";
-		//message strcharinfo(0), "[Servidor]: Ajustando taxas para: "+CUSTOM_RATE_BASE+"x/"+CUSTOM_RATE_JOB+"x/"+CUSTOM_RATE_DROP+"x.";
+		dispbottom "^FF4500[›]^000000 ^009900Taxas ativas: ^FF0000"+CUSTOM_RATE_BASE+"x^000000";
+		dispbottom "^FF4500[›]^000000 ^009900Bônus: Drop ^FF0000+"+CUSTOM_RATE_DROP+"%^000000";
 	}
 	else
 		goto OneTimeSetRate;
