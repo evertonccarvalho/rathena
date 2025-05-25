@@ -1,0 +1,140 @@
+prontera.gat,175,177,3	script	Telma	701,{
+	mes "[Telma]";
+	mes "Bem-vindo, bravo guerreiro.";
+	mes "Você precisa de suprimentos para suas batalhas?";
+	mes "Posso trocar suprimentos por suas insígnias...";
+
+	if (select("^1E90FF[>]^000000 Suprimentos de BG",
+	           "^FF0000[>]^000000 Suprimentos de WoE") == 2) {
+		next;
+		mes "[Telma]";
+		mes "Esses suprimentos só funcionam em ^FF0000Mapas de WoE^000000.";
+		switch(select("^1E90FF[>]^000000 150 Poções Brancas Compactas",
+		             "^1E90FF[>]^000000 150 Poções Azuis",
+		             "^1E90FF[>]^000000 50 Revestimentos Brilhantes",
+		             "^1E90FF[>]^000000 100 Garrafas de Granadas",
+		             "^1E90FF[>]^000000 100 Garrafas de Ácido",
+		             "^1E90FF[>]^000000 300 Teias de Aranha",
+		             "^1E90FF[>]^000000 5 Garrafas de Veneno",
+		             "^1E90FF[>]^000000 80 Gemas Amarelas",
+		             "^1E90FF[>]^000000 70 Gemas Vermelhas",
+		             "^1E90FF[>]^000000 60 Gemas Azuis",
+		             "^1E90FF[>]^000000 100 Poções de Velocidade")) {
+			case 1:  callsub S_BuyConsumableWOE,547,150,100; break;
+			case 2:  callsub S_BuyConsumableWOE,505,150,100; break;
+			case 3:  callsub S_BuyConsumableWOE,7139,50,30; break;
+			case 4:  callsub S_BuyConsumableWOE,7135,100,60; break;
+			case 5:  callsub S_BuyConsumableWOE,7136,100,60; break;
+			case 6:  callsub S_BuyConsumableWOE,1025,300,80; break;
+			case 7:  callsub S_BuyConsumableWOE,678,5,10; break;
+			case 8:  callsub S_BuyConsumableWOE,715,80,20; break;
+			case 9:  callsub S_BuyConsumableWOE,716,70,15; break;
+			case 10: callsub S_BuyConsumableWOE,717,60,10; break;
+			case 11: callsub S_BuyConsumableWOE,12016,100,100; break;
+		}
+	}
+
+	switch(select("^1E90FF[>]^000000 150 Poções Brancas Compactas",
+	              "^1E90FF[>]^000000 100 Poções Azuis",
+	              "^1E90FF[>]^000000 15 Garrafas de Veneno",
+	              "^1E90FF[>]^000000 50 Garrafas de Fogo",
+	              "^1E90FF[>]^000000 50 Garrafas de Ácido",
+	              "^1E90FF[>]^000000 50 Garrafas de Planta",
+	              "^1E90FF[>]^000000 50 Garrafas de Esfera Marinha",
+	              "^1E90FF[>]^000000 50 Revestimentos Brilhantes",
+	              "^1E90FF[>]^000000 50 Gemas Amarelas",
+	              "^1E90FF[>]^000000 50 Gemas Vermelhas",
+	              "^1E90FF[>]^000000 100 Gemas Azuis",
+	              "^1E90FF[>]^000000 5 Poções de Velocidade",
+	              "^1E90FF[>]^000000 20 Teias de Aranha",
+	              "^1E90FF[>]^000000 10 Poções da Despertar",
+	              "^1E90FF[>]^000000 10 Poções da Fúria")) {
+		case 1:  callsub S_BuyConsumableBG,547,150; break;
+		case 2:  callsub S_BuyConsumableBG,505,100; break;
+		case 3:  callsub S_BuyConsumableBG,678,15; break;
+		case 4:  callsub S_BuyConsumableBG,7135,50; break;
+		case 5:  callsub S_BuyConsumableBG,7136,50; break;
+		case 6:  callsub S_BuyConsumableBG,7137,50; break;
+		case 7:  callsub S_BuyConsumableBG,7138,50; break;
+		case 8:  callsub S_BuyConsumableBG,7139,50; break;
+		case 9:  callsub S_BuyConsumableBG,715,50; break;
+		case 10: callsub S_BuyConsumableBG,716,50; break;
+		case 11: callsub S_BuyConsumableBG,717,100; break;
+		case 12: callsub S_BuyConsumableBG,12016,5; break;
+		case 13: callsub S_BuyConsumableBG,1025,20; break;
+		case 14: callsub S_BuyConsumableBG,14510,10; break;
+		case 15: callsub S_BuyConsumableBG,14511,20; break;
+	}
+	end;
+
+S_BuyConsumableBG:
+	set .@item_id, getarg(0);
+	set .@amt, getarg(1);
+	next;
+	.@bg_item = 1;
+	mes "[Telma]";
+	mes "How many ^0000FF"+ .@amt +" "+ getitemname(.@item_id) +"s^000000 do you want?";
+	mes "1 = "+ .@amt   +" supplies = 1 badge";
+	mes "2 = "+ .@amt*2 +" supplies = 2 badges";
+	mes "3 = "+ .@amt*3 +" supplies = 3 badges";
+	mes "etc..";
+	next;
+	input .@sets;
+	mes "[Telma]";
+	if (.@sets < 1) {
+		mes "Put a positive number, greater than zero.";
+		close;
+	}
+	mes "So you want ^0000FF"+ (.@amt*.@sets) +" "+ getitemname(.@item_id) +"s^000000...";
+	mes "Remember these can only be used in Battleground Arenas";
+	mes "It will cost you "+ .@sets +" badge(s)...";
+	next;
+	switch(select("Give her "+ .@sets +" Bravery Badge(s):Give her "+ .@sets +" Valor Badge(s):Give her "+ .@sets +" War Badges")) {
+		case 1: set .@badge,7828; set .@cost,1; break;
+		case 2: set .@badge,7829; set .@cost,1; break;
+		case 3: set .@badge,7773; set .@cost,1; break;
+	}
+	.@bgchar = getBattleFlag("bg_reserved_char_id");
+	mes "[Telma]";
+	if (countitem(.@badge) < (.@cost*.@sets)) {
+		mes "You do not have enough ^FF0000"+getitemname(.@badge)+"s^000000 to buy "+(.@amt*.@sets)+" "+getitemname(.@item_id)+"s.";
+	} else if (!checkweight(.@item_id, .@amt*.@sets)) {
+		mes "You are overweight or have too many items in your inventory.";
+	} else {
+		delitem .@badge, .@cost*.@sets;
+		// Battleground's Consumables
+		getitem2 .@item_id,(.@amt*.@sets),1,0,0, 254, 0, .@bgchar & 0xFFFF, .@bgchar >> 0x10;
+		mes "Here are your: ^0000FF"+(.@amt*.@sets)+" "+getitemname(.@item_id)+"s^000000!";
+		mes "Remember they can only be used in Battleground Arenas";
+	}
+	close;
+
+S_BuyConsumableWOE:
+	set .@item_id, getarg(0);
+	set .@amt, getarg(1);
+	set .@cost, getarg(2);
+	set .@badge,7773;
+	next;
+	.@bg_item = 0;
+	.@sets = 1;
+	mes "[Telma]";
+	mes "So you want ^0000FF"+ (.@amt*.@sets) +" "+ getitemname(.@item_id) +"s^000000...";
+	next;
+	if (select("Give her ^FF0000"+.@cost+"^000000 War Badge(s)","Cancel")==2) close;
+	.@woechar = getBattleFlag("woe_reserved_char_id");
+	mes "[Telma]";
+	if (countitem(.@badge) < (.@cost*.@sets)) {
+		mes "You do not have enough ^FF0000"+getitemname(.@badge)+"s^000000 to buy "+(.@amt*.@sets)+" "+getitemname(.@item_id)+"s.";
+	} else if (!checkweight(.@item_id, .@amt*.@sets)) {
+		mes "You are overweight or have too many items in your inventory.";
+	} else {
+		delitem .@badge, .@cost*.@sets;
+		// WoE's Consumables
+		getitem2 .@item_id,(.@amt*.@sets),1,0,0, 254, 0, .@woechar & 0xFFFF, .@woechar >> 0x10;
+		mes "Here are your: ^0000FF"+(.@amt*.@sets)+" "+getitemname(.@item_id)+"s^000000!";
+		mes "Remember they can only be used in WoE Maps";
+	}
+	close;
+}
+
+//prontera.gat,175,177,3	duplicate(Telma)	Telma::Telma1	701

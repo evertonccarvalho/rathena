@@ -1,0 +1,166 @@
+-	shop	BG_SHOP	-1,512:1
+prontera.gat,173,179,3	script	Loja de BG	4_M_JOB_KNIGHT2,{
+	set .name$,"[^FF0000Loja de BG^000000]";
+	setarray @CurrencyIds[0], 7828, 7829; // Medalhas de Guerra e Elite
+
+	mes .name$;
+	mes "Bem-vindo à Loja Exclusiva da Guerra!";
+	mes "Aqui você pode trocar suas ^FF0000medalhas^000000 por itens especiais.";
+	mes "Você possui atualmente:";
+
+	// Verifica se o jogador tem alguma medalha
+	set .@hasAnyCurrency, 0;
+	for (set .@i, 0; .@i < getarraysize(@CurrencyIds); set .@i, .@i + 1) {
+		mes "[ ] "+getitemname(@CurrencyIds[.@i])+": ^FF0000"+countitem(@CurrencyIds[.@i])+"^000000";
+		if (countitem(@CurrencyIds[.@i]) > 0)
+			set .@hasAnyCurrency, 1;
+	}
+
+
+
+	if (!.@hasAnyCurrency) {
+		mes "Você não possui nenhuma medalha para negociar.";
+		close;
+	}
+
+	deletearray .ItemLists[0], getarraysize(.ItemLists);
+	deletearray .ItemPrice[0], getarraysize(.ItemPrice);
+	deletearray @bought_nameid[0], getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0], getarraysize(@bought_quantity);
+	npcshopitem "BG_SHOP",512,1;
+
+
+	select(
+		"^FF4500[ ]^000000 Armas (Todas as categorias)",
+		"^1E90FF[ ]^000000 Armaduras",
+		"^DAA520[ ]^000000 Acessórios",
+		"^8A2BE2[ ]^000000 Consumíveis"
+	);
+	callsub CaseCH,@menu;
+
+	npcshopdelitem "BG_SHOP",512;
+	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
+		npcshopadditem "BG_SHOP",.ItemLists[.@i],.ItemPrice[.@i];
+
+	close2;
+	callshop "BG_SHOP",1;
+	npcshopattach "BG_SHOP";
+
+	set .@total, 0;
+	for (set .@i, 0; .@i < getarraysize(@CurrencyIds); set .@i, .@i + 1)
+		set .@total, .@total + countitem(@CurrencyIds[.@i]);
+
+	dispbottom "Você possui um total de: "+.@total+" medalhas ("+getitemname(7828)+" + "+getitemname(7829)+").";
+
+OnBuyItem:
+	callsub CaseCH,@menu;
+	set @TotalCost,0;
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		for(set @j,0; @j < getarraysize(.ItemLists); set @j,@j+1) {
+			if(.ItemLists[@j] == @bought_nameid[@i]) {
+				set @TotalCost,@TotalCost + (.ItemPrice[@j] * @bought_quantity[@i]);
+			}
+		}
+	}
+
+	// Verificação mais rigorosa do saldo
+	set .@hasEnough, 1;
+	set .@required, @TotalCost;
+	set .@currency1, countitem(@CurrencyIds[0]);
+	set .@currency2, countitem(@CurrencyIds[1]);
+
+	// Verifica se a soma das medalhas é suficiente
+	if ((.@currency1 + .@currency2) < @TotalCost) {
+		set .@hasEnough, 0;
+	}
+
+	if (!.@hasEnough) {
+		mes .name$;
+		mes "Você precisa de ^FF0000"+@TotalCost+" medalhas^000000 no total.";
+		mes "Você possui:";
+		mes getitemname(@CurrencyIds[0])+": ^FF0000"+.@currency1+"^000000";
+		mes getitemname(@CurrencyIds[1])+": ^FF0000"+.@currency2+"^000000";
+		// Limpa os arrays de compra quando falha
+		set @TotalCost,0;
+		deletearray @bought_nameid[0],getarraysize(@bought_nameid);
+		deletearray @bought_quantity[0],getarraysize(@bought_quantity);
+		close;
+	}
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		getitem @bought_nameid[@i],@bought_quantity[@i];
+		dispbottom "Você adquiriu: "+getitemname(@bought_nameid[@i])+" x"+@bought_quantity[@i];
+	}
+
+	set .@LeftToRemove, @TotalCost;
+	for (set .@i, 0; .@i < getarraysize(@CurrencyIds); set .@i, .@i + 1) {
+		set .@hasAmount, countitem(@CurrencyIds[.@i]);
+		if (.@hasAmount >= .@LeftToRemove) {
+			delitem @CurrencyIds[.@i], .@LeftToRemove;
+			break;
+		} else {
+			delitem @CurrencyIds[.@i], .@hasAmount;
+			set .@LeftToRemove, .@LeftToRemove - .@hasAmount;
+		}
+	}
+
+	if (.@remaining > 0) {
+		// Caso algo dê errado na remoção
+		mes .name$;
+		mes "Ocorreu um erro ao processar sua compra.";
+		mes "Por favor, contate um GM.";
+		close;
+	}
+
+CaseCH:
+	switch(getarg(0)) {
+		case 1: // Armas
+			setarray .ItemLists[0],
+				13036,13037,13411,13410,1183,1184,1425,1482, // Espadas, adagas
+				1632,1633,1634,1635,1543,1542,1380,1379,13305,13306, // Staff/Mace
+				1739,1738,1279,1280,1924,1923,1978,1977, // Bow/Katar
+				1574,1575,1824,1823; // Book/Knuckle
+			setarray .ItemPrice[0],
+				100,100,100,100,100,100,100,100,
+				100,100,100,100,100,100,100,100,100,100,
+				100,100,100,100,100,100,100,100,
+				100,100,100,100;
+			return;
+
+		case 2: // Armaduras
+			setarray .ItemLists[0],
+				2538,2539,2540,2435,2436,2437,2700, // Garments/Shoes
+				2376,2377,2378,2379,2380,2381,2382; // Armor
+			setarray .ItemPrice[0],
+				50,50,50,50,50,50,60,
+				80,80,80,80,80,80,80;
+			return;
+
+		case 3: // Acessórios
+			setarray .ItemLists[0],
+				2733,2720,2721,2722,2723,2724,2725,2900,2901;
+			setarray .ItemPrice[0],
+				500,500,500,500,500,500,500,600,600;
+			return;
+
+		case 4: // Consumíveis
+			setarray .ItemLists[0],
+				12269,12270,12271,12272,12273;
+			setarray .ItemPrice[0],
+				10,10,5,10,10;
+			return;
+
+		default:
+			mes "Opção inválida.";
+			close;
+	}
+
+OnInit:
+	.NPCName$ = callfunc("F_NpcInitStatus", "Loja de BG");
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 9;
+	end;
+}
+
+
+//prontera.gat,173,179,3	duplicate(Loja de BG)	Loja de BG#prt	4_M_JOB_KNIGHT2

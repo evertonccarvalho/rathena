@@ -1,0 +1,131 @@
+-	shop	KVM_SHOP	-1,512:1
+prontera.gat,178,174,3	script	Loja de KVM	4_M_JOB_KNIGHT2,{
+	set .name$,"[^FF0000Loja de KVM^000000]";
+	setarray @CurrencyIds[0], 7773; // Usando somente a moeda 7773
+
+	mes .name$;
+	mes "Bem-vindo à Loja Exclusiva da Guerra!";
+	mes "Aqui você pode trocar suas ^FF0000medalhas^000000 por itens especiais.";
+	mes "Você possui atualmente:";
+
+	// Verifica se o jogador tem a moeda 7773
+	set .@hasAnyCurrency, 0;
+	for (set .@i, 0; .@i < getarraysize(@CurrencyIds); set .@i, .@i + 1) {
+		mes "[ ] "+getitemname(@CurrencyIds[.@i])+": ^FF0000"+countitem(@CurrencyIds[.@i])+"^000000";
+		if (countitem(@CurrencyIds[.@i]) > 0)
+			set .@hasAnyCurrency, 1;
+	}
+
+	if (!.@hasAnyCurrency) {
+		mes "Você não possui nenhuma medalha para negociar.";
+		close;
+	}
+
+	deletearray .ItemLists[0], getarraysize(.ItemLists);
+	deletearray .ItemPrice[0], getarraysize(.ItemPrice);
+	deletearray @bought_nameid[0], getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0], getarraysize(@bought_quantity);
+	npcshopitem "KVM_SHOP",512,1;
+
+	select(
+		"^FF4500[ ]^000000 Armas (Todas as categorias)",
+		"^1E90FF[ ]^000000 Armaduras",
+		"^DAA520[ ]^000000 Acessórios"
+	);
+	callsub CaseCH,@menu;
+
+	npcshopdelitem "KVM_SHOP",512;
+	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
+		npcshopadditem "KVM_SHOP",.ItemLists[.@i],.ItemPrice[.@i];
+
+	close2;
+	callshop "KVM_SHOP",1;
+	npcshopattach "KVM_SHOP";
+
+	// Mostrar o total de moedas 7773
+	set .@total, countitem(7773);
+	dispbottom "Você possui um total de: "+.@total+" "+getitemname(7773)+".";
+
+OnBuyItem:
+	callsub CaseCH,@menu;
+	set @TotalCost,0;
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		for(set @j,0; @j < getarraysize(.ItemLists); set @j,@j+1) {
+			if(.ItemLists[@j] == @bought_nameid[@i]) {
+				set @TotalCost,@TotalCost + (.ItemPrice[@j] * @bought_quantity[@i]);
+			}
+		}
+	}
+
+	// Verificação do saldo na moeda 7773
+	set .@hasEnough, 1;
+	set .@required, @TotalCost;
+	set .@currencyAmount, countitem(7773);
+
+	if (.@currencyAmount < @TotalCost) {
+		set .@hasEnough, 0;
+	}
+
+	if (!.@hasEnough) {
+		mes .name$;
+		mes "Você precisa de ^FF0000"+@TotalCost+" "+getitemname(7773)+"^000000 para comprar.";
+		mes "Você possui: ^FF0000"+.@currencyAmount+" "+getitemname(7773)+"^000000";
+		set @TotalCost,0;
+		deletearray @bought_nameid[0],getarraysize(@bought_nameid);
+		deletearray @bought_quantity[0],getarraysize(@bought_quantity);
+		close;
+	}
+
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		getitem @bought_nameid[@i],@bought_quantity[@i];
+		dispbottom "Você adquiriu: "+getitemname(@bought_nameid[@i])+" x"+@bought_quantity[@i];
+	}
+
+	// Remover a quantidade da moeda 7773
+	delitem 7773, @TotalCost;
+
+	close;
+
+
+CaseCH:
+	switch(getarg(0)) {
+		case 1: // Armas
+			setarray .ItemLists[0],
+				13042,13416,13417,13418,1187,1426,1486,1310,1382,1546,
+				1281,1282,1576,1577,1743,1826,1827,1640,1641,2002,
+				1927,1981,13110,13176,13177,13178,13179,13307;
+			setarray .ItemPrice[0],
+				2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,
+				2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,
+				2000,2000,2000,2000,2000,2000,2000,2000;
+			return;
+
+		case 2: // Armaduras
+			setarray .ItemLists[0],
+				2394,2395,2396,2549,2444,2445,2446;
+			setarray .ItemPrice[0],
+				840,120,15,630,580,70,10;
+			return;
+
+		case 3: // Acessórios
+			setarray .ItemLists[0],
+				2772,2773,2774;
+			setarray .ItemPrice[0],
+				1200,200,30;
+			return;
+
+		default:
+			mes "Opção inválida.";
+			close;
+	}
+
+OnInit:
+	.NPCName$ = callfunc("F_NpcInitStatus", "Loja de KVM");
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 9;
+	end;
+}
+
+
+
+//prontera.gat,173,179,3	duplicate(Loja de KVM)	Loja de KVM#prt	4_M_JOB_KNIGHT2

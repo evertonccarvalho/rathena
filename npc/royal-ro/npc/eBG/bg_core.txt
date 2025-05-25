@@ -258,3 +258,83 @@ function	script	F_EndSpeedBG	{
 	sc_end SC_AVOID;
 	return 0;
 }
+
+
+prontera,170,178,4	script	Recrutador BG	403,{
+	mes "[Recrutador BG]";
+	mes "Bem-vindo aos Campos de Batalha!";
+	mes "Como deseja entrar?";
+	next;
+
+	.@modo = select("^1E90FF[>]^000000 Entrar Sozinho",
+	                "^1E90FF[>]^000000 Entrar em Grupo",
+	                "^1E90FF[>]^000000 Entrar com Guilda",
+	                "^FF0000[>]^000000 Cancelar") - 1;
+
+	if (.@modo == 3) {
+		mes "[Recrutador BG]";
+		mes "Volte quando quiser!";
+		close;
+	}
+
+	// Verifica se o sistema BG está ativado
+	if (!getbattleflag("feature.bgqueue")) {
+		mes "[Recrutador BG]";
+		mes "^FF0000Os Campos de Batalha estão desativados no momento.^000000";
+		close;
+	}
+
+	// Verifica se já está na fila
+	if (getcharqueue() != -1) {
+		mes "[Recrutador BG]";
+		mes "^FF0000Você já está na fila dos Campos de Batalha!^000000";
+		next;
+		bg_queue_show();
+		close;
+	}
+
+	// Entra na fila conforme o modo selecionado
+	switch(.@modo) {
+		case 0: // Solo
+			bg_queue_join($@BG_C_Name$, 0);
+			break;
+		case 1: // Grupo
+			if (getcharid(1) == 0) {
+				mes "[Recrutador BG]";
+				mes "^FF0000Você precisa estar em um grupo para entrar em modo Grupo!^000000";
+				close;
+			}
+			bg_queue_join($@BG_C_Name$, 1);
+			break;
+		case 2: // Guilda
+			if (getcharid(2) == 0) {
+				mes "[Recrutador BG]";
+				mes "^FF0000Você precisa estar em uma guilda para entrar em modo Guilda!^000000";
+				close;
+			}
+			bg_queue_join($@BG_C_Name$, 2);
+			break;
+	}
+
+	// Verifica se entrou na fila com sucesso
+	if (getcharqueue() == -1) {
+		mes "[Recrutador BG]";
+		mes "^FF0000Falha ao entrar na fila dos Campos de Batalha!^000000";
+		close;
+	}
+
+	// Mensagem de sucesso
+	mes "[Recrutador BG]";
+	mes "^00FF00Você entrou na fila para^000000";
+	mes "^0000FF" + $@BG_C_Name$ + "^000000!";
+	mes " ";
+	mes "Status atual da fila:";
+	next;
+
+	// Mostra informações da fila
+	bg_queue_show();
+
+	// Atualiza a fila
+	donpcevent "BG_Core::OnJoinQueue";
+	close;
+}
