@@ -17,7 +17,7 @@
 // ---------------------------------------------------------------- --
 // Cabeçalho de script
 // ---------------------------------------------------------------- --
-prontera,159,193,3	script	Curandeira	B_MAGALETA,{
+prontera,159,193,3	script	Curandeira	G_MAGALETA_,{
 OnBuff:
 	specialeffect2 EF_HEAL2;
 	percentheal 100,100;
@@ -132,7 +132,7 @@ OnInit:
 	initnpctimer;
 	end;
 
-OnTimer60000:
+OnTimer6000:
 	npcwalkto rand(.walk_min_x, .walk_max_x), rand(.walk_min_y, .walk_max_y);
 	npctalk .msgs$[rand(getarraysize(.msgs$))];
 	initnpctimer;
@@ -141,4 +141,4 @@ OnTimer60000:
 
 
 
-vip_lounge,148,120,5	duplicate(Curandeira)	Curandeira#vip	B_MAGALETA
+vip_lounge,148,120,5	duplicate(Curandeira)	Curandeira#vip	G_MAGALETA_

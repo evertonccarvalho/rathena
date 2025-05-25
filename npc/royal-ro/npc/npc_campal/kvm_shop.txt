@@ -1,5 +1,5 @@
 -	shop	KVM_SHOP	-1,512:1
-prontera.gat,178,174,3	script	Loja de KVM	4_M_JOB_KNIGHT2,{
+prontera.gat,178,174,3	script	Loja de KVM	4_M_ROYALGUARD,{
 	set .name$,"[^FF0000Loja de KVM^000000]";
 	setarray @CurrencyIds[0], 7773; // Usando somente a moeda 7773
 

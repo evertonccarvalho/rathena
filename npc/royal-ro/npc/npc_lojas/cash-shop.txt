@@ -1,5 +1,5 @@
 -	shop	CASHPOINTS_shop	-1,512:15
-prontera.gat,150,180,5	script	Loja de ROPs	401,{
+prontera.gat,150,180,5	script	Loja de ROPs	4_EP16_NIHIL,{
 
 	//delwaitingroom;
 	//waitingroom "Loja de ROPs",0;

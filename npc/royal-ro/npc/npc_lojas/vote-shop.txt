@@ -1,5 +1,5 @@
 -	shop	VOTEPOINTS_shop	-1,512:15
-prontera.gat,162,180,5	script	Loja de Votos	402,{
+prontera.gat,162,180,5	script	Loja de Votos	4_EXJOB_NINJA2,{
 
 	//delwaitingroom;
 	//waitingroom "Loja de Votos",0;

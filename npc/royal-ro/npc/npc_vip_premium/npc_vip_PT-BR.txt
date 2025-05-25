@@ -1,4 +1,4 @@
-prontera,161,195,3	script	Central VIP	108,{
+prontera,161,195,3	script	Central VIP	4_EP19_RGAN_SR2,{
 	OnTalk:
 		callsub ShowMainMenu; // Still calls the main menu
 		end;
@@ -100,7 +100,7 @@ prontera,161,195,3	script	Central VIP	108,{
 		}
 }
 
-vip_lounge,154,115,4	script	Sair	108,{
+vip_lounge,154,115,4	script	Sair	4_EP19_RGAN_SR2,{
 
 	mes "[Voltar]";
 	mes "Deseja retornar para ^008affProntera^000000?";
