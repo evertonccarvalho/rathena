@@ -1,22 +1,16 @@
 -	shop	KVM_SHOP	-1,512:1
+
 prontera.gat,178,174,3	script	Loja de KVM	4_M_ROYALGUARD,{
 	set .name$,"[^FF0000Loja de KVM^000000]";
-	setarray @CurrencyIds[0], 7773; // Usando somente a moeda 7773
+	set .currencyId, 7773; // ID da moeda KVM (alterável apenas aqui)
 
 	mes .name$;
 	mes "Bem-vindo à Loja Exclusiva da Guerra!";
 	mes "Aqui você pode trocar suas ^FF0000medalhas^000000 por itens especiais.";
 	mes "Você possui atualmente:";
+	mes "[ ] "+getitemname(.currencyId)+": ^FF0000"+countitem(.currencyId)+"^000000";
 
-	// Verifica se o jogador tem a moeda 7773
-	set .@hasAnyCurrency, 0;
-	for (set .@i, 0; .@i < getarraysize(@CurrencyIds); set .@i, .@i + 1) {
-		mes "[ ] "+getitemname(@CurrencyIds[.@i])+": ^FF0000"+countitem(@CurrencyIds[.@i])+"^000000";
-		if (countitem(@CurrencyIds[.@i]) > 0)
-			set .@hasAnyCurrency, 1;
-	}
-
-	if (!.@hasAnyCurrency) {
+	if (countitem(.currencyId) < 1) {
 		mes "Você não possui nenhuma medalha para negociar.";
 		close;
 	}
@@ -35,16 +29,17 @@ prontera.gat,178,174,3	script	Loja de KVM	4_M_ROYALGUARD,{
 	callsub CaseCH,@menu;
 
 	npcshopdelitem "KVM_SHOP",512;
-	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
+	for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1) {
 		npcshopadditem "KVM_SHOP",.ItemLists[.@i],.ItemPrice[.@i];
+	}
 
 	close2;
 	callshop "KVM_SHOP",1;
 	npcshopattach "KVM_SHOP";
 
-	// Mostrar o total de moedas 7773
-	set .@total, countitem(7773);
-	dispbottom "Você possui um total de: "+.@total+" "+getitemname(7773)+".";
+	// Mostrar o total de moedas
+	set .@total, countitem(.currencyId);
+	dispbottom "Você possui um total de: "+.@total+" "+getitemname(.currencyId)+".";
 
 OnBuyItem:
 	callsub CaseCH,@menu;
@@ -58,10 +53,10 @@ OnBuyItem:
 		}
 	}
 
-	// Verificação do saldo na moeda 7773
+	// Verificação do saldo na moeda
 	set .@hasEnough, 1;
 	set .@required, @TotalCost;
-	set .@currencyAmount, countitem(7773);
+	set .@currencyAmount, countitem(.currencyId);
 
 	if (.@currencyAmount < @TotalCost) {
 		set .@hasEnough, 0;
@@ -69,8 +64,8 @@ OnBuyItem:
 
 	if (!.@hasEnough) {
 		mes .name$;
-		mes "Você precisa de ^FF0000"+@TotalCost+" "+getitemname(7773)+"^000000 para comprar.";
-		mes "Você possui: ^FF0000"+.@currencyAmount+" "+getitemname(7773)+"^000000";
+		mes "Você precisa de ^FF0000"+@TotalCost+" "+getitemname(.currencyId)+"^000000 para comprar.";
+		mes "Você possui: ^FF0000"+.@currencyAmount+" "+getitemname(.currencyId)+"^000000";
 		set @TotalCost,0;
 		deletearray @bought_nameid[0],getarraysize(@bought_nameid);
 		deletearray @bought_quantity[0],getarraysize(@bought_quantity);
@@ -82,8 +77,8 @@ OnBuyItem:
 		dispbottom "Você adquiriu: "+getitemname(@bought_nameid[@i])+" x"+@bought_quantity[@i];
 	}
 
-	// Remover a quantidade da moeda 7773
-	delitem 7773, @TotalCost;
+	// Remover a quantidade da moeda
+	delitem .currencyId, @TotalCost;
 
 	close;
 

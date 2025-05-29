@@ -9,29 +9,39 @@ prontera.gat,175,177,3	script	Telma	4_F_PINKWOMAN,{
 		next;
 		mes "[Telma]";
 		mes "Esses suprimentos só funcionam em ^FF0000Mapas de WoE^000000.";
-		switch(select("^1E90FF[>]^000000 150 Poções Brancas Compactas",
-		             "^1E90FF[>]^000000 150 Poções Azuis",
-		             "^1E90FF[>]^000000 50 Revestimentos Brilhantes",
-		             "^1E90FF[>]^000000 100 Garrafas de Granadas",
-		             "^1E90FF[>]^000000 100 Garrafas de Ácido",
-		             "^1E90FF[>]^000000 300 Teias de Aranha",
-		             "^1E90FF[>]^000000 5 Garrafas de Veneno",
-		             "^1E90FF[>]^000000 80 Gemas Amarelas",
-		             "^1E90FF[>]^000000 70 Gemas Vermelhas",
-		             "^1E90FF[>]^000000 60 Gemas Azuis",
-		             "^1E90FF[>]^000000 100 Poções de Velocidade")) {
-			case 1:  callsub S_BuyConsumableWOE,547,150,100; break;
-			case 2:  callsub S_BuyConsumableWOE,505,150,100; break;
-			case 3:  callsub S_BuyConsumableWOE,7139,50,30; break;
-			case 4:  callsub S_BuyConsumableWOE,7135,100,60; break;
-			case 5:  callsub S_BuyConsumableWOE,7136,100,60; break;
-			case 6:  callsub S_BuyConsumableWOE,1025,300,80; break;
-			case 7:  callsub S_BuyConsumableWOE,678,5,10; break;
-			case 8:  callsub S_BuyConsumableWOE,715,80,20; break;
-			case 9:  callsub S_BuyConsumableWOE,716,70,15; break;
-			case 10: callsub S_BuyConsumableWOE,717,60,10; break;
-			case 11: callsub S_BuyConsumableWOE,12016,100,100; break;
-		}
+			switch(select(
+				"^1E90FF[>]^000000 150 Poções Brancas Compactas ^1E90FF[20]^000000",
+				"^1E90FF[>]^000000 100 Poções Azuis ^1E90FF[20]^000000",
+				"^1E90FF[>]^000000 15 Garrafas de Veneno ^1E90FF[20]^000000",
+				"^1E90FF[>]^000000 50 Garrafas de Fogo ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 50 Garrafas de Ácido ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 50 Garrafas de Planta ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 50 Garrafas de Esfera Marinha ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 50 Revestimentos Brilhantes ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 50 Gemas Amarelas ^1E90FF[20]^000000",
+				"^1E90FF[>]^000000 50 Gemas Vermelhas ^1E90FF[15]^000000",
+				"^1E90FF[>]^000000 100 Gemas Azuis ^1E90FF[10]^000000",
+				"^1E90FF[>]^000000 5 Poções de Velocidade ^1E90FF[10]^000000",
+				"^1E90FF[>]^000000 20 Teias de Aranha ^1E90FF[10]^000000",
+				"^1E90FF[>]^000000 10 Poções da Despertar ^1E90FF[2]^000000",
+				"^1E90FF[>]^000000 20 Poções da Fúria ^1E90FF[2]^000000"
+			)) {
+				case 1:  callsub S_BuyConsumableWOE,547,150,20; break;
+				case 2:  callsub S_BuyConsumableWOE,505,100,20; break;
+				case 3:  callsub S_BuyConsumableWOE,678,15,20; break;
+				case 4:  callsub S_BuyConsumableWOE,7135,50,15; break;
+				case 5:  callsub S_BuyConsumableWOE,7136,50,15; break;
+				case 6:  callsub S_BuyConsumableWOE,7137,50,15; break;
+				case 7:  callsub S_BuyConsumableWOE,7138,50,15; break;
+				case 8:  callsub S_BuyConsumableWOE,7139,50,15; break;
+				case 9:  callsub S_BuyConsumableWOE,715,50,20; break;
+				case 10: callsub S_BuyConsumableWOE,716,50,15; break;
+				case 11: callsub S_BuyConsumableWOE,717,100,10; break;
+				case 12: callsub S_BuyConsumableWOE,12016,5,10; break;
+				case 13: callsub S_BuyConsumableWOE,1025,20,10; break;
+				case 14: callsub S_BuyConsumableWOE,14510,10,2; break;
+				case 15: callsub S_BuyConsumableWOE,14511,20,2; break;
+			}
 	}
 
 	switch(select("^1E90FF[>]^000000 150 Poções Brancas Compactas",
