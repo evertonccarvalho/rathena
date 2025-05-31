@@ -53,7 +53,7 @@ INSERT INTO `rotd_time` (`id`, `time`) VALUES
 (1, 1652171379);
 
 */
-prontera,147,172,4	script	ROTD	2_BULLETIN_BOARD,{
+prontera,164,175,4	script	ROTD	2_BULLETIN_BOARD,{
 	query_sql "SELECT `zeny` FROM `rotd_system` WHERE `race_id`='0'",.@amorfo;
 	query_sql "SELECT `zeny` FROM `rotd_system` WHERE `race_id`='1'",.@morto;
 	query_sql "SELECT `zeny` FROM `rotd_system` WHERE `race_id`='2'",.@bruto;

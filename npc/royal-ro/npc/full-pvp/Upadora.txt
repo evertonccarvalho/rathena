@@ -1,4 +1,4 @@
-prontera,144,184,5	script	Julie Upadora	955,{
+prontera,146,161,5	script	Julie Upadora	955,{
 mes "[ ~Upadora~ ]";
 mes "Olá ^FF0000"+strcharinfo(0)+"^000000 , eu sou responsável por dar leveis aos jogadores, gostaria de pegar o level máximo?";
 menu "Sim",yessir,"- Não",noting;

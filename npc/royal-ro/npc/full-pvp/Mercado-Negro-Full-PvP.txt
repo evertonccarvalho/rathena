@@ -10,7 +10,7 @@
 //= 1.0 Convertido para brAthena [Maa ']
 //============================================================
 
-prontera,164,170,3	script	Mercado Negro	790,{
+prontera,141,155,5	script	Mercado Negro	790,{
 
 //Configuracoes:
 set .server$,"Ragna Stick";

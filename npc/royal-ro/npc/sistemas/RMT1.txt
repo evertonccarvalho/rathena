@@ -267,4 +267,4 @@ end;
 }
 
 
-prontera,167,181,3	duplicate(Assistente RMT)	Assistente RMT#prt	10210
+prontera,189,175,3	duplicate(Assistente RMT)	Assistente RMT#prt	10210

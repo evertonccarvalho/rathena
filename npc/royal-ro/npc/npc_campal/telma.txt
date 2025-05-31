@@ -1,4 +1,4 @@
-prontera.gat,175,177,3	script	Telma	4_F_PINKWOMAN,{
+prontera.gat,185,185,3	script	Telma	4_F_PINKWOMAN,{
 	mes "[Telma]";
 	mes "Bem-vindo, bravo guerreiro.";
 	mes "Você precisa de suprimentos para suas batalhas?";

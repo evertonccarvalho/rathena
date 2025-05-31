@@ -1,5 +1,5 @@
 -	shop	BG_SHOP	-1,512:1
-prontera.gat,173,179,3	script	Loja de BG	4_F_LAPERM,{
+prontera.gat,179,185,3	script	Loja de BG	4_F_LAPERM,{
 	set .name$,"[^FF0000Loja de BG^000000]";
 	setarray @CurrencyIds[0], 7828, 7829; // Medalhas de Guerra e Elite
 

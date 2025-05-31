@@ -260,7 +260,7 @@ function	script	F_EndSpeedBG	{
 }
 
 
-prontera,170,178,4	script	Recrutador BG	403,{
+prontera,175,185,4	script	Recrutador BG	403,{
 	mes "[Recrutador BG]";
 	mes "Bem-vindo aos Campos de Batalha!";
 	mes "Como deseja entrar?";

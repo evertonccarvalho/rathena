@@ -657,5 +657,5 @@ OnInit:
 }
 sec_in01,175,167,3	duplicate(Estilista)	Estilista#aret	122
 vip_lounge,164,126,3	duplicate(Estilista)	Estilista#arets	122
-prontera,167,178,3	duplicate(Estilista)	Estilista#vip	122
+prontera,143,174,5	duplicate(Estilista)	Estilista#vip	122
 
