@@ -17,7 +17,7 @@
 // ---------------------------------------------------------------- --
 // Cabeçalho de script
 // ---------------------------------------------------------------- --
-prontera,159,193,3	script	Curandeira	G_MAGALETA_,{
+prontera,163,186,3	script	Curandeira	G_MAGALETA_,{
 OnBuff:
 	specialeffect2 EF_HEAL2;
 	percentheal 100,100;

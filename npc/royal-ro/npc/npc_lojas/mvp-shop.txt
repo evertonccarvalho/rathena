@@ -1,5 +1,5 @@
 -	shop	MVPPOINTS_shop	-1,512:15
-prontera.gat,158,180,5	script	Loja de MVP	4_EP20_LASGAND,{
+prontera.gat,135,171,5	script	Loja de MVP	4_EP20_LASGAND,{
 
 	//delwaitingroom;
 	//waitingroom "Loja de MVP",0;

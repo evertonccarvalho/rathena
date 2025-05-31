@@ -1,6 +1,6 @@
 -	shop	Cheffenia_Shop	-1,512:1
 
-prontera.gat,154,180,5	script	Loja da Cheffênia	4_F_SARAH,{
+prontera.gat,137,173,5	script	Loja da Cheffênia	4_F_SARAH,{
 
 	//delwaitingroom;
 	//waitingroom "Loja da Cheffênia",0;

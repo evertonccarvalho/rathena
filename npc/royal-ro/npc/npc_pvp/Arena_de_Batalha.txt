@@ -32,7 +32,7 @@
 -	pointshop	pontospvp	-1,#PONTOS_PVP,31803:200;31803:200;31885:200;
 //==============================================================
 
-prontera,186,211,5	script	Arena de Batalha	417,{	goto NPC_PVP;
+prontera,158,193,5	script	Arena de Batalha	417,{	goto NPC_PVP;
 
 //==============================================================
 // Configurações
