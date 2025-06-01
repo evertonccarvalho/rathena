@@ -11272,6 +11272,49 @@ ACMD_FUNC( roulette ){
 #endif
 }
 
+
+/*==========================================
+ * @afk - Ativa modo autotrade com sentar e efeito
+ * Patch criado por: AlfheiM, ADM da comunidade Help rAthena
+ *==========================================*/
+ACMD_FUNC(afk) {
+	nullpo_retr(-1, sd);
+
+	if (pc_isdead(sd)) {
+		clif_displaymessage(fd, "Você está morto. Não é possível entrar em modo AFK.");
+		return -1;
+	}
+
+	if (sd->state.vending || sd->state.buyingstore) {
+		clif_displaymessage(fd, "Você está vendendo ou comprando. Finalize isso antes.");
+		return -1;
+	}
+
+	if (map_getmapflag(sd->bl.m, MF_AUTOTRADE) == battle_config.autotrade_mapflag) {
+
+		if (map_getmapflag(sd->bl.m, MF_PVP) || map_getmapflag(sd->bl.m, MF_GVG)) {
+			clif_displaymessage(fd, "Modo AFK não permitido em mapas PvP/GvG.");
+			return -1;
+		}
+
+		sd->state.autotrade = 1;
+		sd->state.block_action |= PCBLOCK_IMMUNE;
+
+		pc_setsit(sd); // faz sentar
+		clif_specialeffect(&sd->bl, 234, AREA); // efeito visual
+
+		channel_pcquit(sd, 0xF);
+		clif_authfail_fd(sd->fd, 15);
+		chrif_save(sd, CSAVE_AUTOTRADE);
+
+	} else {
+		clif_displaymessage(fd, "Este mapa não permite entrar em modo AFK.");
+		return -1;
+	}
+
+	return 0;
+}
+
 /**
  * Replaces a card ID in an equip
  * Usage: @setcard <equip position> <slot> <card_id>
@@ -11749,6 +11792,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(roulette, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(setcard),
 		ACMD_DEF(macrochecker),
+		ACMD_DEF(afk),
 	};
 	AtCommandInfo* atcommand;
 	int32 i;

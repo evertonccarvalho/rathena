@@ -49,6 +49,7 @@ Body:
           changedress: true
           resurrect: true
           go: true
+          afk: true
           commands: true
       Permissions:
           # without this basic permissions regular players could not trade or party
