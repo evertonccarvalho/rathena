@@ -50,6 +50,7 @@ Body:
           resurrect: true
           go: true
           afk: true
+          ltp: true
           commands: true
       Permissions:
           # without this basic permissions regular players could not trade or party

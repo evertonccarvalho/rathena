@@ -9830,9 +9830,11 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 
 			if( sd->state.autocast || ( (sd->skillitem == AL_TELEPORT || battle_config.skip_teleport_lv1_menu) && skill_lv == 1 ) || skill_lv == 3 )
 			{
-				if( skill_lv == 1 )
-					pc_randomwarp(sd,CLR_TELEPORT);
-				else
+			if( skill_lv == 1 ){
+ 					pc_randomwarp(sd,CLR_TELEPORT);
+					if(sd->state.ltp)
+						clif_viewpoint(*sd, 1, 1, sd->ltp_x, sd->ltp_y, 1, 0x00FF00);
+				} else
 					pc_setpos( sd, mapindex_name2id( sd->status.save_point.map ), sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 				break;
 			}
@@ -15894,9 +15896,11 @@ int32 skill_castend_map (map_session_data *sd, uint16 skill_id, const char *mapn
 		//The storage window is closed automatically by the client when there's
 		//any kind of map change, so we need to restore it automatically
 		//bugreport:8027
-		if(strcmp(mapname,"Random") == 0)
+		if(strcmp(mapname,"Random") == 0){
 			pc_randomwarp(sd,CLR_TELEPORT);
-		else if (sd->menuskill_val > 1 || skill_id == ALL_ODINS_RECALL) //Need lv2 to be able to warp here.
+			if(sd->state.ltp)
+				clif_viewpoint(*sd, 1, 1, sd->ltp_x, sd->ltp_y, 1, 0x00FF00);
+		} else if (sd->menuskill_val > 1 || skill_id == ALL_ODINS_RECALL) //Need lv2 to be able to warp here.
 			pc_setpos( sd, mapindex_name2id( sd->status.save_point.map ),sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 
 		clif_refresh_storagewindow(sd);
@@ -17671,9 +17675,11 @@ int32 skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t
 			break;
 
 		case UNT_DIMENSIONDOOR:
-			if( tsd && !map_getmapflag(bl->m, MF_NOTELEPORT) )
+			if( tsd && !map_getmapflag(bl->m, MF_NOTELEPORT) ){
 				pc_randomwarp(tsd,CLR_TELEPORT);
-			else if( bl->type == BL_MOB && battle_config.mob_warp&8 )
+			if(tsd->state.ltp)
+					clif_viewpoint(*tsd, 1, 1, tsd->ltp_x, tsd->ltp_y, 1, 0x00FF00);
+			} else if( bl->type == BL_MOB && battle_config.mob_warp&8 )
 				unit_warp(bl,-1,-1,-1,CLR_TELEPORT);
 			break;
 

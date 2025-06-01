@@ -7466,6 +7466,9 @@ char pc_randomwarp(map_session_data *sd, clr_type type, bool ignore_mapflag)
 		x = rnd_value<int16>(edge, mapdata->xs - edge - 1);
 		y = rnd_value<int16>(edge, mapdata->ys - edge - 1);
 	} while((map_getcell(sd->bl.m,x,y,CELL_CHKNOPASS) || (!battle_config.teleport_on_portal && npc_check_areanpc(1,sd->bl.m,x,y,1))) && (i++) < 1000);
+	
+	sd->ltp_x = sd->bl.x;
+	sd->ltp_y = sd->bl.y;
 
 	if (i < 1000)
 		return pc_setpos(sd,mapdata->index,x,y,type);

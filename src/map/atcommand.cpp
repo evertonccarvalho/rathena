@@ -9101,6 +9101,18 @@ ACMD_FUNC(mapflag) {
 	return 0;
 }
 
+ACMD_FUNC(ltp)
+{
+	if (sd->state.ltp) {
+		sd->state.ltp = 0;
+		clif_displaymessage(fd,"Last teleport position will not be shown.");
+		return 0;
+	}
+
+	sd->state.ltp = 1;
+	clif_displaymessage(fd, "Last teleport position is now shown.");
+	return 0;
+}
 /*===================================
  * Remove some messages
  *-----------------------------------*/
@@ -11703,6 +11715,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(monsterignore),
 		ACMD_DEF(fakename),
 		ACMD_DEF(size),
+		ACMD_DEF(ltp),
 		ACMD_DEF(showexp),
 		ACMD_DEF(showzeny),
 		ACMD_DEF(showdelay),
