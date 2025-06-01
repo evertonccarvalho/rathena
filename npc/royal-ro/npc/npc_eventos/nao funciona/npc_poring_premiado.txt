@@ -1,0 +1,36 @@
+moc_para01,44,72,4	script	Controle Premiado::bau	123,{
+
+if(getgroupid () > 30){
+
+mes "[ Poporing Premiado ]";
+mes "Olá "+strcharinfo(0)+", o que deseja fazer ?";
+next;
+switch(select("Soltar Poporing:Nada, obrigado...")){
+
+	case 1:
+		mes "[ Poporing Premiado ]";
+		mes "Certo, Então irei Soltar Poporing Premiados em prontera!";
+		goto invocarpoporing;
+
+	case 2:
+		mes "[ Poporing Premiado ]";
+		mes "Ok, volte quando precisar de meus serviços!";
+		close;
+	}
+
+invocarpoporing:
+monster	"prt_maze01",0,0,	"Poring",1002,1,"bau::OnGanhou";
+announce "Um monstro do pix premiado foi solto em algum lugar de midgard!!!",bc_blue|bc_all;
+close;
+end;
+
+OnGanhou:
+getitem 35036,1;
+
+announce "Parabéns ao jogador "+strcharinfo(0)+" por achar o monstro do pix premiado",bc_blue|bc_all;
+end;
+}
+mes "[ Baú Perdido ]";
+mes "Sinto muito, somente membros da staff podem utilizar meus serviços.";
+close;
+}

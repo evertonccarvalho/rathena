@@ -115,7 +115,7 @@ OnInit:
 	setunitdata getnpcid(0), UNPC_GROUP_ID, 22;
 	bindatcmd "buff",strnpcinfo(3)+"::OnBuff";
 
-	.walk_min_x = 139;
+	.walk_min_x = 159;
 	.walk_max_x = 170;
 	.walk_min_y = 180;
 	.walk_max_y = 190;

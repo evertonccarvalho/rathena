@@ -1,0 +1,82 @@
+-	script	Evento#var	-1,{
+end;
+OnInit:
+set $premio, 35015;
+set $quantidade, 2;
+end;
+}
+dic_in01,354,282,5	script	Snuff	871,{
+if(getgmlevel() < 60)
+{
+if(!.caper)
+{
+mes "^FF0000["+strnpcinfo(1)+"]^000000";
+mes "Olá ^FF0000"+strcharinfo(0)+"^000000, me chamo Snuff e gosto muito de Pushs.";
+close;
+end;
+}
+mes "^FF0000["+strnpcinfo(1)+"]^000000";
+mes "Me ajude a procurar meu macaquinho eu imploro!!!";
+close;
+}
+mes "^FF0000["+strnpcinfo(1)+"]^000000";
+mes "Olá ^FF0000"+strcharinfo(0)+"^000000, me chamo Snuff e gosto muito de Pushs.";
+next;
+mes "Quer Ligar o evento?";
+next;
+switch(select("[^339966+^000000]Sim.:[^FF0000-^000000]Não."))
+{
+case 1:
+callsub OnEventStart;
+end;
+case 2:
+mes "^FF0000["+strnpcinfo(1)+"]^000000";
+mes "Volte quando quizer!";
+close;
+}
+OnClock1200: callsub OnEventStart;
+
+OnEventStart:
+disablenpc "Push";
+announce "[Snuff]: Oh não! Meu Push fugiu.",0;
+announce "[Snuff]: Ajudem me a procura-lo, ele foi em direção a morocc.",0;
+initnpctimer;
+set .caper,1;
+monster "morocc",0,0,"Push",1057,1,"Snuff::Onmatar";
+monster "morocc",0,0,"Push",1214,30,"Snuff::Onmatou";
+close;
+return;
+OnTimer600000:
+enablenpc "Push";
+stopnpctimer;
+announce "[Snuff]: Achei meu Macaquinho, obrigado por tentarem me ajudar.",0;
+set .caper,0;
+killmonsterall "morocc";
+end;
+
+Onmatar:
+enablenpc "Push";
+stopnpctimer;
+announce "[Snuff]: "+strcharinfo(0)+" encontrou meu macaquinho. Vou lhe recompensar por isso!",0;
+dispbottom "Parabéns.";
+getitem $premio,$quantidade;
+killmonsterall "morocc";
+set .caper,0;
+end;
+
+Onmatou:
+dispbottom "Você matou um Push selvagem";
+end;
+}
+
+dic_in01,357,279,5	script	Push	1057,{
+mes "ronc! ronc!";
+close;
+}
+
+morocc	mapflag	nodrop
+morocc	mapflag	noloot
+morocc	mapflag	nomobloot
+morocc	mapflag	nomvploot
+morocc	mapflag	nojobexp
+morocc	mapflag	nobaseexp

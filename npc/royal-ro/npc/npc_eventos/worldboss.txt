@@ -1,0 +1,43 @@
+que_temsky,61,142,5	script	World Boss	85,{
+// Verifica se o evento está ativo (entre 22:00 e 23:00)
+	if(gettime(3) == 22 && gettime(4) < 60){
+		mes "[World Boss]";
+		mes "O evento do World Boss está ativo! Deseja ir para a sala?";
+		next;
+		menu "Sim, quero ir para o mapa.",-,"Não, estou apenas olhando.",L_NoWarp;
+
+		// Se o jogador escolher ir para o mapa
+		warp "pvp_n_5-5",0,0;
+		close;
+	}
+
+	// Caso o evento não esteja ativo
+	mes "[World Boss]";
+	mes "O evento do World Boss ainda não está ativo.";
+	mes "Ele ocorre todos os dias às 22:00!";
+	close;
+
+L_NoWarp:
+	close;
+
+OnClock2201:
+	// Anúncio global que o World Boss foi invocado
+	announce "O World Boss foi invocado! Todos podem acessar o mapa em @eventos!", bc_all;
+
+	// Libera o acesso ao mapa e invoca o mob 3658 no mapa "pvp_n_5-5"
+	donpcevent "WorldBossWarp::OnEnableWarp";
+	monster "pvp_n_5-5", 0,0, "World Boss", 3658, 1;
+	end;
+
+OnClock2301:
+	announce "O World Boss não foi derrotado a tempo e foi eliminado!", bc_all;
+	// Mata o mob usando @killmonster2
+	killmonsterall "pvp_n_5-5", "World Boss";
+	end;
+
+OnInit:
+	.@UID = getnpcid(0);
+	setunittitle(.@UID, "[ Monster Mundial ]");
+	setunitdata .@UID, UNPC_GROUP_ID, 58;
+	end;
+}

@@ -1,0 +1,11 @@
+que_temsky,41,131,5	script	Troca de Fragmentos	681,{
+		callshop "evento", 1;
+		end;
+OnInit:
+
+
+		.@UID = getnpcid(0);
+		setunittitle(.@UID, "[ Itens ]");
+		setunitdata .@UID, UNPC_GROUP_ID, 58;
+end;
+}

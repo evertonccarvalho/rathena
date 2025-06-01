@@ -1,0 +1,157 @@
+que_temsky,43,151,4	script	Quiz Master	123,{
+	OnTouch:
+		mes "[Quiz Master]";
+		if (.quiz_active == 0) {
+			mes "O evento de quiz ainda não começou.";
+			mes "O próximo evento começará às 03:00, 11:00 ou 19:00!";
+			menu "Rank",rank;
+			close;
+		}
+
+		mes "Bem-vindo ao evento de quiz! Aqui está sua pergunta:";
+		mes .questions$[.question_index];
+		next;
+		input @player_answer$;
+
+		if (@player_answer$ == .answers$[.question_index]) {
+			mes "Parabéns! Você respondeu corretamente!";
+			getitem 35015, 2; // Premiação
+			.quiz_active = 0; // Desativa o quiz até o próximo evento
+			announce strcharinfo(0) + " respondeu corretamente e ganhou o prêmio! A resposta correta era: " + .answers$[.question_index], bc_all;
+
+			// Atualiza a pontuação do jogador no ranking
+			set @CID, getcharid(0);
+			set @name$, strcharinfo(0);
+			query_sql "SELECT `name` FROM `quiz_event` WHERE `char_id`="+@CID+"", .@result$;
+			if (.@result$ == "") {
+				query_sql "INSERT INTO `quiz_event` (`char_id`, `account_id`, `name`, `quiz_points`) VALUES ("+@CID+", "+getcharid(3)+", '"+@name$+"', 1)";
+			} else {
+				query_sql "UPDATE `quiz_event` SET `quiz_points` = `quiz_points` + 1 WHERE `char_id` = "+@CID;
+			}
+
+			close;
+		} else {
+			mes "Desculpe, mas sua resposta está incorreta. Tente novamente no próximo evento!";
+			close;
+		}
+
+	OnInit:
+		.@UID = getnpcid(0);
+		setunittitle(.@UID, "[ Conhecimento ]");
+		setunitdata .@UID, UNPC_GROUP_ID, 58;
+		// Configurações iniciais
+		setarray .questions$[0], 
+			"Qual é a cidade inicial dos Novices?",
+			"Qual é o item necessário para virar um Mago?",
+			"Qual é o nome do castelo de Geffen?",
+			"Qual é a classe que usa arcos como arma principal?",
+			"Qual é o monstro MVP do mapa de Payon Cave?",
+			"Qual é o item que recupera 50 HP?",
+			"Qual é a classe que pode virar um Lord Knight?",
+			"Qual é a cidade onde se realiza a quest para virar um Blacksmith?",
+			"Qual é o nome da dungeon localizada abaixo de Prontera?",
+			"Qual é o nome da skill que cura outros jogadores?",
+			"Qual é a cor do cabelo do personagem principal na abertura de Ragnarok?",
+			"Qual é o nome da cidade que tem um vulcão?",
+			"Qual classe tem a habilidade de esconder?",
+			"Qual item é necessário para criar flechas?",
+			"Qual é o nome do navio que leva você para Alberta?",
+			"Qual monstro tem o apelido de Bapho?",
+			"Qual é o nome do continente onde fica a cidade de Prontera?",
+			"Qual classe tem a habilidade de detectar espiões?",
+			"Qual é o nome do monstro que solta um anel com o nome dele?",
+			"Qual é o nível máximo em Odin?",
+			"Qual é o nome da ilha onde os Novices começam?",
+			"Qual item é necessário para virar um Acolyte?",
+			"Qual é a dungeon que tem como entrada um poço?",
+			"Qual é a habilidade principal do Blacksmith?",
+			"Qual monstro MVP é um dragão?",
+			"Qual é a cidade onde se pode virar um Alchemist?",
+			"Qual é o nome do castelo de Prontera?",
+			"Qual é o monstro que se transforma em outro quando atacado?",
+			"Qual é o nome da skill que revive outros jogadores?",
+			"Qual é o item usado para recuperar SP?",
+			"Qual é o nome do NPC que guarda seus itens em segurança?",
+			"Qual é o nome do miniboss que se parece com uma árvore gigante?",
+			"Qual é o monstro que dropa a carta Marc?",
+			"Qual é o nome da skill final do Monk?",
+			"Qual é o nome do monstro que tem uma foice e uma capa preta?",
+			"Qual é o nome do chefe final da Bio Laboratory?",
+			"Qual é a cidade conhecida por sua universidade mágica?",
+			"Qual é o item necessário para conjurar a skill Storm Gust?",
+			"Qual é o nome do monstro que usa uma máscara de gás?",
+			"Qual é a skill que aumenta a defesa mágica do usuário?",
+			"Qual é o item necessário para ativar o portal para Niflheim?",
+			"Qual é o nome do monstro MVP na guilda das Valquírias?",
+			"Qual é a cidade conhecida pela mineração e indústria pesada?",
+			"Qual é o nome do monstro que solta o item Ice Pick?",
+			"Qual é a habilidade especial do monstro Tao Gunka?",
+			"Qual é a quantidade máxima de itens que um personagem pode carregar?";
+		setarray .answers$[0], 
+			"Prontera",
+			"Pedra Azul",
+			"Arsulf",
+			"Arqueiro",
+			"Flor do Luar",
+			"Poção Vermelha",
+			"Espadachim",
+			"Einbroch",
+			"Payon Dungeon",
+			"Cura",
+			"Laranja",
+			"Juno",
+			"Ladino",
+			"Fabricar Flechas",
+			"Kafra",
+			"Bafomé",
+			"Rune-Midgard",
+			"Caçador",
+			"Besouro-Ladrão Dourado",
+			"99",
+			"Ilha dos Novatos",
+			"Rosário",
+			"Payon Cave",
+			"Machado",
+			"Nidhoggur",
+			"Alberta",
+			"Valkyrie",
+			"Poporing",
+			"Ressuscitar",
+			"Poção Azul",
+			"Kafra",
+			"Salgueiro Ancião",
+			"Marc",
+			"Punho Supremo de Asura",
+			"Ceifador Ankou",
+			"Wolfchev",
+			"Geffen",
+			"Cristal Azul",
+			"Máscara de Gás",
+			"Proteção Arcana",
+			"Crânio",
+			"Randgris",
+			"Einbroch",
+			"Detardeurus",
+			"Tao Gunka",
+			"10000";
+		.quiz_active = 0;
+		end;
+
+	OnClock0300:
+	OnClock1100:
+	OnClock1900:
+		set .quiz_active, 1;
+		set .question_index, rand(0, getarraysize(.questions$) - 1);
+		announce "O evento de Quiz começou! Venha até mim e responda a pergunta para ganhar prêmios!", bc_all;
+		end;
+
+	rank:
+	next;
+		mes "[Quiz Master]";
+		mes "Aqui está o ranking dos 10 melhores jogadores:";
+		.@rank_count = query_sql("SELECT `name`, `quiz_points` FROM `quiz_event` ORDER BY `quiz_points` DESC LIMIT 10", .@name$, .@points);
+		for (.@i = 0; .@i < .@rank_count; .@i++) {
+			mes (.@i + 1) + ". " + .@name$[.@i] + " - " + .@points[.@i] + " pontos";
+		}
+		close;
+}

@@ -1,0 +1,154 @@
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Npc criado por Douglas Santos
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Nome do Npc Evento Poring Premiado
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Versão atual 1.0
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Npc criado em 04/01/2016
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+// Compatível com eAthena eAmod
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=+
+que_temsky,54,131,4	script	Poring Premiado	909,{
+
+		mes "^FF1493[ Poring Premiado ]^000000";
+		mes (gettime(3)>= 6&&gettime(3)<= 12?"Bom-dia":(gettime(3)>=13&&gettime(3)<=18?"Boa-tarde":"Boa-noite"))+", ^008aff"+strcharinfo(0)+"^000000 !";
+		mes "O que posso fazer por você?";
+		next;
+		switch(select("^0084ff[ • ]^000000 Entrar no evento.:^0084ff[ • ]^000000 Informação.:^0084ff[ • ]^000000 Rank."))
+		{
+			case 1:
+				mes "^FF1493[ Poring Premiado ]^000000";
+				mes "Divirta-se!";
+				next;
+				warp "poring_c01",0,0;
+				end;
+
+			case 2:
+				mes "^FF1493[ Poring Premiado ]^000000";
+				mes "São invocados 100 Porings.";
+				mes "Apenas UM é o verdadeiro e você terá de acha-lo.";
+				mes "Caso consiga, ganhará 3x Fragmento de Evento como prêmio.";
+				mes "Boa Sorte "+strcharinfo(0)+". ";
+				next;
+				mes "^FF1493[ Poring Premiado ]^000000";
+				mes "Abre as 02:00 e ás 14:00";
+				close;
+
+			case 3:
+					mes "^FF1493[ Ranking Poring Premiado ]^000000";
+	mes "Aqui estão os 10 melhores jogadores:";
+
+	.@rank_count = query_sql("SELECT `name`, `poring_premiado` FROM `eventos` ORDER BY `poring_premiado` DESC LIMIT 10", .@name$, .@count);
+
+	for (.@i = 0; .@i < .@rank_count; .@i++) {
+		mes "^008aff" + (.@i + 1) + ". " + .@name$[.@i] + "^000000 - " + .@count[.@i] + " vitórias";
+	}
+
+	next;
+	mes "Continue participando para melhorar sua posição!";
+	close;
+		}
+
+OnClock0200:
+OnClock1400:
+
+	set $poring_premiado,1;
+
+	announce "O Evento Poring Premiado começará em 3 minutos. Dirija-se ao NPC para participar.",0;
+	sleep 30000;
+	announce "O Evento Poring Premiado começará em 2 minutos e 30 segundos.",0;
+	sleep 30000;
+	announce "O Evento Poring Premiado começará em 2 minutos.",0;
+	sleep 15000;
+	announce "Para participar do evento, dirija-se ao npc na sala de eventos @eventos.",0;
+	sleep 3000;
+	announce "O Evento Poring Premiado começará em breve.",0;
+	sleep 22000;
+	sleep 20000;
+	announce "Evento Poring Premiado começará em 1 minuto!",0;
+	sleep 1000;
+	announce "Para participar do evento, dirija-se ao npc na sala de eventos @eventos.",0;
+	sleep 15000;
+	mapannounce "poring_c01","O Evento Poring Premiado começará em 30 segundos.",0;
+	sleep 30000;
+	announce "Os registros foram encerrados.",0;
+	set $poring_premiado,0;
+	sleep 3000;
+	mapannounce "poring_c01","Evento Poring Premiado começará em ~5~",0;
+	sleep 1000;
+	mapannounce "poring_c01","Evento Poring Premiado começará em ~4~",0;
+	sleep 1000;
+	mapannounce "poring_c01","Evento Poring Premiado começará em ~3~",0;
+	sleep 1000;
+	mapannounce "poring_c01","Evento Poring Premiado começará em ~2~",0;
+	sleep 1000;
+	mapannounce "poring_c01","Evento Poring Premiado começará em ~1~",0;
+	sleep 1000;
+	mapannounce "poring_c01","Poring Premiado Começou!",0;
+
+			initnpctimer;
+			monster "poring_c01",0,0,"Poring",1002,1,strnpcinfo(0)+"::OnMobKilled";
+			monster "poring_c01",0,0,"Pouring",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Proing",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Poirng",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Poing",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Porimg",1002,5,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Porinq",1002,1,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"P0r1ng",1002,1,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"PoRiNg",1002,1,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Por|ng",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Por1ng",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Porong",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"P0ring",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"P@ring",1002,10,strnpcinfo(0)+"::OnWrongKilled";
+			monster "poring_c01",0,0,"Porng",1002,1,strnpcinfo(0)+"::OnWrongKilled";
+			end;
+			return;
+
+		OnTimer300000:
+			stopnpctimer;
+			announce "[Evento Poring]: O tempo acabou, tente na próxima vez.",0;
+			killmonsterall "poring_c01";
+			end;
+
+		OnMobKilled:
+			stopnpctimer;
+			set @CID,getcharid(0);
+			set @name$,"";
+			query_sql "SELECT `name` FROM `eventos` WHERE `char_id`="+@CID+"",@name$;
+			if ( @name$ == "" ) {
+			query_sql "INSERT INTO `eventos` (`char_id`,`account_id`,`name`,`poring_premiado`) VALUES ("+@CID+",'"+getcharid(3)+"','"+strcharinfo(0)+"',1)",@esc$;
+			announce "[Poring Premiado] "+strcharinfo(0)+" encontrou o Poring.",0;
+			getitem 35015,3;
+			killmonsterall "poring_c01";
+			warp "prontera",155,155;
+			end;
+			}
+			query_sql "UPDATE `eventos` SET `poring_premiado` = `poring_premiado` +1 WHERE `char_id`="+@CID+"",@esc$;
+			announce "[Poring Premiado] "+strcharinfo(0)+" encontrou o Poring.",0;
+			dispbottom "Parabéns, você me achou.";
+			getitem 12912,1;
+			killmonsterall "poring_c01";
+			warp "prontera",155,155;
+			end;
+
+		OnWrongKilled:
+			dispbottom "Whaa, você errou feio.";
+			warp "prontera",157,175;
+			end;
+
+			OnInit:
+		.@UID = getnpcid(0);
+		setunittitle(.@UID, "[ Ache o certo ]");
+		setunitdata .@UID, UNPC_GROUP_ID, 58;
+    end;
+}
+poring_c01	mapflag	nosave
+poring_c01	mapflag	nomemo
+poring_c01	mapflag	nobranch
+poring_c01	mapflag	nowarpto
+poring_c01	mapflag	nowarp
+poring_c01	mapflag	noteleport
+poring_c01	mapflag	noskill

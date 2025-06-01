@@ -1,0 +1,137 @@
+-	script	Event_Bombring	-1,{
+OnInit:
+	// recompensa do item
+	setarray .item,
+		35015, 5;
+
+	// @bombstart - iniciação manual pelo GM
+	bindatcmd "bombstart", strnpcinfo(0)+"::OnStart",60,60;
+
+	// @bomb - jogador participa do evento
+	bindatcmd "bomb", strnpcinfo(0)+"::OnJoinEvent";
+
+	// Mapflags
+	setarray .@mapflag,
+		mf_nowarp,
+		mf_nowarpto,
+		mf_noskill,
+		mf_noteleport,
+		mf_nomemo,
+		mf_nosave,
+		mf_noicewall,
+		mf_nobranch,
+		mf_noreturn,
+		mf_nocommand;
+
+	for ( .@i = 0; .@i < getarraysize(.@mapflag); .@i++)
+		setmapflag "quiz_02", .@mapflag[.@i];
+	end;
+
+OnJoinEvent:
+	mes " [ Status do Evento ] ";
+	switch ( .start ) {
+		case 1: .@status$ = "ativo"; break;
+		case 2: .@status$ = "em andamento"; break;
+		default: .@status$ = "não ativo"; break;
+	}
+	mes "O evento está atualmente ^ff0000"+ .@status$ +"^000000";
+	next;
+	switch(select(
+		"Evento Bombring - "+ ((.start == 1) ? "^0000ffEntrar no Evento":((.start == 2) ? "^0000ffEvento em Andamento":"^ff0000Indisponível"))+"^000000" )) {
+	case 1:
+		if ( !.start ) {
+			mes "Evento não está disponível.";
+			close;
+		} else if ( .start == 2 ) {
+			mes "Evento está em andamento";
+			close;
+		}
+		if (checkriding()) { mes "Você não pode entrar com PecoPeco!"; end; }
+		if (countitem(12016) > 0) { mes "Você não pode entrar com Poção do Vento!"; end; }
+		if (countitem(12622) > 0) { mes "Você não pode entrar com Rédea!"; end; }
+		sc_end SC_ALL;
+		sc_start SC_DECREASEAGI,600000,10;
+		percentheal 100,100;
+		warp "quiz_02",59,345;
+	}
+	end;
+
+OnStart:
+// Adicione seus cronômetros aqui.
+OnClock0700:
+OnClock1500:
+OnClock2300:
+	if ( .start ) end;
+	.start = 1;
+	.round = 0;
+	killmonsterall "quiz_02";
+	announce "Bombring: Vamos ter um evento Bombring.",0;
+	sleep 10000;
+	announce "Bombring: Para quem quer participar, use @bomb",0;
+	sleep 10000;
+	announce "Bombring: Após 1 minuto, o evento será encerrado.",0;
+	sleep 10000;
+	announce "Bombring: Então, por favor, se você quer participar, use @bomb",0;
+	sleep 60000;
+	announce "Bombring: A entrada para o evento está agora fechada.",bc_all,0x0ceedb;
+	if ( getmapusers("quiz_02") < 1 ) {
+		announce "Bombring: Não há participantes suficientes.",bc_all,0x0ceedb;
+		.start = false;
+		mapwarp "quiz_02", "prontera", 150, 180; // saída.
+		end;
+	}
+	.start = 2;
+	sleep 3500;
+	mapannounce "quiz_02","Estamos prestes a começar o evento.",bc_map,0x0ceedb;
+	sleep 2500;
+	mapannounce "quiz_02","As regras são simples.",bc_map,0x0ceedb;
+	sleep 2000;
+	mapannounce "quiz_02","O evento durará 30 segundos por 5 rodadas no total.",bc_map,0x0ceedb;
+	sleep 2500;
+	mapannounce "quiz_02","Tudo o que você precisa fazer é evitar as Bombrings e permanecer vivo por 30 segundos.",bc_map,0x0ceedb;
+	sleep 2000;
+	mapannounce "quiz_02","Isso é tudo. Vamos começar.",bc_map,0x0ceedb;
+	sleep 3000;
+	while ( .round < 5 ) {
+		.@count = getmapusers("quiz_02");
+		.round++;
+		mapannounce "quiz_02","Rodada "+.round,bc_map,0x0ceedb;
+		areamonster "quiz_02",48,334,71,357,"Corra pela sua vida!",1904, 5 * .@count * .round;
+		sleep 10000 - ( 1000*.round );
+	}
+	.@count = getmapusers("quiz_02");
+	if ( !.@count )
+		announce "Bombring: Ninguém sobreviveu às Bombrings.",bc_all,0x0ceedb;
+	else if ( .@count ) {
+		.@size = getmapunits(BL_PC,"quiz_02",.@aid);
+		.@amt = getarraysize(.item);
+		if ( .@size > 1 ) announce "Muitos jogadores venceram o evento Bombring.",bc_all,0x0ceedb;
+		for ( .@i = 0; .@i < getarraysize(.@aid); .@i++) {
+			attachrid .@aid[.@i];
+			if ( .@size == 1 ) announce strcharinfo(0)+" venceu o evento Bombring.",bc_all,0x0ceedb;
+			for ( .@j = 0; .@j < .@amt; .@j += 2 )
+				getitem .item[.@j], .item[.@j+1];
+		}
+		detachrid;
+	}
+	.start = false;
+	sleep 5000;
+	mapwarp "quiz_02","prontera",rand(148,163),rand(167,186);
+	end;
+
+OnPCDieEvent:
+	if ( .start && strcharinfo(3) == "quiz_02" )
+		warp "prontera",rand(148,163),rand(167,186);
+	end;
+}
+
+que_temsky,61,136,5	script	Bombring	1904,{
+mes "Use o comando @bomb para participar do evento.";
+end;
+OnInit:
+		.@UID = getnpcid(0);
+		setunittitle(.@UID, "[ Estourou ]");
+		setunitdata .@UID, UNPC_GROUP_ID, 58;
+end;
+
+}

@@ -1,0 +1,93 @@
+//============================================================
+// NPC para mostrar o próximo evento no Waitroom
+//============================================================
+
+que_temsky,47,135,4	script	Time Evento	857,{
+	OnInit:
+		// Definindo a programação dos eventos
+		setarray .eventos$[0],
+			"00:00 - Zumbi vs Aprendiz",
+			"01:00 - Sortudo",
+			"02:00 - Poring Premiado",
+			"03:00 - Quiz Master",
+			"04:00 - Corrida Maluca",
+			"05:00 - Evento Sobrevivente",
+			"06:00 - Guerra do Tesouro",
+			"07:00 - Bombring",
+			"08:00 - Zumbi vs Aprendiz",
+			"09:00 - Sortudo",
+			"10:00 - Devill Square",
+			"11:00 - Quiz Master",
+			"12:00 - Corrida Maluca",
+			"13:00 - Evento Sobrevivente",
+			"14:00 - Poring Premiado",
+			"15:00 - Bombring",
+			"16:00 - Zumbi vs Aprendiz",
+			"17:00 - Sortudo",
+			"00:10 - Devill Square",
+			"19:00 - Quiz Master",
+			"20:00 - Corrida Maluca",
+			"21:00 - Evento Sobrevivente",
+			"22:00 - Guerra do Tesouro",
+			"23:00 - Bombring";
+
+		while (1) {
+			// Obtém a hora e minuto atual
+			set .@hour, gettime(3);
+			set .@minute, gettime(1);
+
+			// Calcula o índice do próximo evento
+			if (.@minute >= 2) {
+				set .@nextEventIndex, (.@hour + 1) % 24;
+			} else {
+				set .@nextEventIndex, .@hour;
+			}
+
+			// Define a mensagem com o próximo evento
+			set .@message$, .eventos$[.@nextEventIndex];
+
+			// Remove o chatroom existente, se houver
+			delwaitingroom;
+
+			// Cria um novo chatroom com a mensagem atualizada
+			waitingroom .@message$, 0;
+
+			// Espera 1 minuto antes de verificar novamente
+			sleep 60000;
+		}
+	end;
+}
+
+-	script	Comando Evento	-1,{
+OnInit:
+	unbindatcmd "evento";
+	bindatcmd "evento",strnpcinfo(3)+"::OnEvent",0,100;
+    	set .intervalo,0;	// Tempo de intervalo para usar o comando novamente
+	end;
+
+OnEvent:
+	if (strcharinfo(3) == "arena_room" || strcharinfo(3) == "prt_are_in" || strcharinfo(3) == "bat_c01") {
+		dispbottom "Você não pode usar este comando neste mapa.";
+		end;
+	}
+	warp "que_temsky",49,136;
+end;
+
+}
+
+-	script	Comando Eventos	-1,{
+OnInit:
+	unbindatcmd "eventos";
+	bindatcmd "eventos",strnpcinfo(3)+"::OnEvents",0,100;
+    	set .intervalo,0;	// Tempo de intervalo para usar o comando novamente
+	end;
+
+OnEvents:
+	if (strcharinfo(3) == "arena_room" || strcharinfo(3) == "prt_are_in" || strcharinfo(3) == "bat_c01") {
+		dispbottom "Você não pode usar este comando neste mapa.";
+		end;
+	}
+	warp "que_temsky",49,136;
+end;
+
+}

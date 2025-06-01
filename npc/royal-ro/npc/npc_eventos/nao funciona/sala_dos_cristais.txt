@@ -1,0 +1,356 @@
+//===== Izlude Games (Odin) =======================================
+//Sala dos Cristais
+//===== Description: =========================================
+//= Um evento onde você entra em uma sala com o objetivo de
+//= conseguir Fragmento de Cristal matando os Cristais que
+//= existem por lá, porém além da Fragmento de Cristal, há:
+//=  - 35% de chance de ser retirado da sala;
+//=  -  5% de chance de expulsão e voltar na rodada seguinte;
+//=  -  3% de chance de ganhar 2 Espectros Obscuros;
+//=  -  8% de chance de ganhar 1 Espectro Obscuro;
+//=  - 15% de chance de aumentar sua agilidade;
+//=  -  4% de chance de perder 1 Espectro Obscuro.
+//============================================================
+prontera,137,203,4	script	Sala dos Cristais	855,{
+mes "O que você deseja?";
+switch(select("Continuar:Ranking:Loja")) {
+	case 1:
+	next;
+	if(getgmlevel() > 79) {
+		onconf:
+		if(!$cr[0] || !$cr[1] || !$cr[2]) 
+			set(.@_CAINHO$, select("Menu Administrativo [CONFIGURAR!]"));
+		else 
+			set(.@_CAINHO$, select("Menu Administrativo:Menu do Jogador"));
+		if(@menu == 2) 
+			callsub(onplayer);
+		
+		while(set(.@_loop, 1)) {
+			mes("Painel de Configuração:");
+			mes("~ Lim. Jogadores Sala 1: "+$cr[0]);
+			mes("~ Lim. Jogadores Sala 2: "+$cr[1]);
+			mes("~ Lim. Jogadores Sala VIP: "+$cr[2]);
+			mes("~ BN para 1º Ranking: "+$cr[5]);
+			mes("~ Bonificação VIP: "+(($cr[4]) ? "Sim" : "Não"));
+			mes("~ Nv. VIP do Servidor: "+$cr[3]);
+			mes("~ Evento em andamento: "+(($ison) ? "^00FF00Em Andamento^000000" : "^FF0000Parado^000000"));
+			next();
+			switch(select("Lim. de Jogadores Sala 1:Lim. de Jogadores Sala 2:Lim. de Jogadores Sala VIP:BN para o 1º Ranking:Bonificação VIP:Nível VIP do Servidor:Iniciar Evento Manualmente:Finalizar Evento Manualmente:Sair")) {
+				case 1:
+				case 2:
+				case 3:
+					mes("["+strnpcinfo(1)+"]");
+					mes("Digite o limite de usuários na Sala "+((@menu == 3) ? "VIP" : @menu));
+					input(.@_mn, 0);
+					next();
+					mes("["+strnpcinfo(1)+"]");
+					mes("Lim. Jogadores Sala "+((@menu == 3) ? "VIP" : @menu)+": "+.@_mn);
+					set(.@_lastmenu, @menu);
+					select("Confirmar");
+					set($cr[.@_lastmenu-1], .@_mn);
+					next();
+					break;
+				case 4:
+					mes("["+strnpcinfo(1)+"]");
+					mes("Quantas Espectro Obscuro o 1º do ranking de \"kills\" de Cristal deve ganhar?");
+					input(.@_mn, 0);
+					next();
+					mes("["+strnpcinfo(1)+"]");
+					mes("BN para 1º Ranking: "+.@_mn);
+					select("Confirmar");
+					set($cr[5], .@_mn);
+					next();
+					break;
+				case 5:
+					mes("["+strnpcinfo(1)+"]");
+					mes("Jogadores VIP têm chances de drop nos cristais alteradas, favorecendo a eles?");
+					next();
+					select("Sim.:Não.");
+					set($cr[4], ((@menu == 2) ? 0 : 1));
+					next();
+					break;
+				case 6:
+					mes("["+strnpcinfo(1)+"]");
+					mes("Digite o nível da conta VIP no seu servidor:");
+					input(.@_mn, 0, 20);
+					next();
+					mes("["+strnpcinfo(1)+"]");
+					mes("Nível da Conta VIP: "+.@_mn);
+					select("Confirmar");
+					set($cr[3], .@_mn);
+					next();
+					break;
+				case 7: // Iniciar evento manualmente
+					if ($ison) {
+						mes("O evento já está em andamento.");
+					} else {
+						mes("Iniciando o evento manualmente.");
+						callsub(StartEvent);
+					}
+					next();
+					break;
+				case 8: // Finalizar evento manualmente
+					if (!$ison) {
+						mes("O evento já está parado.");
+					} else {
+						mes("Finalizando o evento manualmente.");
+						callsub(EndEvent);
+					}
+					next();
+					break;
+				case 9:
+					set(.@_loop, 0);
+					break;
+			}
+		}
+		close();
+	}
+	
+	onplayer:
+	mes("["+strnpcinfo(1)+"]");
+	if(!$ison) {
+		mes("A sala dos cristais está fechada.");
+		close();
+	}
+	mes("Posso te teleportar para várias salas onde existem cristais que, ao serem mortos, podem dropar Espectro Obscuro que poderá ser trocado por itens.");
+	next();
+	mes("["+strnpcinfo(1)+"]");
+	if((#trap)&&(#sct == $trapadd)) {
+		mes("Você caiu em uma armadilha de expulsão, volte na próxima rodada.");
+		close();
+	}
+	mes("Escolha a sala que você deseja entrar:");
+	next();
+	select("Sala Romana [^FF0000"+getmapusers("pvp_n_1-2")+"^000000/^008B00"+$cr[0]+"^000000]:Sala Grega [^FF0000"+getmapusers("pvp_n_2-2")+"^000000/^008B00"+$cr[1]+"^000000]:Sala VIP [^FF0000"+getmapusers("pvp_n_3-2")+"^000000/^008B00"+$cr[2]+"^000000]");
+	mes("["+strnpcinfo(1)+"]");
+	
+	if(getmapusers(((@menu == 1) ? "pvp_n_1-2" : ((@menu == 2) ? "pvp_n_2-2" : "pvp_n_3-2"))) >= $cr[@menu-1]) {
+		mes("Esta sala está lotada.");
+		close();
+	}
+	if(!$ison) {
+		mes("A sala dos cristais está fechada.");
+		close();
+	}
+	warp(((@menu == 1) ? "pvp_n_1-2" : ((@menu == 2) ? "pvp_n_2-2" : "pvp_n_3-2")), 0, 0);
+	end();
+
+	// Evento de 6 em 6 horas
+	onclock0400:onclock0800:onclock1200:onclock1600:onclock2000:onclock0000:
+		callsub(StartEvent);
+		end();
+
+	onclock0410:onclock0810:onclock1210:onclock1610:onclock2010:onclock0010:
+		callsub(EndEvent);
+		end();
+
+	// Início do evento
+	StartEvent:
+		if($ison) end();
+		if(!$cr[0] || !$cr[1] || !$cr[2]) {
+			announce("[Sala dos Cristais]: O evento não foi iniciado porque ainda não foi configurado.",bc_all,"0x00FFFF");
+			end();
+		}
+		set($ison, 1);
+		announce("[Sala dos Cristais]: A sala dos cristais está aberta por 10 minutos ou até destruírem todos os cristais!",bc_all,"0x00FFFF");
+		monster("pvp_n_1-2", 0, 0, "[SDC] Cristal", 1877, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_1-2", 0, 0, "[SDC] Cristal", 1953, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_1-2", 0, 0, "[SDC] Cristal", 1952, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_2-2", 0, 0, "[SDC] Cristal", 1877, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_2-2", 0, 0, "[SDC] Cristal", 1953, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_2-2", 0, 0, "[SDC] Cristal", 1952, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_3-2", 0, 0, "[SDC] Cristal", 1877, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_3-2", 0, 0, "[SDC] Cristal", 1953, 20, strnpcinfo(0)+"::onmobdie");
+		monster("pvp_n_3-2", 0, 0, "[SDC] Cristal", 1952, 20, strnpcinfo(0)+"::onmobdie");
+		end();
+
+	// Finalização do evento
+	EndEvent:
+		if(!$ison) end();
+		set($ison, 0);
+		announce("[Sala dos Cristais]: A sala dos cristais foi fechada!",bc_all,"0x00FFFF");
+		set($trapadd, $trapadd + 1);
+		for(set(.@_mn, 0); .@_mn < getarraysize($maps$); set(.@_mn, .@_mn + 1)) {
+			mapwarp($maps$[.@_mn], "prontera", 137, 197);
+			killmonsterall($maps$[.@_mn]);
+		}
+		end();
+
+	onmobdie:
+		query_sql("select `kills` from `cristais_by_calleb` where `char_id`='"+getcharid(0)+"'", .@_crk);
+		if(!getarraysize(.@_crk)) {
+			query_sql("insert into `cristais_by_calleb` (`char_id`, `name`, `kills`) values ('"+getcharid(0)+"','"+strcharinfo(0)+"','1')");
+		} else {
+			query_sql("update `cristais_by_calleb` set kills=kills+1 where `char_id`='"+getcharid(0)+"'");
+		}
+		specialeffect2(100);
+
+	// Gerar um número aleatório uma vez para garantir que as probabilidades sejam avaliadas corretamente
+	set .@rand, rand(100);
+
+	// 15% de chance de ser retirado da sala
+	if (.@rand < 15) {
+		announce("Que pena, você foi retirado da sala. Entre e tente novamente.",bc_self,"0x40E0D0");
+		warp("prontera", 137, 197);
+		end();
+	}
+
+	// 5% de chance de ser expulso e voltar na próxima rodada
+	else if (.@rand < 20) { // 15% já foi avaliado, então adicionamos os 5% à sequência
+		announce("Parabéns Você recebeu 1 Espectro Obscuro mas foi removido da Sala Entre e tente novamente .",bc_self,"0x40E0D0");
+		getitem(25126, 1);
+		sc_Start(52, 140000, 10); // Envenenar nv 10
+		warp("prontera", 137, 197);
+		end();
+	}
+
+	// 5% de chance de ganhar 2 bandeiras
+	else if (.@rand < 25) { // Agora estamos no intervalo de 20% a 25%
+		announce("Parabéns! Você recebeu 2 Espectros Obscuros!!",bc_self,"0x40E0D0");
+		getitem(25126, 2);
+		end();
+	}
+
+	// 15% de chance de ganhar 1 bandeira
+	else if (.@rand < 40) { // Agora no intervalo de 25% a 40%
+		announce("Parabéns! Você recebeu 1 Espectro Obscuro!!",bc_self,"0x40E0D0");
+		getitem(25126, 1);
+		end();
+	}
+
+	// 15% de chance de ganhar Aumentar Agilidade Nv. 10
+	else if (.@rand < 55) { // Agora no intervalo de 40% a 55%
+		announce("Parabéns! Você recebeu Aumentar Agilidade Nv.10!!",bc_self,"0x40E0D0");
+		sc_Start(32, 240000, 10); // Buff Aumentar Agilidade Nv. 10 por 4 minutos
+		skilleffect(29, 0);
+		end();
+	}
+
+	// 10% de chance de receber Diminuir Agilidade Nv. 10 (debuff)
+	else if (.@rand < 65) { // Agora no intervalo de 55% a 65%
+		announce("Que pena! Você recebeu Diminuir Agilidade Nv.10!!",bc_self,"0x40E0D0");
+		sc_Start(30, 240000, 10); // Debuff Diminuir Agilidade Nv. 10 por 4 minutos
+		skilleffect(30, 0);
+		end();
+	}
+
+	// 5% de chance de perder 1 bandeira
+	else if (.@rand < 70) { // Agora no intervalo de 65% a 70%
+		if (!countitem(25126)) {
+			announce("Que pena, você foi retirado da sala. Entre e tente novamente.",bc_self,"0x40E0D0");
+			warp("prontera", 137, 197);
+			end();
+		} else {
+			announce("Que pena! Você perdeu 1 Espectro Obscuro.",bc_self,"0x40E0D0");
+			delitem(25126, 1);
+			end();
+		}
+	}
+
+	// 30% de chance de não acontecer nada
+	else {
+		announce("Nada aconteceu dessa vez. Mais sorte na próxima!",bc_self,"0x40E0D0");
+		end();
+	}
+	
+	oninit:
+		waitingroom "Sala dos Cristais",0;
+		setarray($mf[0], 0, 1, 2, 5, 12, 13, 15, 22, 29, 30, 31, 33, 34, 35, 41);
+		setarray($maps$[0], "pvp_n_1-2", "pvp_n_2-2", "pvp_n_3-2");
+		for(set(.@_mn, 0); .@_mn<getarraysize($mf); set(.@_mn, .@_mn + 1)) {
+			setmapflag($maps$[0], $mf[.@_mn]);
+			setmapflag($maps$[1], $mf[.@_mn]);
+			setmapflag($maps$[2], $mf[.@_mn]);
+		}
+		end();
+
+
+
+case 2:
+next;
+	// Verificação de nível de GM
+	if (getgmlevel() > 79) {
+		mes("["+strnpcinfo(1)+"]");
+		mes("Bem-vindo ao painel administrativo do Ranking dos Cristais.");
+		next();
+		switch(select("Ver Ranking:Resetar Ranking:Sair")) {
+			case 1:
+				callsub ViewRanking;
+				close();
+				break;
+			case 2:
+				mes("["+strnpcinfo(1)+"]");
+				mes("Tem certeza de que deseja resetar o ranking?");
+				if(select("Não:Sim") == 2) {
+					query_sql("truncate table `cristais_by_calleb`");
+					announce("[Sala dos Cristais]: O ranking foi resetado manualmente por um administrador.",bc_all,"0xFF0000");
+					mes("O ranking foi resetado.");
+				} else {
+					mes("Nenhuma alteração foi feita.");
+				}
+				close();
+				break;
+			case 3:
+				mes("Saindo...");
+				close();
+				break;
+		}
+	} else {
+		// Jogadores normais acessam o menu de visualização do ranking ou loja
+		mes("["+strnpcinfo(1)+"]");
+		mes("Bem-vindo! O que deseja fazer?");
+		next();
+		switch(select("Ver Ranking:Sair")) {
+			case 1:
+				callsub ViewRanking;
+				close2;
+				break;
+			case 2:
+				mes("Saindo...");
+				close();
+				break;
+		}
+	}
+
+	// Subrotina para visualização do ranking
+	ViewRanking:
+	mes("["+strnpcinfo(1)+"]");
+	mes("Deseja ver o Ranking de quem mais destruiu os Cristais?");
+	mes("Todo o mês o primeiro do ranking ganha "+$cr[5]+" Espectro Obscuro.");
+	next();
+	query_sql("select `first` from `cristais_by_calleb`",.@_mn);
+	if (select("Ver Ranking"+(getcharid(0) == .@_mn ? ":Pegar Prêmio" : "")) == 2) {
+		mes("["+strnpcinfo(1)+"]");
+		if (checkweight(25126, $cr) == 0) {
+			mes("Você está pesado demais!");
+			close();
+		}
+		mes("Aqui está: "+$cr[5]+" Espectro Obscuro!");
+		close2();
+		getitem(25126, $cr[5]);
+		query_sql("update `cristais_by_calleb` set `first`=''");
+		end();
+	}
+	query_sql("select `kills`,`name` from `cristais_by_calleb` order by `kills` desc", .@_cki, .@_nm$);
+	for (set(.@_mn, 0); .@_mn < getarraysize(.@_cki); set(.@_mn, .@_mn + 1)) {
+		mes((.@_mn + 1) + "º | " + .@_nm$[.@_mn] + " | " + .@_cki[.@_mn] + " Kills");
+	}
+	close();
+	end;
+
+	// Reset automático do ranking todo início de mês
+	onday0102:onday0202:onday0302:onday0402:onday0502:onday0602:onday0702:onday0802:onday0902:onday1002:onday1102:onday1202:
+		query_sql("select `char_id`,`name` from `cristais_by_calleb` order by `kills` desc limit 1", .@_mn, .@_nmdx$);
+		query_sql("truncate table `cristais_by_calleb`");
+		query_sql("insert into `cristais_by_calleb` (`first`) values ('"+.@_mn+"')");
+		announce("[Sala dos Cristais]: O ranking foi resetado. O vencedor foi: "+.@_nmdx$, bc_all, "0x00FFFF");
+		end();
+
+case 3:
+next;
+		close2;
+		callshop "eventocristal",1;
+end;
+
+}
+}

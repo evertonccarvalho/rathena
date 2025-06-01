@@ -1,0 +1,5 @@
+que_temsky,47,126,5	script	Marechalaadx	45,1,1,{
+	warp "prontera",155,186;
+
+end;
+}

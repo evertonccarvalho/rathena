@@ -1,0 +1,12 @@
+prontera,158,178,5	script	Evento 7 de Setembro	-1,{
+
+mes "[ Evento 7 de Setembro ]";
+mes "Evento 7 de setembro foi concluído. Apenas a loja restou.";
+menu "Abrir loja",loja;
+
+loja:
+close2;
+callshop "eventosetembro", 1;
+end;
+
+}

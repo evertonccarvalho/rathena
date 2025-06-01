@@ -1,0 +1,365 @@
+dic_in01,365,282,6	script	Prisão dos Orcs	433,{
+
+mes "[Guarda da Prisão dos Orcs]";
+mes "Bem-Vindo para a porta da ^FF0000Prisão dos Orcs^000000";
+mes "Caro aventureiro, sabemos que os Orcs são criaturas destemíeis, porem conseguimos de alguma forma trancar eles...";
+mes "Bom... Conseguimos fazer uma espécie de 'Prisão' para eles, trancafiando-os em uma espécie de sala.";
+mes "Porem eventualmente eles irão atacar a entrada e nossas defesas não irão durar para sempre, porem você pode ajudar neste combate.";
+mes "Eu sei que esta jornada pode não ser facil, mas te garanto que no final temos uma recompensa a sua altura.";
+mes "Caso você queira entrar, basta dizer, também caso surja dúvidas? Fique a vontade, e claro se isso não for para você basta não aceitar.";
+next;
+menu "[»] Sim, quero entrar",-,"[»] Me de Informações",Info,"[»] Acho melhor não",Cancel;
+
+if(Baselevel < 40) goto LReq;
+if($inf == 1) goto L_go;
+goto L_eror;
+
+LReq:
+mes "[Guarda da Prisão dos Orcs]";
+mes "Vejo que está interessado, mas o nível necessário para ajudar neste confronto é no mínimo 40.";
+close;
+
+L_go:
+if (getmapusers("ordeal_1-1.gat")==90) goto toomany;
+announce "O aventureiro "+strcharinfo(0)+" acabou de entrar para defesa da Prisão dos Orcs",8;
+percentheal 100,100;
+dispbottom "Para Sair da Prisão dos Orcs basta [Relogar] ou Procurar o NPC [Saida!]";
+warp "ordeal_1-1",150,149;
+end;
+
+L_eror:
+mes "[Guarda da Prisão dos Orcs]";
+mes "Olá no momento, os guardas fecharam o portão da Prisão dos Orcs.";
+mes "Eventualmente esses malditos se soltam da prisão, fique sempre atento.";
+mes "Nós já estimamos alguns horários recorrentes quando surge esse tipo de problema, irei te falar.";
+mes "^FF0000Horas:^000000 10h, 16h, 19h";
+close;
+
+Info:
+mes "[Guarda da Prisão dos Orcs]";
+mes "Pelo visto você busca algumas informações úteis, vamos lá!";
+mes "Dentro da ^FF0000Prisão dos Orcs^000000 há 6 níveis de dificuldade.";
+mes "Cada nível ultrapassado, a dificuldade irá ficar cada vez maior !!";
+mes "Toda vez que essa onda de Orcs forem derrotados, cada vez mais irão surgir.";
+next;
+mes "[Guarda da Prisão dos Orcs]";
+mes "Lembrando que participar desta defesa não será fácil. Por isso, prepare-se leve seus suprimentos porquê é um caminho sem volta.";
+mes "Caso você consiga defender a ^FF0000Prisão dos Orcs^000000, será possível abrir ^FF8C0015 Caixas do Tesouro.^000000";
+mes "Garantindo a você alguns itens!!!";
+mes "Muito obrigado por participar, e desejo muita sorte a você, agora vamos lá";
+close;
+end;
+
+toomany:
+mes "[Guarda da Prisão dos Orcs]";
+mes "Mil perdões, porem o esquadrão já foi formado para a ^FF0000Prisão dos Orcs^000000 e está na sua lotação máxima!";
+mes "Peço que fique atento nas novas defesas que forem acontecer, existem horários que geralmente acontece isso.";
+mes "^FF0000Horas:^000000 04:00h, 14:00h, 23:00h";
+set $inf,1;
+close;
+end;
+
+Cancel:
+mes "[Guarda da Prisão dos Orcs]";
+mes "Até logo, te vejo ná próxima formação.";
+close;
+OnInit:
+
+    PUBTITLE:
+        showscript "Prisão dos Orcs";
+        sleep 3000;
+        goto PUBTITLE;
+end;
+}
+
+//Final da Prisão dos Orcs
+
+ordeal_1-1,182,183,5	script	Cek	-1,{
+
+OnTimer30000:
+if($status == 1) end;
+if (getmapusers("ordeal_1-1.gat") == 0) mapannounce "ordeal_1-1", "Guarda: NÂO! NÂO! NÂO! Isso não pode estar acontecendo a defesa foi quebrada, homens VOLTEM. Tentaremos na próxima vez.",8;
+if (getmapusers("ordeal_1-1.gat") == 0) set $status,1;
+if (getmapusers("ordeal_1-1.gat") == 0) killmonsterall "ordeal_1-1.gat";
+if (getmapusers("ordeal_1-1.gat") == 0) end;
+mapannounce "ordeal_1-1", getmapusers("ordeal_1-1.gat") + " jogadores estão defendendo a Prisão dos Orcs",8;
+initnpctimer;
+end;
+
+}
+
+ordeal_1-1,182,183,5	script	HiddenNpc	-1,{
+//Dias da Semana:
+//= 1= Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado e 0=Domingo
+
+	//A configuração está nessa parte:
+
+OnClock0400:
+OnClock1300:
+	//O Evento inicia nesses horários somente na Segunda, Quarta, Sexta e Sábado. Os demais não tem evento
+
+ds_ONE:
+Announce "Guarda da Prisão dos Orcs: Atenção aventureiros estamos convocando todos os guerreiros para defender a Prisão dos Orcs que irá acontecer neste local:[@evento]",8;
+Announce "Guarda da Prisão dos Orcs: Iremos formar um grupo gigantesco para impedir o avanço desses Orcs, partiremos em 5 MINUTOS, venham rápido após isso iremos fechar os portões.",8;
+disablenpc "Saída";
+initnpctimer;
+set $inf,1;
+set $status,0;
+killmonsterall "ordeal_1-1";
+end;
+
+OnTimer60000:
+Announce "Guarda da Prisão dos Orcs: A entrada para a Prisão dos Orcs está aberta, e em 4 minutos ele irá se fechar e iremos seguir em frente, Me encontre na sala de eventos",8;
+end;
+
+OnTimer120000:
+Announce "Guarda da Prisão dos Orcs: A entrada para a Prisão dos Orcs está aberta, e em 3 minutos ele irá se fechar e iremos seguir em frente, Me encontre na sala de eventos",8;
+end;
+
+OnTimer180000:
+Announce "Guarda da Prisão dos Orcs: A entrada para a Prisão dos Orcs está aberta, e em 2 minutos ele irá se fechar e iremos seguir em frente, Me encontre na sala de eventos",8;
+end;
+
+OnTimer240000:
+Announce "Guarda da Prisão dos Orcs: A entrada para a Prisão dos Orcs está aberta, e em 1 minutos ele irá se fechar e iremos seguir em frente, Me encontre na sala de eventos",8;
+end;
+
+OnTimer300000:
+mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Fechem a entrada da prisão os ORCS ESTÂO VINDO, PREPAREM-SE !!",8;
+mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Iremos descer as esscadas, não se assustem fiquem todos juntos.",8;
+mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Chegamos ao local, EM FORMAÇÂO PREPAREM-SE !!,",8;
+initnpctimer "Cek";
+set $inf,0;
+set $mob,410;
+atcommand "@skillon";
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Guerreiro Orc",1023,70,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead";
+areamonster "ordeal_1-1",117,181,53,245,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead";
+end;
+
+Ondevildead:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 100) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: ATENÇÂO! Restam apenas 100 monstros fiquem atentos",8;
+if($mob == 50) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: O que é isso? Restam apenas 50 monstros, porem vejo uma segunda onda chegando!",8;
+if($mob == 0) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Preparem-se! Está vindo a segunda ONDA DE ORCS, FIQUEM JUNTOS!",8;
+if($mob == 0) goto Ondevil2;
+end;
+
+Ondevil2:
+set $mob,435;
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Guerreiro Orc",1023,70,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Grand Orc",1213,5,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Guerreiro Orc",1023,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Lobo",1013,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Lobo",1013,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Grand Orc",1213,20,"HiddenNpc::Ondevildead2";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Grand Orc",1213,20,"HiddenNpc::Ondevildead2";
+end;
+
+Ondevildead2:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 434) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Que estranho, esses Grand Orcs estavam aqui antes? Não me lembro.",8;
+if($mob == 50) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Droga! isso era uma armadilha, existe um necromante nesta sala !!",8;
+if($mob == 25) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Reunam-se todos no centro, todos os Orcs que matamos até agora estão voltando como Zumbis, isso é terrivel !!",8;
+if($mob == 0) goto Ondevil3;
+end;
+
+Ondevil3:
+set $mob,370;
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Orc Zumbi",1023,70,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",182,118,246,52,"[DS]  Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",150,128,149,173,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",182,118,246,52,"[DS]  Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",150,128,149,173,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",182,118,246,52,"[DS]  Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",150,128,149,173,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",182,118,246,52,"[DS]  Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",150,128,149,173,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Orc Zumbi",1153,20,"HiddenNpc::Ondevildead3";
+end;
+
+Ondevildead3:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 100) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Malditos!, tivemos muitas baixas nesse ataque, não esperava isso, mas ainda estamos em maior número.",8;
+if($mob == 50) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Parece que a brincadeira acabou, nós pensavamos que prender eles aqui seria uma boa idéia, mas eles estavam mais preparados que nunca!",8;
+if($mob == 0) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Preparem-se lá vem eles, parece um grupo de elite, façam uma formação defensiva",8;
+if($mob == 0) goto Ondevil4;
+end;
+
+Ondevil4:
+set $mob,290;
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Grand Orc",1023,50,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Grand Orc",1213,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Grand Orc",1213,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Grand Orc",1213,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Grand Orc",1213,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Grand Orc",1213,30,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Orc Arqueiro",1189,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Orc Arqueiro",1189,20,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Orc Arqueiro",1189,30,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Orc Arqueiro",1189,30,"HiddenNpc::Ondevildead4";
+areamonster "ordeal_1-1",197,150,273,250,"[DS] Orc Arqueiro",1189,30,"HiddenNpc::Ondevildead4";
+end;
+
+Ondevildead4:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 70) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Todos estão bem? Ainda estamos sofrendo um ataque pesado, pelo visto mandaram seus melhores guerreiros.",8;
+if($mob == 40) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Estamos quase lá não devem durar muito.",8;
+if($mob == 1) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Hahahahahahaaaaaa!!! Esperem.... O que é isso? Os ossos estão se movendo... Mas que coisa bizarra é essa? PREPAREM-SE!",8;
+if($mob == 0) goto Ondevil5;
+end;
+
+Ondevil5:
+set $mob,350;
+areamonster "ordeal_1-1",150,150,150,150,"[DS]     Orc Lord",1190,1,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",150,150,0,0,"[DS] Orc Esqueleto",1177,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Orc Esqueleto",1152,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Zenorc",1177,10,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Orc Esqueleto",1152,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Zenorc",1177,10,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",102,149,25,149,"[DS] Orc Esqueleto",1152,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Zenorc",1177,10,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Orc Esqueleto",1152,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Zenorc",1177,10,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",149,101,150,25,"[DS] Orc Esqueleto",1152,50,"HiddenNpc::Ondevildead5";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]  Zenorc",1177,10,"HiddenNpc::Ondevildead5";
+end;
+
+Ondevildead5:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 145) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Mas que bizarro, tenho a impressão que isso não tem fim...",8;
+if($mob == 85) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: É uma pilha de ossos gigantesca, vamos lá pessoal estamos quase lá! ",8;
+if($mob == 50) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Finalmente parece que está acabando, mas eles ainda são numerosos",8;
+if($mob == 25) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Vitória nossa! Eliminem o restante, parem essa Horda de mortos vivos e monstros bizarros...",8;
+if($mob == 1) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: O que estou vendo aqui?... Um ser grande não consigo ver nessa pilha de ossos mas parece problema e dos grandes, PREPAREM-SE!",8;
+if($mob == 0) goto Ondevil6;
+end;
+
+Ondevil6:
+set $mob,461;
+areamonster "ordeal_1-1",150,150,150,150,"[DS]     Orc Herói",1087,1,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",149,149,25,149,"[DS] Guerreiro Orc",1023,70,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",102,149,25,149,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",102,149,25,149,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",102,149,25,149,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",117,117,53,53,"[DS]   Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",149,101,150,25,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",102,149,25,149,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",149,197,149,274,"[DS] Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",117,181,53,245,"[DS]  Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+areamonster "ordeal_1-1",183,182,246,244,"[DS] Guerreiro Orc",1023,30,"HiddenNpc::Ondevildead6";
+end;
+
+Ondevildead6:
+if ($status == 1) end;
+set $mob,$mob-1;
+if($mob == 540) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Imaginava que isso estaria acontecendo não era possível...",8;
+if($mob == 120) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Eles possuíam um líder, e parece muito forte, ele é diferente dos outros.",8;
+if($mob == 100) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Mantenham a formação!",8;
+if($mob == 50) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Estamos quase lá pessoal, vamos derrotar essa horda de Orcs e voltar para casa.",8;
+if($mob == 10) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Falta pouco, eu tenho esperanças, essa defesa para conter os Orcs, está dando certo!",8;
+if($mob == 1) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Resta apenas 1 Orc, vamos acabar juntos com ele, a vitória é nossa!",8;
+if($mob == 0) mapannounce "ordeal_1-1", "Guarda da Prisão dos Orcs: Conseguimos parar o avanço deles, obrigado a todos que compareceram, aqui está algumas recompensas a vocês, aguardo vocês em uma próxima defesa.(s).",8;
+if($mob == 0) goto Ondevilfinal;
+end;
+
+Ondevilfinal:
+set $mob,30;
+mapannounce "ordeal_1-1", "Os baús de premiação apareceram no centro da prisão.",8;
+atcommand "@skilloff";
+monster "ordeal_1-1",155,141,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",152,141,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",149,141,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",146,141,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",141,145,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",141,148,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",141,151,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",141,154,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",145,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",148,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",148,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",148,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",148,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",151,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",154,158,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",158,155,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",158,151,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",158,149,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+monster "ordeal_1-1",158,146,"Caixa do Tesouro",1325,1,"HiddenNpc::Onboxdead";
+enablenpc "Saída";
+end;
+
+Onboxdead:
+if ($status == 1) end;
+set $mob,$mob-1;
+set .quantidade, rand(1, 17);
+getitem 35015, .quantidade;
+warp "prontera", 156, 191;
+Announce "Prisão dos Orcs: " + strcharinfo(0) +" Abriu a Caixa do Tesouro.",8;
+if($mob == 0) set $status,0;
+end;
+
+}
+
+// -- Mapflags de "ordeal_1-1" (Mapa do DS)
+ordeal_1-1	mapflag	nowarp
+ordeal_1-1	mapflag	nowarpto
+ordeal_1-1	mapflag	noteleport
+ordeal_1-1	mapflag	nosave	SavePoint
+ordeal_1-1	mapflag	nomemo
+//ordeal_1-1	mapflag	pvp
+ordeal_1-1	mapflag	nobranch
+ordeal_1-1	mapflag	nopenalty
+// -- Fim dos Mapflags
+
+ordeal_1-1,156,138,3	script	Saída	105,{
+mes "[Guarda da Prisão dos Orcs]";
+mes "Você foi incrível nesta defesa, espero ver você em breve, pois uma hora eles irão tentar invadir os portões novamente.";
+next;
+warp "prontera", 156, 191;
+close;
+}
