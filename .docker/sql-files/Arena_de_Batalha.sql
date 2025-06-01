@@ -33,9 +33,8 @@ CREATE TABLE IF NOT EXISTS `ranking_pvp_reset` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NULL DEFAULT NULL,
   `char_id` int(11) NOT NULL,
-  `char_name` varchar(255) NOT NULL,
   `Data` varchar(255) NOT NULL,
-  `Premio?` enum('Sim','NÃ£o') NOT NULL,
+  `Premio?` enum('Sim','Não') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -44,9 +43,15 @@ CREATE TABLE IF NOT EXISTS `ranking_gvg_reset` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NULL DEFAULT NULL,
   `char_id` int(11) NOT NULL,
-  `char_name` varchar(255) NOT NULL,
   `Data` varchar(255) NOT NULL,
-  `Premio?` enum('Sim','NÃ£o') NOT NULL,
+  `Premio?` enum('Sim','Não') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+
+CREATE TABLE IF NOT EXISTS `ranking_pvp_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Assassino` VARCHAR(30) NOT NULL,
+  `Alvo` VARCHAR(30) NOT NULL,
+  `Data` VARCHAR(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

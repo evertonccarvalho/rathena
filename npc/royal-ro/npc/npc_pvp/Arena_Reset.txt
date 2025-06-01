@@ -1,11 +1,11 @@
 //==============================================================
-//        _____ _           _ _                   
-//       / ____| |         | (_)                  
-//      | |  __| | __ _  __| |_ _   _ ___         
-//      | | |_ | |/ _` |/ _` | | | | / __|        
-//      | |__| | | (_| | (_| | | |_| \__ \        
-//       \_____|_|\__,_|\__,_|_|\__,_|___/        
-//                                                  
+//        _____ _           _ _
+//       / ____| |         | (_)
+//      | |  __| | __ _  __| |_ _   _ ___
+//      | | |_ | |/ _` |/ _` | | | | / __|
+//      | |__| | | (_| | (_| | | |_| \__ \
+//       \_____|_|\__,_|\__,_|_|\__,_|___/
+//
 //===== rAthena Script =========================================
 //= Arena PvP Normal, Extreme (Sem Ygg) e GVG
 //= Ranking Top 10 PvP e GvG
@@ -32,7 +32,7 @@
 
 -	script	auto_pvp_reset	-1,{
 
-.nomeserver$ = getvariableofnpc(.servername$,"Arena de Batalha");
+.servername$ = getvariableofnpc(.servername$,"Arena de Batalha");
 
 OnDay0101:		// Janeiro
 OnDay0201:		// Fevereiro
@@ -50,57 +50,74 @@ OnDay1201:		// Dezembro
 //================================================
 //= PvP
 
-	query_sql "SELECT `char_id`, `char_name` FROM `ranking_pvp` ORDER BY `Total` DESC LIMIT 3",.@char_id, .@nome$;	
-	announce "[Arena de Batalha] : Ranking PvP resetado automaticamente. Premiação entregue para os jogadores: "+.@nome$[0]+", "+.@nome$[1]+" e "+.@nome$[2]+".", bc_all, 0xFF10FF;
-	query_sql "INSERT INTO `ranking_pvp_reset` (`account_id`, `char_id`, `Data`, `Premio?`) VALUES ('2000000', '"+.nomeserver$+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim')";
-	
-	.@sender$ = .nomeserver$+ "(PVP)";
-	.@title$ = "Prêmio Ranking PvP";
-	.@body$ = "Você está recebendo sua premiação por estar entre os três melhores jogadores do Ranking PvP deste mês!";
-	.@zeny = 0;
-		
-	.@maxmailitem_pvp = getvariableofnpc(.maxmailitem_pvp,"Arena de Batalha");
-	
-	for(.@e = 0; .@e < .@maxmailitem_pvp; .@e++){
-		.@mailitem_pvp[.@e] = getvariableofnpc(.mailitem_pvp[.@e],"Arena de Batalha");
-		.@mailamount_pvp[.@e] = getvariableofnpc(.mailamount_pvp[.@e],"Arena de Batalha");
-	}
-	
-	for (.@i = 0; .@i < 3; .@i++) { 
-		mail .@char_id[.@i], .@sender$, .@title$, .@body$, .@zeny, .@mailitem_pvp, .@mailamount_pvp;
-	}
-	
-	query_sql "truncate table ranking_pvp";
-	atcommand "@refreshall";
-	end;
+    // Obter top 3 PvP
+    query_sql "SELECT `char_id`, `char_name` FROM `ranking_pvp` ORDER BY `Total` DESC LIMIT 3", .@char_id, .@nome$;
+
+    // Verificar se há jogadores suficientes
+    if (getarraysize(.@char_id) < 3) {
+        announce "[Arena de Batalha] : Ranking PvP resetado, mas menos de 3 jogadores qualificados para premiação.", bc_all, 0xFF10FF;
+    } else {
+        announce "[Arena de Batalha] : Ranking PvP resetado automaticamente. Premiação entregue para os jogadores: "+.@nome$[0]+", "+.@nome$[1]+" e "+.@nome$[2]+".", bc_all, 0xFF10FF;
+
+        // Registrar no log
+        query_sql "INSERT INTO `ranking_pvp_reset` (`account_id`, `char_id`, `char_name`, `Data`, `Premio?`) VALUES "+
+                  "(2000000, "+.@char_id[0]+", '"+escape_sql(.@nome$[0])+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim'), "+
+                  "(2000000, "+.@char_id[1]+", '"+escape_sql(.@nome$[1])+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim'), "+
+                  "(2000000, "+.@char_id[2]+", '"+escape_sql(.@nome$[2])+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim')";
+
+        // Configurar prêmios PvP
+        .@sender$ = .servername$+" (PVP)";
+        .@title$ = "Prêmio Ranking PvP";
+        .@body$ = "Você está recebendo sua premiação por estar entre os três melhores jogadores do Ranking PvP deste mês!";
+        .@zeny = 0;
+
+        // Enviar prêmios
+        for (.@i = 0; .@i < 3; .@i++) {
+            if (.@char_id[.@i] > 0) {
+                // Aqui você precisará definir os itens de premiação
+                // Exemplo: .@mailitem_pvp[0] = 501; // ID do item
+                //          .@mailamount_pvp[0] = 1; // Quantidade
+                mail .@char_id[.@i], .@sender$, .@title$, .@body$, .@zeny, .@mailitem_pvp, .@mailamount_pvp;
+            }
+        }
+    }
+
+    query_sql "TRUNCATE TABLE `ranking_pvp`";
+    atcommand "@refreshall";
 
 //================================================
 //= GvG
 
-	query_sql "SELECT `guild_id`, `guild_name` FROM `ranking_gvg` ORDER BY `Total` DESC LIMIT 1",.@guild_id, .@nome$;	
-	announce "[Arena de Batalha] : Ranking GvG resetado automaticamente. Premiação entregue para o Guild Líder do clã: "+.@name_guildm$+".", bc_all, 0xFF10FF;
-	query_sql "INSERT INTO `ranking_gvg_reset`  (`account_id`, `char_id`, `Data`, `Premio?`) VALUES ('2000000', '"+.nomeserver$+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim')";
-	
-	.@char_id = getguildmasterid(.@guild_id[.@i]);
-	.@name_guildm$ = getguildmaster(.@guild_id[.@i]);
-	
-	.@sender$ = .nomeserver$ +"(GvG)";
-	.@title$ = "Prêmio Ranking GvG";
-	.@body$ = "Você está recebendo essa premiação por sua Guilda ser a melhor posicionada no Ranking GvG deste mês!";
-	.@zeny = 0;
-	
-	.@maxmailitem_gvg = getvariableofnpc(.maxmailitem_gvg,"Arena de Batalha");
-	
-	for(.@e = 0; .@e < .@maxmailitem_gvg; .@e++){
-		.@mailitem_gvg[.@e] = getvariableofnpc(.mailitem_pvp[.@e],"Arena de Batalha");
-		.@mailamount_gvg[.@e] = getvariableofnpc(.mailamount_gvg[.@e],"Arena de Batalha");
-	}
-	
-	for (.@i = 0; .@i < 3; .@i++) { 
-		mail .@char_id[.@i], .@sender$, .@title$, .@body$, .@zeny, .@mailitem_gvg, .@mailamount_gvg;
-	}
-	
-	query_sql "truncate table ranking_gvg";
-	end;
+    // Obter top 1 GvG
+    query_sql "SELECT `guild_id`, `guild_name` FROM `ranking_gvg` ORDER BY `Total` DESC LIMIT 1", .@guild_id, .@guild_name$;
 
+    if (getarraysize(.@guild_id) > 0) {
+        .@char_id = getguildmasterid(.@guild_id);
+        .@name_guildm$ = getguildmaster(.@guild_id);
+
+        announce "[Arena de Batalha] : Ranking GvG resetado automaticamente. Premiação entregue para o Guild Líder do clã: "+.@guild_name$+".", bc_all, 0xFF10FF;
+
+        // Registrar no log
+        query_sql "INSERT INTO `ranking_gvg_reset` (`account_id`, `char_id`, `char_name`, `Data`, `Premio?`) VALUES "+
+                  "(2000000, "+.@char_id+", '"+escape_sql(.@name_guildm$)+"', '"+gettimestr("%d/%m/%Y - %H:%M:%S", 25)+"', 'Sim')";
+
+        // Configurar prêmios GvG
+        .@sender$ = .servername$ + " (GvG)";
+        .@title$ = "Prêmio Ranking GvG";
+        .@body$ = "Você está recebendo essa premiação por sua Guilda ser a melhor posicionada no Ranking GvG deste mês!";
+        .@zeny = 0;
+
+        // Enviar prêmio
+        if (.@char_id > 0) {
+            // Aqui você precisará definir os itens de premiação GvG
+            // Exemplo: .@mailitem_gvg[0] = 502; // ID do item
+            //          .@mailamount_gvg[0] = 1; // Quantidade
+            mail .@char_id, .@sender$, .@title$, .@body$, .@zeny, .@mailitem_gvg, .@mailamount_gvg;
+        }
+    } else {
+        announce "[Arena de Batalha] : Ranking GvG resetado, mas nenhuma guilda qualificada para premiação.", bc_all, 0xFF10FF;
+    }
+
+    query_sql "TRUNCATE TABLE `ranking_gvg`";
+    end;
 }

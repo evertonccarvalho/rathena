@@ -152,5 +152,10 @@ Body:
       Buy: 1000
       Weight: 0
 
-
+    - Id: 35015
+      AegisName: 신년선물봉투
+      Name: Fragmento de Evento
+      Type: Etc
+      Buy: 1000
+      Weight: 0
 

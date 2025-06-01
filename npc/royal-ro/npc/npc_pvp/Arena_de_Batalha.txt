@@ -32,12 +32,12 @@
 -	pointshop	pontospvp	-1,#PONTOS_PVP,31803:200;31803:200;31885:200;
 //==============================================================
 
-prontera,158,193,5	script	Arena de Batalha	417,{	goto NPC_PVP;
+prontera,186,211,5	script	Arena de Batalha	417,{	goto NPC_PVP;
 
 //==============================================================
 // Configurações
 OnInit:
-
+.NPCName$ = callfunc("F_NpcInitStatus", "PVP", 13);
 //==============================================================
 // Nome do NPC
 	set .np$,"^00B2EE["+strnpcinfo(1)+"]^000000";
@@ -60,7 +60,7 @@ OnInit:
 
 //==============================================================
 // Configurações de MAPA
-	set .servername$, "Odin";	// Nome do Servidor
+	set .servername$, "Royal-RO";	// Nome do Servidor
 	set .pvpnormal$, "guild_vs2";	// PvP Normal
 	set .pvpextreme$, "guild_vs4";	// PvP Extreme
 	set .gvgnormal$, "guild_vs1";	// GvG Normal
