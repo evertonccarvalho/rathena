@@ -1,0 +1,431 @@
+prontera,177,159,3	script	Encantador de Itens#25	10385,{
+	disable_items;
+
+	// Menu principal com categorias
+	mes .n$;
+	mes "Olá, ^008aff"+strcharinfo(0)+"^000000. Sou o ^FF6600Mestre do Encantamento^000000 responsável por encantar os seus ^FF0000Equipamentos^000000!";
+	mes "Aqui você poderá ^9964f2Encantar^000000 qualquer equipamento com opções aleatórias.";
+	next;
+	mes .n$;
+	mes "Que tipo de equipamento você deseja encantar hoje?";
+	mes "^777777Custo: 500.000 zeny por encantamento^000000";
+
+	switch(select("^0084ff[»]^000000 Armas:^0084ff[»]^000000 Armaduras:^0084ff[»]^000000 Botas:^0084ff[»]^000000 Capas:^2a2a2a[»]^000000 Lista de Itens")) {
+		case 1: // Armas (submenu)
+			next;
+			mes .n$;
+			mes "Que tipo de arma você deseja encantar?";
+			mes "^777777Todas as armas podem receber 2 opções aleatórias.^000000";
+
+			switch(select("^FF6600[»]^000000 Armas Físicas:^FF6600[»]^000000 Armas de Distância:^FF6600[»]^000000 Armas Mágicas")) {
+				case 1: // Armas Físicas
+					next;
+					mes .n$;
+					mes "Você escolheu encantar uma ^9964f2Arma Física^000000.";
+					mes "Por favor, equipe a arma que deseja encantar.";
+					.@tipo_grupo = 1;
+					break;
+
+				case 2: // Armas de Distância
+					next;
+					mes .n$;
+					mes "Você escolheu encantar uma ^9964f2Arma de Distância^000000.";
+					mes "Por favor, equipe a arma que deseja encantar.";
+					.@tipo_grupo = 2;
+					break;
+
+				case 3: // Armas Mágicas
+					next;
+					mes .n$;
+					mes "Você escolheu encantar uma ^9964f2Arma Mágica^000000.";
+					mes "Por favor, equipe a arma que deseja encantar.";
+					.@tipo_grupo = 3;
+					break;
+			}
+			break;
+
+		case 2: // Armaduras
+			next;
+			mes .n$;
+			mes "Você escolheu encantar uma ^9964f2Armadura^000000.";
+			mes "Por favor, equipe a armadura que deseja encantar.";
+			mes "^777777As armaduras podem receber 1 opção aleatória.^000000";
+			.@tipo_grupo = 4;
+			break;
+
+		case 3: // Botas
+			next;
+			mes .n$;
+			mes "Você escolheu encantar ^9964f2Botas^000000.";
+			mes "Por favor, equipe as botas que deseja encantar.";
+			mes "^777777As botas podem receber 1 opção aleatória.^000000";
+			.@tipo_grupo = 5;
+			break;
+
+		case 4: // Capas
+			next;
+			mes .n$;
+			mes "Você escolheu encantar uma ^9964f2Capa^000000.";
+			mes "Por favor, equipe a capa que deseja encantar.";
+			mes "^777777As capas podem receber 1 opção aleatória.^000000";
+			.@tipo_grupo = 6;
+			break;
+
+		case 5: // Lista de Itens
+			next;
+			mes .n$;
+			mes "Aqui está a lista de tipos de itens que posso encantar:";
+			next;
+			mes .n$;
+			mes "• ^FF6600Armas:^000000";
+			mes "  - ^9964f2Físicas^000000 (Espadas, Adagas, Machados, etc.)";
+			mes "  - ^9964f2Distância^000000 (Arcos, Armas de Fogo)";
+			mes "  - ^9964f2Mágicas^000000 (Livros, Cajados, etc.)";
+			next;
+			mes .n$;
+			mes "• ^FF6600Armaduras^000000 (Peitorais)";
+			mes "• ^FF6600Botas^000000 (Calçados)";
+			mes "• ^FF6600Capas^000000 (Mantos)";
+			next;
+			mes .n$;
+			mes "^777777Armas podem receber 2 opções aleatórias.";
+			mes "Armaduras, botas e capas recebem 1 opção aleatória.^000000";
+			close;
+	}
+
+	// Verificar equipamentos
+	.@exist = false;
+	.@m1$ = "";
+
+	// Verificar slots de equipamento relevantes com base no tipo escolhido
+	if (.@tipo_grupo == 1) {
+		// Para armas físicas, verificar slot de arma
+		if (getequipisequiped(EQI_HAND_R)) {
+			.@id = getequipid(EQI_HAND_R);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se é uma arma física (não arco, não arma de fogo, não livro, não cajado)
+			if (.@tipo_item == IT_WEAPON &&
+				.@subtipo_item != W_BOW &&
+				.@subtipo_item != W_GUN &&
+				.@subtipo_item != W_BOOK &&
+				.@subtipo_item != W_STAFF) {
+				.@m1$ += "Arma - [^9964f2" + getequipname(EQI_HAND_R) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_HAND_R;
+			} else {
+				.@m1$ += "Arma - [^FF0000" + getequipname(EQI_HAND_R) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma arma equipada^000000";
+		}
+	} else if (.@tipo_grupo == 2) {
+		// Para armas de distância, verificar slot de arma
+		if (getequipisequiped(EQI_HAND_R)) {
+			.@id = getequipid(EQI_HAND_R);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se é uma arma de distância (arco ou arma de fogo)
+			if (.@tipo_item == IT_WEAPON &&
+				(.@subtipo_item == W_BOW || .@subtipo_item == W_GUN)) {
+				.@m1$ += "Arma - [^9964f2" + getequipname(EQI_HAND_R) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_HAND_R;
+			} else {
+				.@m1$ += "Arma - [^FF0000" + getequipname(EQI_HAND_R) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma arma equipada^000000";
+		}
+	} else if (.@tipo_grupo == 3) {
+		// Para armas mágicas, verificar slot de arma
+		if (getequipisequiped(EQI_HAND_R)) {
+			.@id = getequipid(EQI_HAND_R);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se é uma arma mágica (livro ou cajado)
+			if (.@tipo_item == IT_WEAPON &&
+				(.@subtipo_item == W_BOOK || .@subtipo_item == W_STAFF)) {
+				.@m1$ += "Arma - [^9964f2" + getequipname(EQI_HAND_R) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_HAND_R;
+			} else {
+				.@m1$ += "Arma - [^FF0000" + getequipname(EQI_HAND_R) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma arma equipada^000000";
+		}
+	} else if (.@tipo_grupo == 4) {
+		// Para armaduras, verificar slot de armadura
+		if (getequipisequiped(EQI_ARMOR)) {
+			.@id = getequipid(EQI_ARMOR);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se é uma armadura
+			if (.@tipo_item == IT_ARMOR && .@subtipo_item == A_ARMOR) {
+				.@m1$ += "Armadura - [^9964f2" + getequipname(EQI_ARMOR) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_ARMOR;
+			} else {
+				.@m1$ += "Armadura - [^FF0000" + getequipname(EQI_ARMOR) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma armadura equipada^000000";
+		}
+	} else if (.@tipo_grupo == 5) {
+		// Para botas, verificar slot de sapatos
+		if (getequipisequiped(EQI_SHOES)) {
+			.@id = getequipid(EQI_SHOES);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se são botas
+			if (.@tipo_item == IT_ARMOR && .@subtipo_item == A_SHOES) {
+				.@m1$ += "Botas - [^9964f2" + getequipname(EQI_SHOES) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_SHOES;
+			} else {
+				.@m1$ += "Botas - [^FF0000" + getequipname(EQI_SHOES) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma bota equipada^000000";
+		}
+	} else if (.@tipo_grupo == 6) {
+		// Para capas, verificar slot de capa
+		if (getequipisequiped(EQI_GARMENT)) {
+			.@id = getequipid(EQI_GARMENT);
+			.@tipo_item = getiteminfo(.@id, ITEMINFO_TYPE);
+			.@subtipo_item = getiteminfo(.@id, ITEMINFO_SUBTYPE);
+
+			// Verificar se é uma capa
+			if (.@tipo_item == IT_ARMOR && .@subtipo_item == A_GARMENT) {
+				.@m1$ += "Capa - [^9964f2" + getequipname(EQI_GARMENT) + "^000000]";
+				.@exist = true;
+				.@eq = EQI_GARMENT;
+			} else {
+				.@m1$ += "Capa - [^FF0000" + getequipname(EQI_GARMENT) + "^000000] (Tipo incorreto)";
+			}
+		} else {
+			.@m1$ += "^FF0000Nenhuma capa equipada^000000";
+		}
+	}
+
+	if (!.@exist) {
+		next;
+		mes .n$;
+		mes "Você deve equipar o item correto para o tipo selecionado!";
+		mes "Status: " + .@m1$;
+		close;
+	}
+
+	next;
+	mes .n$;
+	mes "Item selecionado: [^9964f2" + getequipname(.@eq) + "^000000]";
+	next;
+
+	// Verificar se já tem random options
+	if (getequiprandomoption(.@eq, 0, ROA_ID)) {
+		next;
+		mes .n$;
+		mes "Este item já possui opções aleatórias.";
+		mes "Deseja reencantá-lo? ^FF0000(As opções atuais serão substituídas)^000000";
+		if (select("^FF6600[»]^000000 Sim:^2a2a2a[»]^000000 Não") == 2) {
+			mes .n$;
+			mes "Ok, até a próxima!";
+			close;
+		}
+	}
+
+	// Custo fixo de 500k zeny
+	.@zeny = 500000;
+
+	// Mostrar custos
+	mes .n$;
+	mes "^FF6600==== Custo do Encantamento ====^000000";
+	mes "Zenys: ^9964f2" + .@zeny + "^000000";
+	next;
+
+	mes .n$;
+	mes "Você gostaria de continuar com o encantamento?";
+	if (select("^FF6600[»]^000000 Sim, quero encantar:^2a2a2a[»]^000000 Não, vou pensar melhor") == 2) {
+		mes .n$;
+		mes "Ok, volte quando estiver pronto!";
+		close;
+	}
+
+	// Verificar recursos
+	if (Zeny < .@zeny) {
+		mes .n$;
+		mes "^FF0000Você não tem zenys suficientes!^000000";
+		mes "São necessários ^9964f2" + .@zeny + "^000000 zenys para este encantamento.";
+		close;
+	}
+
+	// Salvar informações do item
+	.@r = getequiprefinerycnt(.@eq);
+	for (.@i = 0; .@i < 4; .@i++) {
+		if (getequipcardid(.@eq, .@i)) {
+			setd ".@c" + .@i, getequipcardid(.@eq, .@i);
+		}
+	}
+
+	// Definir opções aleatórias com base no tipo de equipamento
+	if (.@tipo_grupo == 1) { // Armas Físicas
+		// Primeira opção aleatória
+		switch(rand(13)) {
+			case 0: .@opt_id[0] = RDMOPT_RACE_DAMAGE_NOTHING; .@opt_val[0] = rand(1, 5); break;
+			case 1: .@opt_id[0] = RDMOPT_RACE_DAMAGE_UNDEAD; .@opt_val[0] = rand(1, 5); break;
+			case 2: .@opt_id[0] = RDMOPT_RACE_DAMAGE_ANIMAL; .@opt_val[0] = rand(1, 5); break;
+			case 3: .@opt_id[0] = RDMOPT_RACE_DAMAGE_PLANT; .@opt_val[0] = rand(1, 5); break;
+			case 4: .@opt_id[0] = RDMOPT_RACE_DAMAGE_INSECT; .@opt_val[0] = rand(1, 5); break;
+			case 5: .@opt_id[0] = RDMOPT_RACE_DAMAGE_FISHS; .@opt_val[0] = rand(1, 5); break;
+			case 6: .@opt_id[0] = RDMOPT_RACE_DAMAGE_DEVIL; .@opt_val[0] = rand(1, 5); break;
+			case 7: .@opt_id[0] = RDMOPT_RACE_DAMAGE_HUMAN; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_RACE_DAMAGE_ANGEL; .@opt_val[0] = rand(1, 5); break;
+			case 9: .@opt_id[0] = RDMOPT_RACE_DAMAGE_DRAGON; .@opt_val[0] = rand(1, 5); break;
+			case 10: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_SMALL_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 11: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_MIDIUM_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 12: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_LARGE_TARGET; .@opt_val[0] = rand(1, 5); break;
+		}
+
+		// Segunda opção aleatória
+		switch(rand(4)) {
+			case 0: .@opt_id[1] = RDMOPT_VAR_ATTPOWER; .@opt_val[1] = rand(10, 20); break;
+			case 1: .@opt_id[1] = RDMOPT_VAR_PLUSASPDPERCENT; .@opt_val[1] = rand(1, 5); break;
+			case 2: .@opt_id[1] = RDMOPT_VAR_HITSUCCESSVALUE; .@opt_val[1] = rand(10, 20); break;
+			case 3: .@opt_id[1] = RDMOPT_VAR_CRITICALSUCCESSVALUE; .@opt_val[1] = rand(5, 10); break;
+		}
+	} else if (.@tipo_grupo == 2) { // Armas de Distância
+		// Primeira opção aleatória
+		switch(rand(14)) {
+			case 0: .@opt_id[0] = RDMOPT_RACE_DAMAGE_NOTHING; .@opt_val[0] = rand(1, 5); break;
+			case 1: .@opt_id[0] = RDMOPT_RACE_DAMAGE_UNDEAD; .@opt_val[0] = rand(1, 5); break;
+			case 2: .@opt_id[0] = RDMOPT_RACE_DAMAGE_ANIMAL; .@opt_val[0] = rand(1, 5); break;
+			case 3: .@opt_id[0] = RDMOPT_RACE_DAMAGE_PLANT; .@opt_val[0] = rand(1, 5); break;
+			case 4: .@opt_id[0] = RDMOPT_RACE_DAMAGE_INSECT; .@opt_val[0] = rand(1, 5); break;
+			case 5: .@opt_id[0] = RDMOPT_RACE_DAMAGE_FISHS; .@opt_val[0] = rand(1, 5); break;
+			case 6: .@opt_id[0] = RDMOPT_RACE_DAMAGE_DEVIL; .@opt_val[0] = rand(1, 5); break;
+			case 7: .@opt_id[0] = RDMOPT_RACE_DAMAGE_HUMAN; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_RACE_DAMAGE_ANGEL; .@opt_val[0] = rand(1, 5); break;
+			case 9: .@opt_id[0] = RDMOPT_RACE_DAMAGE_DRAGON; .@opt_val[0] = rand(1, 5); break;
+			case 10: .@opt_id[0] = RDMOPT_RANGE_ATTACK_DAMAGE_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 11: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_SMALL_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 12: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_MIDIUM_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 13: .@opt_id[0] = RDMOPT_DAMAGE_SIZE_LARGE_TARGET; .@opt_val[0] = rand(1, 5); break;
+		}
+
+		// Segunda opção aleatória
+		switch(rand(3)) {
+			case 0: .@opt_id[1] = RDMOPT_VAR_CRITICALSUCCESSVALUE; .@opt_val[1] = rand(5, 10); break;
+			case 1: .@opt_id[1] = RDMOPT_VAR_HITSUCCESSVALUE; .@opt_val[1] = rand(10, 20); break;
+			case 2: .@opt_id[1] = RDMOPT_VAR_PLUSASPDPERCENT; .@opt_val[1] = rand(1, 5); break;
+		}
+	} else if (.@tipo_grupo == 3) { // Armas Mágicas
+		// Primeira opção aleatória
+		switch(rand(13)) {
+			case 0: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_NOTHING; .@opt_val[0] = rand(1, 5); break;
+			case 1: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_UNDEAD; .@opt_val[0] = rand(1, 5); break;
+			case 2: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_ANIMAL; .@opt_val[0] = rand(1, 5); break;
+			case 3: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_PLANT; .@opt_val[0] = rand(1, 5); break;
+			case 4: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_INSECT; .@opt_val[0] = rand(1, 5); break;
+			case 5: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_FISHS; .@opt_val[0] = rand(1, 5); break;
+			case 6: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_DEVIL; .@opt_val[0] = rand(1, 5); break;
+			case 7: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_HUMAN; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_ANGEL; .@opt_val[0] = rand(1, 5); break;
+			case 9: .@opt_id[0] = RDMOPT_RACE_IGNORE_MDEF_PERCENT_DRAGON; .@opt_val[0] = rand(1, 5); break;
+			case 10: .@opt_id[0] = RDMOPT_MDAMAGE_SIZE_SMALL_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 11: .@opt_id[0] = RDMOPT_MDAMAGE_SIZE_MIDIUM_TARGET; .@opt_val[0] = rand(1, 5); break;
+			case 12: .@opt_id[0] = RDMOPT_MDAMAGE_SIZE_LARGE_TARGET; .@opt_val[0] = rand(1, 5); break;
+		}
+
+		// Segunda opção aleatória
+		switch(rand(4)) {
+			case 0: .@opt_id[1] = RDMOPT_DEC_SPELL_CAST_TIME; .@opt_val[1] = rand(1, 5); break;
+			case 1: .@opt_id[1] = RDMOPT_DEC_SPELL_DELAY_TIME; .@opt_val[1] = rand(1, 5); break;
+			case 2: .@opt_id[1] = RDMOPT_HEAL_MODIFY_PERCENT; .@opt_val[1] = rand(5, 10); break;
+			case 3: .@opt_id[1] = RDMOPT_VAR_MAGICATKPERCENT; .@opt_val[1] = rand(5, 10); break;
+		}
+	} else if (.@tipo_grupo == 4) { // Armaduras - apenas 1 opção
+		switch(rand(9)) {
+			case 0: .@opt_id[0] = RDMOPT_VAR_STRAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 1: .@opt_id[0] = RDMOPT_VAR_AGIAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 2: .@opt_id[0] = RDMOPT_VAR_VITAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 3: .@opt_id[0] = RDMOPT_VAR_INTAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 4: .@opt_id[0] = RDMOPT_VAR_DEXAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 5: .@opt_id[0] = RDMOPT_VAR_LUKAMOUNT; .@opt_val[0] = rand(1, 3); break;
+			case 6: .@opt_id[0] = RDMOPT_VAR_MAXHPAMOUNT; .@opt_val[0] = rand(200, 360); break;
+			case 7: .@opt_id[0] = RDMOPT_VAR_ITEMDEFPOWER; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_VAR_MDEFPOWER; .@opt_val[0] = rand(1, 5); break;
+		}
+	} else if (.@tipo_grupo == 5) { // Botas - apenas 1 opção
+		switch(rand(13)) {
+			case 0: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_NOTHING; .@opt_val[0] = rand(1, 5); break;
+			case 1: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_UNDEAD; .@opt_val[0] = rand(1, 5); break;
+			case 2: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_ANIMAL; .@opt_val[0] = rand(1, 5); break;
+			case 3: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_PLANT; .@opt_val[0] = rand(1, 5); break;
+			case 4: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_INSECT; .@opt_val[0] = rand(1, 5); break;
+			case 5: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_FISHS; .@opt_val[0] = rand(1, 5); break;
+			case 6: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_DEVIL; .@opt_val[0] = rand(1, 5); break;
+			case 7: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_HUMAN; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_ANGEL; .@opt_val[0] = rand(1, 5); break;
+			case 9: .@opt_id[0] = RDMOPT_ADDEXPPERCENT_KILLRACE_DRAGON; .@opt_val[0] = rand(1, 5); break;
+			case 10: .@opt_id[0] = RDMOPT_VAR_MAXSPAMOUNT; .@opt_val[0] = rand(20, 40); break;
+			case 11: .@opt_id[0] = RDMOPT_VAR_PLUSASPDPERCENT; .@opt_val[0] = rand(1, 5); break;
+			case 12: .@opt_id[0] = RDMOPT_HEAL_MODIFY_PERCENT; .@opt_val[0] = rand(5, 10); break;
+		}
+	} else if (.@tipo_grupo == 6) { // Capas - apenas 1 opção
+		switch(rand(14)) {
+			case 0: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_NOTHING; .@opt_val[0] = rand(1, 5); break;
+			case 1: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_WATER; .@opt_val[0] = rand(1, 5); break;
+			case 2: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_GROUND; .@opt_val[0] = rand(1, 5); break;
+			case 3: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_FIRE; .@opt_val[0] = rand(1, 5); break;
+			case 4: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_WIND; .@opt_val[0] = rand(1, 5); break;
+			case 5: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_POISON; .@opt_val[0] = rand(1, 5); break;
+			case 6: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_SAINT; .@opt_val[0] = rand(1, 5); break;
+			case 7: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_DARKNESS; .@opt_val[0] = rand(1, 5); break;
+			case 8: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_TELEKINESIS; .@opt_val[0] = rand(1, 5); break;
+			case 9: .@opt_id[0] = RDMOPT_ATTR_TOLERACE_UNDEAD; .@opt_val[0] = rand(1, 5); break;
+			case 10: .@opt_id[0] = RDMOPT_VAR_AVOIDSUCCESSVALUE; .@opt_val[0] = rand(5, 10); break;
+			case 11: .@opt_id[0] = RDMOPT_VAR_PLUSAVOIDSUCCESSVALUE; .@opt_val[0] = rand(1, 5); break;
+			case 12: .@opt_id[0] = RDMOPT_VAR_ITEMDEFPOWER; .@opt_val[0] = rand(1, 5); break;
+			case 13: .@opt_id[0] = RDMOPT_VAR_MDEFPOWER; .@opt_val[0] = rand(1, 5); break;
+		}
+	}
+
+	// Verificar recursos novamente (anti-hack)
+	if (Zeny < .@zeny) close;
+
+	// Cobrar recursos
+	Zeny -= .@zeny;
+
+	// Efeito visual e barra de progresso
+	next;
+	mes .n$;
+	mes "Iniciando o processo de encantamento...";
+	progressbar "ffff00", 3;
+	specialeffect2 EF_REFINEOK;
+
+	// Remover o equipamento atual
+	delequip(.@eq);
+
+	// Criar o novo item com opções aleatórias
+	getitem3(.@id, 1, 1, .@r, 0, .@c0, .@c1, .@c2, .@c3, .@opt_id, .@opt_val, .@null);
+
+	// Equipar o novo item automaticamente
+	equip(.@id);
+
+	mes .n$;
+	mes "^FF6600Encantamento concluído com sucesso!^000000";
+	end;
+
+OnInit:
+	set .n$, "^FF6600[ Mestre do Encantamento ]^000000";
+	delwaitingroom;
+	waitingroom "[ Random Options ]", 0;
+	.NPCName$ = "Encantador de Itens";
+	end;
+}
