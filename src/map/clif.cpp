@@ -22342,14 +22342,17 @@ void clif_ui_open( map_session_data& sd, enum out_ui_type ui_type, int32 data ){
 void clif_parse_open_ui( int32 fd, map_session_data* sd ){
 	switch( RFIFOB(fd,2) ){
 		case IN_UI_ATTENDANCE:
-			if( !pc_has_permission( sd, PC_PERM_ATTENDANCE ) ){
-				clif_messagecolor( &sd->bl, color_table[COLOR_RED], msg_txt( sd, 791 ), false, SELF ); // You are not allowed to use the attendance system.
-			}else if( pc_attendance_enabled() ){
-				clif_ui_open( *sd, OUT_UI_ATTENDANCE, pc_attendance_counter( sd ) );
-			}else{
-				clif_msg_color( *sd, MSI_CHECK_ATTENDANCE_NOT_EVENT, color_table[COLOR_RED] );
-			}
-			break;
+				if (sd) {
+					if (sd->npc_id || sd->vender_id || sd->state.trading || sd->state.storage_flag)
+						break;
+					{
+						struct npc_data *nd;
+						nd = npc_name2id("RECOMPENSA_DR");
+						if (nd == NULL) break;
+						run_script(nd->u.scr.script, 0, sd->bl.id, nd->bl.id);
+					}
+				}
+				break;
 #if PACKETVER >= 20160316
 		case IN_UI_MACRO_REGISTER:
 			clif_ui_open(*sd, OUT_UI_CAPTCHA, 0);

@@ -1,0 +1,156 @@
+//===== Descrição: =========================================
+//= Um sistema de recompensa para os jogadores que jogam com mais frequência
+//============================================================
+
+-	script	LOGIN	-1,{
+OnWhisperGlobal:
+OnLoginCmnd:
+OnPCLoginEvent:
+	if(.Rest) message strcharinfo(0),"[Recompensa Diária]: Para receber sua recompensa você deve permanecer conectado por "+  .Rest +" minutos";
+	.@i = (gettime(7) * 365 * 24 * 60) + (gettime(8) * 24 * 60) + (gettime(3) * 60) +gettime(2);
+	if(.@i >= (#LastDailyReward + .MinWait)){
+		sleep2 1000 + .Rest * 60000;
+		if(.@i < #LastDailyReward + .MaxWait){
+			#DRewardCon += 1;
+		} else { #DRewardCon = 1; }
+		if(#DRewardCon >= getarraysize(.Rewards$)){
+			if(.Reset){ #DRewardCon = 1; }
+			else { .@g = getarraysize(.Rewards$)-1; }
+		} else {	.@g = #DRewardCon;	}
+		explode(.@XT$,.Rewards$[.@g],",");
+		for(.@x = 0; .@x < getarraysize(.@XT$); .@x++){
+			.@TT[.@x] = atoi(.@XT$[.@x]);
+		}
+		if(.Mode & 1 && .@TT[4] > 0){
+			for(.@x = 4; .@x <= getarraysize(.@TT) - 1 ; .@x += 2){
+				.@itms[getarraysize(.@itms)] = .@TT[.@x];
+				.@qnts[getarraysize(.@qnts)] = .@TT[.@x + 1];
+			}
+			if(checkweight2(.@itms,.@qnts)){
+				for(.@x = 0; .@x < getarraysize(.@itms) && .@x < getarraysize(.@qnts); .@x++){
+					getitem  .@itms[.@x], .@qnts[.@x];
+				}
+			} else {
+				message strcharinfo(0),"[Recompensa Diária]: Você está acima do peso permitido guarde seus equipamentos e relogue.";
+				if(#DRewardCon) #DRewardCon -= 1;
+				end;
+			}
+		}
+		if(.Mode & 16){
+			cutin .Cutins$[#DRewardCon],4;
+		}
+		if(.Mode & 2){
+			if(.@TT[0]){
+				zeny += .@TT[0];
+				message strcharinfo(0),"[Recompensa Diária]: Você recebeu "+ .@TT[0] +"zeny";
+			}
+			if(.@TT[1]){
+				setd getd(.Points$[0]),getd(.Points$[0]) + .@TT[1];
+				message strcharinfo(0),"[Recompensa Diária]: Você recebeu "+ .@TT[1] +" "+.Points$[1];
+			}
+		}
+		if(.Mode & 4 && (.@TT[3] || .@TT[4]))
+			getexp .@TT[3], .@TT[4];
+		if(.Mode & 8){
+			for(.@x = 0; .@x < getarraysize(.BuffInfo); .@x += 4){
+				if(#DRewardCon % .BuffInfo[.@x + 1] == 0)
+					sc_start .BuffInfo[.@x], .BuffInfo[.@x + 2] * 60000, .BuffInfo[.@x + 3];
+			}
+		}
+		message strcharinfo(0),"[Recompensa Diária]: Vôcê recebeu sua recompensa diária por logar "+callfunc("F_InsertPlural",#DRewardCon,"dia")+" consecutivos.";
+		#LastDailyReward = .@i;
+		@Login_Time = 0;
+	} else {
+		.@days = (#LastDailyReward + .MinWait - .@i)/60/24;
+		.@hours = ((#LastDailyReward + .MinWait - .@i)/60)%24;
+		.@mins = (#LastDailyReward + .MinWait - .@i)%60;
+		message strcharinfo(0),"[Recompensa Diária]: Aguarde "+ ((.@days) ? .@days +" Dias, " : "") +""+ ((.@hours) ? .@hours +" Horas e " : "") +""+ ((.@mins) ? .@mins +" Minutos " : "") +"para receber sua nova recompensa.";
+	}
+end;
+OnInit:
+	// Configurações Básicas
+	//   1: Item | 2: Pontos | 4: Exp
+	//   8: Ganha buffs por logar a cada x dias consecutivos
+	//   16: Mostrar Cutim
+	//     (a bit value, e.g. 3 = Items & Points from Multi)
+	.Mode = 1|2|4|8|16;
+
+	// Para desativar o comando ' @loginreward ' comentar as próximas linhas
+	// * Comandos necessários para erro de digitação
+	bindatcmd("recompensa"	,"LOGIN::OnLoginCmnd",0,99);
+
+	// Tempo em minutos para receber a Recompensa Diária
+	//   Dia: 22*60 - 24*60
+	//   Semana: 10080
+	.MinWait = 1320;
+
+	// Minutos para perder a Recompensa Consecutiva
+	//   Dia: 48*60 - 50*60
+	//   Semana: 20160
+	.MaxWait = 3000;
+
+	// Resetar
+	//   [0] Repetir último dia
+	//   [1] Resetar quando alcançar o útimo dia
+	.Reset = 1;
+
+	// Tempo online antes de receber a Recompensa
+	.Rest = 0;
+
+	// Tipos de Pontos
+	//   [0] Pontos Ganhos
+	//   [1] Nome do Ponto
+	setarray .Points$,"#KAFRAPOINTS","K-Points";
+
+	// Buffs por dias consecutivos
+	// Cada Buff contém 4 variáveis (32 Total Max)
+	// <Tipo>,<Dias>,<Duração>,<Rate>, // Buff 1
+	// <Tipo>,<Dias>,<Duração>,<Rate>, // Buff 2
+	//   ...;
+	//
+	//  Exemplo: 188,7,45,3
+	//    - A cada 7 dias consecutivos o jogador irá ganhar +3 de STR por 45 minutos
+	//
+	//  Tipo 188 é, quais as referencias que SC_ vai usar, SC_INCSTR neste exemplo
+	//     - Para uma lista completa de SC_ visite db/const.txt
+	//  Dias é os dias de buff aplicado, neste exemplo 7, assim será a cada 7 dias, 14,21,28....
+	//	Duração é a quantidade de tempo que o buff irá durar, neste exemplo 45 minutos
+	//  Rate é o nível do buff, neste exemplo o player irá ganhar +3 Str
+	setarray .BuffInfo
+				,260,2,360,1	// Seguro de Vida por 360 Minutos, a cada 2 dias consecutivos
+				,198,3,120,10	// +10% Hp por 120 Minutos, a cada 3 dias consecutivos
+				,196,5,120,25	// +25 Flee por 120 Minutos, a cada 5 dias consecutivos
+				,257,7,240,50;	// +50% Exp por 240 Minutos, a cada 7 dias consecutivos
+
+	// Itens Recompensa Diária (Max 128 dias):
+	//   "<Zeny>|<Pontos>|<BaseExp>|<JobExp>|<itemID-1>|<quantidade-1>|<itemID-2>|<quantidade-2>...etc", // Dia 1
+	//   "<Zeny>|<Pontos>|<BaseExp>|<JobExp>|<itemID-1>|<quantidade-1>|<itemID-2>|<quantidade-2>...etc"  // Dia 2
+	//   ...;
+	// Comprimento total de qualquer seqüência de dias deve ser 255 ou mais curto
+	// * Se os jogadores sessão mais longa do que o último dia set, eles vão continuar a receber o último prêmio.
+	setarray .Rewards$[1],
+		"0,0,0,0,503,5,506,5",			// Dia 1: 5 Poção Branca + 5 Poção Verde
+		"0,0,0,0,501,50",					// Dia 2: 100 Zeny
+		"0,0,0,0,501,5",			// Dia 3: 5 Poção Vermelha
+		"0,0,0,0,503,5,506,5",			// Dia 4: 5 Poção Branca + 5 Poção Verde
+		"100",					// Dia 5: 100 Zeny
+		"0,0,0,0,501,5",			// Dia 6: 5 Poção Vermelha
+		"1000",					// Dia 7: 1000 Zeny
+		"1000",					// Dia 8: 1000 Zeny
+		"0,0,0,0,503,5,506,5";			// Dia 9: 5 Poção Branca + 5 Poção Verde
+
+	// Cutin Array
+	//	Mostra uma cutin para cada dia
+	//
+	setarray .Cutins$[1],
+			"dia01",
+			"dia02",
+			"dia03",
+			"dia04",
+			"dia05",
+			"dia06",
+			"dia07",
+			"dia08",
+			"dia09";
+end;
+}

@@ -1,0 +1,148 @@
+-	Script	RECOMPENSA_DR	-1,{
+
+if(#Logindayrio < gettime(DT_YYYYMMDD))
+	{
+		if(gettime(DT_DAYOFMONTH) == 1 && #LD_Count > 0) set #LD_Count,0;
+		
+		set #LD_Count,#LD_Count+1;
+		switch(#LD_Count)
+		{
+			case 1:		cutin .Pic$[1],4; sleep2 1100; if(checkweight(.Rewards[0],.Rewards[1]))		getitem .Rewards[0],.Rewards[1]; else callsub S_SMail,.Rewards[0],.Rewards[1]; break;			
+			case 2:		cutin .Pic$[2],4; sleep2 1100; if(checkweight(.Rewards[2],.Rewards[3]))		getitem .Rewards[2],.Rewards[3]; else callsub S_SMail,.Rewards[2],.Rewards[3]; break;
+			case 3:		cutin .Pic$[3],4; sleep2 1100; if(checkweight(.Rewards[4],.Rewards[5]))		getitem .Rewards[4],.Rewards[5]; else callsub S_SMail,.Rewards[4],.Rewards[5]; break;
+			case 4:		cutin .Pic$[4],4; sleep2 1100; if(checkweight(.Rewards[6],.Rewards[7]))		getitem .Rewards[6],.Rewards[7]; else callsub S_SMail,.Rewards[6],.Rewards[7]; break;
+			case 5:		cutin .Pic$[5],4; sleep2 1100; if(checkweight(.Rewards[8],.Rewards[9]))		getitem .Rewards[8],.Rewards[9]; else callsub S_SMail,.Rewards[8],.Rewards[9]; break;
+			case 6:		cutin .Pic$[6],4; sleep2 1100; if(checkweight(.Rewards[10],.Rewards[11]))	getitem .Rewards[10],.Rewards[11]; else callsub S_SMail,.Rewards[10],.Rewards[11]; break;
+			case 7:		cutin .Pic$[7],4; sleep2 1100; if(checkweight(.Rewards[12],.Rewards[13]))	getitem .Rewards[12],.Rewards[13]; else callsub S_SMail,.Rewards[12],.Rewards[13]; break;
+			case 8:		cutin .Pic$[8],4; sleep2 1100; if(checkweight(.Rewards[14],.Rewards[15]))	getitem .Rewards[14],.Rewards[15]; else callsub S_SMail,.Rewards[14],.Rewards[15]; break;
+			case 9:		cutin .Pic$[9],4; sleep2 1100; if(checkweight(.Rewards[16],.Rewards[17]))	getitem .Rewards[16],.Rewards[17]; else callsub S_SMail,.Rewards[16],.Rewards[17]; break;
+			case 10:	cutin .Pic$[10],4; sleep2 1100; if(checkweight(.Rewards[18],.Rewards[19]))	getitem .Rewards[18],.Rewards[19]; else callsub S_SMail,.Rewards[18],.Rewards[19]; break;
+			case 11:	cutin .Pic$[11],4; sleep2 1100; if(checkweight(.Rewards[20],.Rewards[21]))	getitem .Rewards[20],.Rewards[21]; else callsub S_SMail,.Rewards[20],.Rewards[21]; break;
+			case 12:	cutin .Pic$[12],4; sleep2 1100; if(checkweight(.Rewards[22],.Rewards[23]))	getitem .Rewards[22],.Rewards[23]; else callsub S_SMail,.Rewards[22],.Rewards[23]; break;
+			case 13:	cutin .Pic$[13],4; sleep2 1100; if(checkweight(.Rewards[24],.Rewards[25]))	getitem .Rewards[24],.Rewards[25]; else callsub S_SMail,.Rewards[24],.Rewards[25]; break;
+			case 14:	cutin .Pic$[14],4; sleep2 1100; if(checkweight(.Rewards[26],.Rewards[27]))	getitem .Rewards[26],.Rewards[27]; else callsub S_SMail,.Rewards[26],.Rewards[27]; break;
+			case 15:	cutin .Pic$[15],4; sleep2 1100; if(checkweight(.Rewards[28],.Rewards[29]))	getitem .Rewards[28],.Rewards[29]; else callsub S_SMail,.Rewards[28],.Rewards[29]; break;
+			case 16:	cutin .Pic$[16],4; sleep2 1100; if(checkweight(.Rewards[30],.Rewards[31]))	getitem .Rewards[30],.Rewards[31]; else callsub S_SMail,.Rewards[30],.Rewards[31]; break;
+			case 17:	cutin .Pic$[17],4; sleep2 1100; if(checkweight(.Rewards[32],.Rewards[33]))	getitem .Rewards[32],.Rewards[33]; else callsub S_SMail,.Rewards[32],.Rewards[33]; break;
+			case 18:	cutin .Pic$[18],4; sleep2 1100; if(checkweight(.Rewards[34],.Rewards[35]))	getitem .Rewards[34],.Rewards[35]; else callsub S_SMail,.Rewards[34],.Rewards[35]; break;
+			case 19:	cutin .Pic$[19],4; sleep2 1100; if(checkweight(.Rewards[36],.Rewards[37]))	getitem .Rewards[36],.Rewards[37]; else callsub S_SMail,.Rewards[36],.Rewards[37]; break;
+			case 20:	cutin .Pic$[20],4; sleep2 1100; if(checkweight(.Rewards[38],.Rewards[39]))	getitem .Rewards[38],.Rewards[39]; else callsub S_SMail,.Rewards[38],.Rewards[39]; break;
+			case 21:	cutin .Pic$[21],4; sleep2 1100; if(checkweight(.Rewards[40],.Rewards[41]))	getitem .Rewards[40],.Rewards[41]; else callsub S_SMail,.Rewards[40],.Rewards[41]; break;
+			case 22:	cutin .Pic$[22],4; sleep2 1100; if(checkweight(.Rewards[42],.Rewards[43]))	getitem .Rewards[42],.Rewards[43]; else callsub S_SMail,.Rewards[42],.Rewards[43]; break;
+			case 23:	cutin .Pic$[23],4; sleep2 1100; if(checkweight(.Rewards[44],.Rewards[45]))	getitem .Rewards[44],.Rewards[45]; else callsub S_SMail,.Rewards[44],.Rewards[45]; break;
+			case 24:	cutin .Pic$[24],4; sleep2 1100; if(checkweight(.Rewards[46],.Rewards[47]))	getitem .Rewards[46],.Rewards[47]; else callsub S_SMail,.Rewards[46],.Rewards[47]; break;
+			case 25:	cutin .Pic$[25],4; sleep2 1100; if(checkweight(.Rewards[48],.Rewards[49]))	getitem .Rewards[48],.Rewards[49]; else callsub S_SMail,.Rewards[48],.Rewards[49]; break;
+			case 26:	cutin .Pic$[26],4; sleep2 1100; if(checkweight(.Rewards[50],.Rewards[51]))	getitem .Rewards[50],.Rewards[51]; else callsub S_SMail,.Rewards[50],.Rewards[51]; break;
+			case 27:	cutin .Pic$[27],4; sleep2 1100; if(checkweight(.Rewards[52],.Rewards[53]))	getitem .Rewards[52],.Rewards[53]; else callsub S_SMail,.Rewards[52],.Rewards[53]; break;
+			case 28:	cutin .Pic$[28],4; sleep2 1100; if(checkweight(.Rewards[54],.Rewards[55]))	getitem .Rewards[54],.Rewards[55]; else callsub S_SMail,.Rewards[54],.Rewards[55]; break;
+			case 29:	cutin .Pic$[29],4; sleep2 1100; if(checkweight(.Rewards[56],.Rewards[57]))	getitem .Rewards[56],.Rewards[57]; else callsub S_SMail,.Rewards[56],.Rewards[57]; break;
+			case 30:	cutin .Pic$[30],4; sleep2 1100; if(checkweight(.Rewards[58],.Rewards[59]))	getitem .Rewards[58],.Rewards[59]; else callsub S_SMail,.Rewards[58],.Rewards[59]; break;
+		}
+		
+		set #Logindayrio,gettime(DT_YYYYMMDD);
+		sleep2 5000;
+		cutin "",255;	
+	}
+	else
+	{
+		if(@picture > 0){
+		cutin "",255;
+		set @picture,0;
+		end;
+		}
+		//message strcharinfo(0),"[Daily Rewards]: You have already collected today's reward!";
+		dispbottom "[Daily Rewards]: You have already collected today's reward!";
+		cutin .Pic$[#LD_Count+1],4;
+		set @picture,1;
+		
+		
+	}	
+	end;
+	
+S_SMail:
+
+	set .@charid,getcharid(0);
+	set .@name$,strcharinfo(0);
+	set .@sender$,"[ Recompensas Diárias ]";
+	set .@title$,"Full Inventory!";
+	set .@body$,"Your inventory was full, here's your reward!";
+	setarray .@mailitem[0],getarg(0); 
+	setarray .@mailamount[0],getarg(1);
+	setarray .@mailcard0[0],0;
+	setarray .@mailcard1[0],0;
+	setarray .@mailcard2[0],0;
+	mail .@charid,.@sender$,.@title$,.@body$,0,.@mailitem,.@mailamount,.@mailcard0,.@mailcard1,.@mailcard2;
+	message .@name$,"[ Daily Rewards]: Full inventory, reward sent to your Mail!";
+	return;
+
+OnInit:
+
+	//ID,qtd (rewards)
+	//* the player will win the item as he logs in, if he fails to log in one day he will not skip the sequence, will continue where he left off.
+	setarray .Rewards[0],
+	607,10,	//item day 1
+	608,15,	//item day 2
+	609,25,	//item day 3
+	610,30,	//item day 4
+	611,35,	//item day 5
+	612,45,	//item day 6
+	613,10,	//item day 7
+	614,15,	//item day 8
+	615,25,	//item day 9
+	616,30,	//item day 10
+	617,35,	//item day 11
+	618,45,	//item day 12
+	619,10,	//item day 13
+	620,15,	//item day 14
+	621,25,	//item day 15
+	622,30,	//item day 16
+	623,35,	//item day 17
+	624,45,	//item day 18
+	625,10,	//item day 19
+	626,15,	//item day 20
+	627,25,	//item day 21
+	628,30,	//item day 22
+	629,35,	//item day 23
+	630,45,	//item day 24
+	631,10,	//item day 25
+	632,15,	//item day 26
+	633,25,	//item day 27
+	634,30,	//item day 28
+	635,35,	//item day 29
+	30000,1;	//item day 30
+
+	//images Cutins
+	setarray .Pic$[1],
+	"day1", //imagem day 1
+	"day2", //imagem day 2
+	"day3", //imagem day 3
+	"day4", //imagem day 4
+	"day5", //imagem day 5
+	"day6", //imagem day 6
+	"day7", //imagem day 7
+	"day8", //imagem day 8
+	"day9", //imagem day 9
+	"day10", //imagem day 10
+	"day11", //imagem day 11
+	"day12", //imagem day 12
+	"day13", //imagem day 13
+	"day14", //imagem day 14
+	"day15", //imagem day 15
+	"day16", //imagem day 16
+	"day17", //imagem day 17
+	"day18", //imagem day 18
+	"day19", //imagem day 19
+	"day20", //imagem day 20
+	"day21", //imagem day 21
+	"day22", //imagem day 22
+	"day23", //imagem day 23
+	"day24", //imagem day 24
+	"day25", //imagem day 25
+	"day26", //imagem day 26
+	"day27", //imagem day 27
+	"day28", //imagem day 28
+	"day29", //imagem day 29	
+	"day30"; //imagem day 30 
+	
+end;
+}

@@ -159,3 +159,10 @@ Body:
       Buy: 1000
       Weight: 0
 
+    - Id: 50023
+      AegisName: Ticket_de_PresenÃ§a
+      Name: Ticket de Presença
+      Type: Etc
+      Buy: 1000
+      Weight: 0
+

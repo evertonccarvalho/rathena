@@ -1,0 +1,293 @@
+//================================================
+//        _____ _           _ _
+//       / ____| |         | (_)
+//      | |  __| | __ _  __| |_ _   _ ___
+//      | | |_ | |/ _` |/ _` | | | | / __|
+//      | |__| | | (_| | (_| | | |_| \__ \
+//       \_____|_|\__,_|\__,_|_|\__,_|___/
+//
+//===== rAthena Script ===========================
+//= Sistema de Presença
+//===== Créditos: ================================
+//= Gladius [Discord: Rodrigo Dias#7694]
+//===== Loja Online: =============================
+//= http://loja.ragnarokprivate.com.br/
+//===== Versão do NPC: ===========================
+//== 1.0
+//================================================
+
+-	shop	PRESENCE_SHOP	-1,512:15
+prontera,126,212,5	script	Pontos de Presença	4_M_RUSMAN1,{ goto NPC_PRES;
+
+//================================================
+//== Configurações
+
+OnInit:
+	set .page$,"https://www.google.com.br/";		// Página sobre o sistema
+	set .ns$,"^00B2EE[Pontos de Presença]^000000";	// Nome do NPC
+	set .ns2$,"[ Pontos de Presença ]";				// Nome do NPC (Chat)
+	set .ns3$,"[ Presença ]";						// Nome do NPC (Global)
+	set .vip_needed, 5;								// Nível vip pra vantagens
+	set .pontos_normal, 1;							// Quantidade de pontos para jogadores normais
+	set .pontos_vip, 2;								// Quantidade de pontos para jogadores vips
+	set .nec, 50023;								// Item necessário pra apostar
+	set .chanc1, 5;									// Chance Mega Prêmio
+	set .chanc2, 10;								// Chance Super Prêmio
+
+	setarray .premio1[0],607,608,609;	// Mega Prêmio (example items)
+	setarray .premio2[0],604,605,606;	// Super Prêmio (example items)
+	setarray .premio3[0],601,602,603;	// Prêmio Comum (example items)
+
+	.NPCName$ = callfunc("F_NpcInitStatus", "Pontos de Presença");
+	setunitdata getnpcid(0), UNPC_GROUP_ID, 58;
+end;
+
+//== Fim das Configurações
+//================================================
+//== Script
+
+	NPC_PRES:
+	mes .ns$;
+	mes "Você deseja apostar um ^FFA500"+getitemname(.nec)+"^000000 e concorrer a um prêmio aleatório?!";
+	mes " ";
+	mes "^00B2EEPontos de Presença^000000:^FFA500 ["+#Presenca+"]^000000";
+	switch(select("^3CB371[»]^000000 Apostar","^3CB371[»]^000000 Ticket de Presença","^3CB371[»]^000000 Loja de Prêmios","^FFA500[»]^000000 Informações",(Presencaon==0?"^FFA500[»]^000000 Ligar Mensagens":"^FFA500[»]^000000 Desligar Mensagens"))){ // Added "Loja de Prêmios" option
+
+		case 1:
+			jogar_novamente:
+			next;
+			if(countitem(.nec) < 1){
+				mes .ns$;
+				mes "Você não possui nenhum "+getitemname(.nec)+" para apostar.";
+				close;
+			}
+			delitem .nec,1;
+			.@rand = rand( 100 );
+			if ( .@rand < .chanc1 ) {
+				set .Random1, rand( getarraysize( .premio1 ) );
+				getitembound .premio1[ .Random1 ], 1 ,1;
+				announce .ns3$+" : "+strcharinfo(0)+" recebeu o prêmio: ["+getitemname(.premio1[ .Random1 ])+"] (Mega Prêmio "+.chanc1+"%).",0;
+				if(select("^3CB371[»]^000000 Apostar Novamente:^ff0000[»]^000000 Sair") == 2) close;
+					goto jogar_novamente;
+				end;
+			} else if ( .@rand < .chanc2 ) {
+				set .Random2, rand( getarraysize( .premio2 ) );
+				getitembound .premio2[ .Random2 ], 1 ,1;
+				announce .ns3$+" : "+strcharinfo(0)+" recebeu o prêmio: ["+getitemname(.premio2[ .Random2 ])+"] (Super Prêmio "+.chanc2+"%).",0;
+				if(select("^3CB371[»]^000000 Apostar Novamente:^ff0000[»]^000000 Sair") == 2) close;
+					goto jogar_novamente;
+				end;
+			} else {
+				set .Random3, rand( getarraysize( .premio3 ) );
+				getitembound .premio3[ .Random3 ], 1 ,1;
+				// You might want to add a message here for common prizes
+				if(select("^3CB371[»]^000000 Apostar Novamente:^ff0000[»]^000000 Sair") == 2) close;
+					goto jogar_novamente;
+				end;
+			}
+			end;
+
+		case 2:
+			next;
+			mes .ns$;
+			mes "Você possui: ^FFA500"+#Presenca+"^000000 Pontos de Presença, deseja trocar 60 Pontos de Presença por 1 ^FFA500"+getitemname(.nec)+"^000000?";
+			if(select("^3CB371[»]^000000 Sim:^ff0000[»]^000000 Não") == 2) close;
+			next;
+			mes .ns$;
+			mes "Digite quantos ^FFA500"+getitemname(.nec)+"^000000 você deseja trocar.";
+			input .@qtd;
+			next;
+			mes .ns$;
+			mes "Para ^FF9900"+.@qtd+"^000000 ^FFA500"+getitemname(.nec)+"^000000 você precisa de ^00B2EE"+.@qtd*60+"^000000 Pontos de Presença, tem certeza que deseja trocar?";
+			if (select("^3CB371[»]^000000 Sim:^ff0000[»]^000000 Não") == 2) close;
+			next;
+			if ((#Presenca < .@qtd*60)){
+				mes .ns$;
+				mes "Desculpe mas você não possui ^FFA500Pontos de Presença^000000 suficiente para realizar a troca.";
+				close;
+			}
+			mes .ns$;
+			mes "A troca foi realizada com sucesso.";
+			#Presenca -= .@qtd*60;
+			getitembound .nec,.@qtd,1;
+			close;
+
+		case 3: // New case for "Loja de Prêmios"
+			next;
+			set .name$,"[^FF0000 Loja de Prêmios ^000000]";
+			set @Currency, 0; // 0 will represent #Presenca (Presence Points)
+
+			mes .name$;
+			mes "Esta loja usa ^FF0000Pontos de Presença^000000 para comprar os itens.";
+			mes "Você possui atualmente ^FFA500"+#Presenca+"^000000 Pontos de Presença.";
+
+			deletearray .ItemLists[0],getarraysize(.ItemLists);
+			deletearray .ItemPrice[0],getarraysize(.ItemPrice);
+
+			// Define your shop items and their costs here
+			// Example: Item ID, Price
+			setarray .ItemLists[0],
+				12914,     // Caixa Ágil [10]
+				12913,     // Caixa Abençoada [10]
+				24021,     // Caixa de Mastela [100]
+				13989,     // Caixa de Bomba Ácida [10]
+				14004,     // Caixa de Veneno Mortal [10]
+				7621,      // Amuleto de Ziegfried
+				5363,      // Helmo do Abismo
+				2546,      // Capuz de Praia
+				2441,      // Sandália de Praia
+				5314,      // Máscara do Mason
+				5800;      // Rubor de Batalha
+
+
+			setarray .ItemPrice[0],
+				5,    // Caixa Ágil [10]
+				5,    // Caixa Abençoada [10]
+				5,    // Caixa de Mastela [100]
+				10,   // Caixa de Bomba Ácida [10]
+				10,   // Caixa de Veneno Mortal [10]
+				10,   // Amuleto de Ziegfried
+				300,  // Helmo do Abismo
+				500,  // Capuz de Praia
+				500,  // Sandália de Praia
+				750,  // Máscara do Mason
+				1000; // Rubor de Batalha
+
+
+			npcshopdelitem "PRESENCE_SHOP",512; // Clear previous shop items if any
+			for(set .@i,0; .@i < getarraysize(.ItemLists); set .@i,.@i+1)
+				npcshopadditem "PRESENCE_SHOP",.ItemLists[.@i],.ItemPrice[.@i];
+
+			callshop "PRESENCE_SHOP",1;
+			npcshopattach "PRESENCE_SHOP";
+
+			dispbottom "Você possui atualmente ^FFA500"+#Presenca+"^000000 Pontos de Presença.";
+			end;
+
+
+		case 4: // Original case 3, now case 4
+			next;
+			mes .ns$;
+			mes "A cada 1 minuto permanecido online você recebe ^FFA500"+.pontos_normal+"^000000 Ponto de Presença do sistema. Se você for um jogador vip, receberá ^FFA500"+.pontos_vip+"^000000.";
+			next;
+			mes .ns$;
+			mes "Os Pontos podem ser trocados por ^FFA500"+getitemname(.nec)+"^000000 e eles podem ser apostados por prêmios aleatório. Os prêmios são separados por: Itens Comuns, Super Prêmio e Mega Prêmio";
+			next;
+			mes .ns$;
+			mes "Você pode conferir as premiações do Sistema de Presença acessando este";
+			mes "<URL>link<INFO>"+.page$+"</INFO></URL>, que vai encaminha-lo até o";
+			mes "fórum do servidor.";
+			close;
+
+		case 5: // Original case 4, now case 5
+			next;
+			mes .ns$;
+			if(Presencaon){
+				mes "As mensagens foram desligadas.";
+				set Presencaon,0;
+				close;
+			} else {
+				mes "As mensagens foram ligadas.";
+				set Presencaon,1;
+				close;
+			}
+	}
+}
+
+//================================================
+//== Contador de Presença
+
+-	script	Presenca	-1,{
+
+OnPCLoginEvent:
+	.ns2$ = getvariableofnpc(.ns2$,"Pontos de Presença");
+	.vip_needed = getvariableofnpc(.vip_needed,"Pontos de Presença");
+	.pontos_normal = getvariableofnpc(.pontos_normal,"Pontos de Presença");
+	.pontos_vip = getvariableofnpc(.pontos_vip,"Pontos de Presença");
+	addtimer 60000,"Presenca::OnTime";
+end;
+
+OnTime:
+	if(checkvending() || Presenca == 65000) end;
+	if(Presenca > 0){
+		#Presenca += Presenca;
+		set Presenca,0;
+	}
+	if (getgroupid() < .vip_needed) {
+		#Presenca += .pontos_normal;
+		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 1 Ponto e ficou com "+#Presenca+" Pontos de Presença.";
+	} else {
+		#Presenca += .pontos_vip;
+		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 2 Pontos e ficou com "+#Presenca+" Pontos de Presença.";
+	}
+	addtimer 60000,"Presenca::OnTime";
+end;
+
+OnBuyItem:
+	// Calculate total cost
+	set @TotalCost, 0;
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		for(set @j,0; @j < getarraysize(.ItemLists); set @j,@j+1) {
+			if(.ItemLists[@j] == @bought_nameid[@i]) {
+				set @TotalCost, @TotalCost + (.ItemPrice[@j] * @bought_quantity[@i]);
+				break;
+			}
+		}
+	}
+
+	// Check if enough currency
+	if (@Currency == 0) { // Using 0 to represent #Presenca
+		if (#Presenca < @TotalCost) {
+			set @notEnough, 1;
+		}
+	} else if (@Currency > 0) { // If you later decide to use an item as currency
+		if (countitem(@Currency) < @TotalCost) {
+			set @notEnough, 1;
+		}
+	}
+
+	if (@notEnough) {
+		for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+			mes "Item : ^0000FF"+getitemname(@bought_nameid[@i])+"^000000";
+			mes "Quantidade : ^0000FF"+@bought_quantity[@i]+"^000000";
+		}
+		mes "^00FF00____________________________^000000";
+		mes "Custo total : ^0000FF"+@TotalCost+" x Pontos de Presença^000000";
+		mes "^00FF00____________________________^000000";
+		mes "[ ^FF0000X^000000 ] Você não possui ^0000FFPontos de Presença^000000 suficientes para realizar esta compra.";
+	} else {
+		// Process the purchase
+		for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+			getitem @bought_nameid[@i],@bought_quantity[@i];
+			message strcharinfo(0),"Comprou "+getitemname(@bought_nameid[@i]);
+		}
+
+		// Deduct currency
+		#Presenca -= @TotalCost;
+
+		mes "Obrigado pela compra!";
+		mes "Agora você possui ^FFA500"+#Presenca+"^000000 Pontos de Presença.";
+	}
+
+	// Clear variables
+	set @TotalCost,0;
+	set @notEnough,0;
+	deletearray @bought_nameid[0],getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0],getarraysize(@bought_quantity);
+	close;
+}
+
+//================================================
+//= Comando @presenca
+//================================================
+
+-	script	@Presenca_Cmd	-1,{
+OnCommand:
+	mes "[ ^00B2EEPontos de Presença^000000 ]";
+	mes "Você possui: ^FFA500"+#Presenca+"^000000 pontos";
+	close;
+
+OnInit:
+	bindatcmd "presenca",strnpcinfo(0)+"::OnCommand",0,99;
+	end;
+}
