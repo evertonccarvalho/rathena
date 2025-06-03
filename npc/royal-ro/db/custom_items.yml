@@ -166,3 +166,49 @@ Body:
       Buy: 1000
       Weight: 0
 
+    - Id: 875
+      AegisName: Battle_PassRO
+      Name: Battle Pass
+      Type: Usable
+      Flags:
+        NoConsume: true
+      Stack:
+        Amount: 1
+        Inventory: true
+      Weight: 1
+      Trade:
+        NoSell: true
+        NoCart: true
+        NoStorage: true
+        NoGuildStorage: true
+        NoMail: true
+        NoAuction: true
+      Script: |
+        callfunc("F_Battle_Passe",1);
+    - Id: 876
+      AegisName: Battle_Vigor
+      Name: Vigor of Battle
+      Type: Usable
+      Flags:
+        NoConsume: true
+      Weight: 1
+      Script: |
+        callfunc("F_Battle_Passe",5,1000,876);
+    - Id: 877
+      AegisName: Battle_Vigor_Rare
+      Name: Rare Vigor of Battle
+      Type: Usable
+      Flags:
+        NoConsume: true
+      Weight: 1
+      Script: |
+        callfunc("F_Battle_Passe",5,10000,877);
+    - Id: 878
+      AegisName: Battle_Vigor_Epic
+      Name: Epic Vigor of Battle
+      Type: Usable
+      Flags:
+        NoConsume: true
+      Weight: 1
+      Script: |
+        callfunc("F_Battle_Passe",5,15000,878);

@@ -53,12 +53,24 @@ Body:
         # Manual de Combate de Classe
         - Item: Job_Manual50
           Price: 200
-        # Medicina Milagrosa
-        - Item: Miracle_Medicine
-          Price: 500
         # Chicle de Bola
         - Item: HE_Bubble_Gum
           Price: 300
         # Goma de Mascar
+    - Tab: Other
+      Items:
+        # Passe de Batalha
+        - Item: Battle_PassRO
+          Price: 5000
+        # Vigor de Batalha
+        - Item: Battle_Vigor
+          Price: 100
+        # Vigor de Batalha Raro
+        - Item: Battle_Vigor_Rare
+          Price: 1000
+        # Vigor de Batalha Epico
+        - Item: Battle_Vigor_Epic
+          Price: 1500
+        # Moeda RMT
         - Item: Modea_RMT
           Price: 1000

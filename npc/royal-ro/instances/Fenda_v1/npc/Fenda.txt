@@ -1,0 +1,686 @@
+//============================================================
+// Entrada
+//============================================================
+prontera,156,204,5	script	Fenda#1	100,{
+
+	set .@party_id,getcharid(1);
+    set .@inst_name$,.inst_name$;
+
+    mes .nome$;
+    mes "Você parece não temer a morte...";
+    mes "Deseja tentar um novo desafio?";
+	next;
+
+	if (is_party_leader() == true) {
+		switch(select("- Criar ^ff0000"+.@inst_name$+"^000000.:- Entrar na ^ff0000"+.@inst_name$+"^000000.:- Quests Diárias.")) {
+		case 1:
+			.@mode = select("- Nível 1 (Padrão):- Nível 2:- Nível 3:- Nível 4 (Intermediate):- Nível 5:- Nível 6:- Nível 7 (Hard):- Nível 8:- Nível 9");
+            if(!instance_check_party(.@party_id,1,60)) {
+                mes .nome$;
+                mes "Desculpe, seu grupo não atende aos requisitos.";
+                mes "Você precisa estar em um grupo.";
+                close;
+            }
+
+			getpartymember getcharid(1),1;
+			getpartymember getcharid(1),2;
+			.@count = $@partymembercount;
+			copyarray .@cid[0], $@partymembercid[0], $@partymembercount;
+			copyarray .@aid[0], $@partymemberaid[0], $@partymembercount;
+			if(.@count > 4){
+				mes .nome$;
+                mes "Desculpe, seu grupo não atende aos requisitos.";
+                mes "Seu grupo só pode ter no máximo 4 jogadores.";
+                close;
+			}
+			for(.@i = 0; .@i < .@count; .@i++){
+				if ( !isloggedin( .@aid[.@i], .@cid[.@i] ) ){
+					query_sql("SELECT `class` FROM `char` WHERE `char_id`="+.@cid[.@i]+"", .@c);
+				}else{
+					.@c = readparam(Class,.@cid[.@i]);
+				}
+				if(inarray(.@class[0], .@c) == -1){
+					.@class[.@i] = .@c;
+				}else{
+					mes .nome$;
+					mes "Desculpe, seu grupo não atende aos requisitos.";
+					mes "Só é possível 1 classe por grupo na "+.inst_name$+".";
+					close;
+				}
+			}
+
+            if(false) {
+                mes .nome$;
+                mes "Desculpe, seu grupo não atende aos requisitos.";
+                mes "Só é permitido 1 classe por grupo.";
+                close;
+            }
+			.@inst_name$ += " Nível "+.@mode;
+
+            .@timelimit = 720 + (.@mode * 60);
+
+            if (instance_create(.inst_name$, IM_PARTY, getcharid(1)) < 0) {
+                mes "Nome do Grupo: "+ getpartyname(.@party_id);
+                mes "Líder do Grupo: "+strcharinfo(0);
+                mes "^0000ff"+.@inst_name$+" ^000000 - Falha ao reservar.";
+                close;
+            }
+			set getinstancevar('nivel, instance_id(IM_PARTY)), .@mode;
+			mes .nome$;
+			mes "^0000ff"+.@inst_name$+"^000000 reservado com sucesso.";
+			mes "Gostaria de entrar agora?";
+			if(select("Sim, gostaria.:Não, deixa pra depois.") == 1)
+				callsub L_Enter,0,.@inst_name$;
+			close;
+		case 2:
+			if(instance_id(IM_PARTY)){
+				callsub L_Enter,0,.@inst_name$;
+			}else{
+				mes .nome$;
+				mes "A Instância "+.@inst_name$+" não existe.";
+				mes "O líder do grupo ainda não gerou a instância.";
+				close;
+			}
+		case 3:
+			close;
+		}
+	}
+	if(select("Entrar no ^ff0000"+.@inst_name$+"^000000.:Cancelar.") == 2)
+		end;
+	if(instance_id(IM_PARTY)){
+		callsub L_Enter,1,.@inst_name$;
+	}
+	mes .nome$;
+	mes "Para gerar uma instância, você deve ser o líder do grupo e ter pelo menos 1 membro no grupo.";
+	close;
+L_Enter:
+	.@inst_name$ = getarg(1);
+	if(fenda_entrada > 6){
+		mes .nome$;
+		mes "Você já usou o limite de 6 entradas na Fenda hoje.";
+		next;
+		if(select("Usar Contrato da Fenda:Sair") == 2)
+			close;
+		if(!countitem(607)){
+			mes .nome$;
+			mes "Você não possui nenhum Contrato da Fenda.";
+			close;
+		}
+		delitem 607,1;
+		.@flag = 1;
+	}
+	switch(instance_enter(.inst_name$)) {
+	case IE_OTHER:
+		mes .nome$;
+		mes "Um erro desconhecido ocorreu.";
+		close;
+	case IE_NOINSTANCE:
+		mes .nome$;
+		mes "A Instância "+.@inst_name$+" não existe.";
+		mes "O líder do grupo ainda não gerou a instância.";
+		close;
+	case IE_NOMEMBER:
+		mes .nome$;
+		mes "Apenas os membros cadastrados podem entrar na instância "+.@inst_name$+".";
+		close;
+	case IE_OK:
+		mapannounce strnpcinfo(4), "O membro ["+strcharinfo(0)+"] do grupo ["+getpartyname( getcharid(1) ) +"] está entrando na "+.@inst_name$+".",bc_map,"0x00ff99";
+		sc_end SC_ALL;
+		f_enchant = 1;
+		if(!.@flag) fenda_entrada++;
+		if (getarg(0) == 0) close;
+		else end;
+	}
+
+OnInit:
+    set .nome$, "[ ^0000FF"+strnpcinfo(1)+"^000000 ]";
+	set .inst_name$,"Fenda";
+	bindatcmd "resetfenda",strnpcinfo(3) + "::OnReset",99;
+	.@npc_id = getnpcid(0);
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 7); // group_id
+    end;
+
+OnReset:
+	dispbottom "Resetando fenda...";
+OnClock2359:
+	.@nb = query_sql("SELECT `char`.`account_id`,`char_reg_num`.`char_id`,`value` from `char_reg_num`"+
+		" INNER JOIN `char` ON `char_reg_num`.char_id = `char`.char_id WHERE `key`='fenda_entrada'", .@aid, .@cid, .@value);
+	for(.@i = 0; .@i < .@nb; .@i++){
+		if(isloggedin(.@aid[.@i],.@cid[.@i])){
+			attachrid(.@aid[.@i]);
+			fenda_entrada = 0;
+			fenda_premio = 0;
+			detachrid;
+		}else{
+			query_sql("DELETE FROM `char_reg_num` WHERE `char_id`="+.@cid[.@i]+" AND `key`='fenda_entrada'");
+			query_sql("DELETE FROM `char_reg_num` WHERE `char_id`="+.@cid[.@i]+" AND `key`='fenda_premio'");
+		}
+	}
+	end;
+OnPCLogoutEvent:
+        if(!instance_id(IM_PARTY)) end;
+        bonus_script_clear;
+        sc_end SC_EPICLESIS;
+        sc_end SC_GT_REVITALIZE;
+        sc_end SC_ENDURE;
+        sc_end SC_SPEEDUP1;
+        sc_end SC_TUNAPARTY;
+        sc_end SC_SPCOST_RATE;
+        end;
+}
+
+// Configurações
+//============================================================
+dominio_c,0,0,0	script	#fenda_start	-1,{
+    end;
+
+OnInstanceInit:
+	set .nome$, "[ ^0000FF"+strnpcinfo(1)+"^000000 ]";
+
+	// Mapas possíveis da Fenda
+	setarray 'map$[0], "dominio_c", "dominio_d", "dominio_e", "dominio_f", "dominio_ta";
+	// Coordenadas x e y de entrada dos mapas, 0 para aleatório
+	setarray 'x[0], 200, 210, 130, 215, 126;
+	setarray 'y[0], 200, 250, 176, 195, 234;
+
+	// Recompensas
+	// item_id, quantidade, chance
+	// chance: 1 = 0,01%, 100 = 1%, 10000 = 100%
+	// Nível 1
+	setarray 'item_nv1[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 2
+	setarray 'item_nv2[0], 507, 5, 10000, 508, 4, 4000, 509, 3, 3000, 510, 2, 2000, 511, 1, 1000;
+	// Nível 3
+	setarray 'item_nv3[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 4
+	setarray 'item_nv4[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 5
+	setarray 'item_nv5[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 6
+	setarray 'item_nv6[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 7
+	setarray 'item_nv7[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 8
+	setarray 'item_nv8[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+	// Nível 9
+	setarray 'item_nv9[0], 501, 5, 10000, 502, 4, 4000, 503, 3, 3000, 504, 2, 2000, 505, 1, 1000;
+
+	sleep 500;
+
+	// Sorteio de mapa inicial
+	'm = rand(getarraysize('map$));
+	//'m = 0;
+
+	// Pontos no início
+	'pontos = 0;
+	// Pontos máximo para nascer o Boss
+    'pontosMax = 100;
+	//'pontosMax = 100;
+	'boss = 0;
+
+	// Scale de HP por nível da Fenda
+    if('nivel == 1){
+		'mobHP = 4;
+        'eliteHP = 100;
+		'bossHP = 400;
+		'mobAtk = 1000;
+		'mobSpeed = 30;
+		'mobAmotion = 80;
+		'mobAdelay = 80;
+		'mobDmotion = 80;
+	}else if('nivel == 2){
+		'mobHP = 6;
+        'eliteHP = 150;
+		'bossHP = 600;
+	}else if('nivel == 3){
+		'mobHP = 9;
+        'eliteHP = 225;
+		'bossHP = 600;
+	}else if('nivel == 4){
+		'mobHP = 18;
+        'eliteHP = 450;
+		'bossHP = 1800;
+	}else if('nivel == 5){
+		'mobHP = 27;
+        'eliteHP = 675;
+		'bossHP = 2700;
+	}else if('nivel == 6){
+		'mobHP = 40;
+        'eliteHP = 1000;
+		'bossHP = 4000;
+	}else if('nivel == 7){
+		'mobHP = 80;
+        'eliteHP = 2000;
+		'bossHP = 8000;
+	}else if('nivel == 8){
+		'mobHP = 120;
+        'eliteHP = 3000;
+		'bossHP = 12000;
+	}else if('nivel == 9){
+		'mobHP = 180;
+        'eliteHP = 4500;
+		'bossHP = 18000;
+		'mobAtk = 5000;
+	}
+	end;
+}
+
+function	script	F_MobMultiplier	{
+	freeloop(1);
+    for(.@i = 0; .@i < getarg(1); .@i++){
+		setunitdata $@mobid[.@i],UMOB_HP,1000 * 'mobHP;
+        setunitdata $@mobid[.@i],UMOB_MAXHP,1000 * 'mobHP;
+        setunitdata $@mobid[.@i],UMOB_ATKMIN, 'mobAtk;
+        setunitdata $@mobid[.@i],UMOB_ATKMAX, 'mobAtk;
+		setunitdata $@mobid[.@i],UMOB_SPEED, 'mobSpeed;
+		setunitdata $@mobid[.@i],UMOB_AMOTION, 'mobAmotion;
+		setunitdata $@mobid[.@i],UMOB_ADELAY, 'mobAdelay;
+		setunitdata $@mobid[.@i],UMOB_DMOTION, 'mobDmotion;
+    }
+	freeloop(0);
+	return;
+}
+
+function	script	F_EliteMultiplier	{
+	freeloop(1);
+    for(.@i = 0; .@i < getarg(1); .@i++){
+		setunitdata $@mobid[.@i],UMOB_HP,1000 * 'eliteHP;
+        setunitdata $@mobid[.@i],UMOB_MAXHP,1000 * 'eliteHP;
+    }
+	freeloop(0);
+	return;
+}
+
+function	script	F_BossMultiplier	{
+    for(.@i = 0; .@i < getarg(1); .@i++){
+		setunitdata $@mobid[.@i],UMOB_HP,1000 * 'bossHP;
+        setunitdata $@mobid[.@i],UMOB_MAXHP,1000 * 'bossHP;
+    }
+	return;
+}
+
+bat_b03,389,2,0	script	#fenda_warp0	45,2,2,{
+OnTouch:
+	warp instance_mapname('map$['m]),'x['m],'y['m];
+	end;
+}
+
+bat_b03,389,14,3	script	Terapeuta da Fenda	95,{
+	specialeffect2 EF_HEAL;
+	percentheal 100,100;
+	mes "[Terapeuta da Fenda]";
+	mes "Apenas feche seus olhos,";
+	mes "e respire fundo.";
+	mes "Você ficará livre da dor.";
+	close2;
+	openstorage;
+	end;
+}
+
+dominio_c,0,0,0	script	#fenda_wave1	-1,{
+	end;
+
+OnInstanceInit:
+    sleep 1000;
+    set .@npc_name$, instance_npcname(strnpcinfo(0));
+    .@qtdMob = 200;
+    .@qtdElite = 5;
+    for(.@i = 0; .@i < 3; .@i++){
+        if('m+.@i < getarraysize('map$))
+            .@m = 'm+.@i;
+        else
+            .@m = 0;
+        set .@map$, instance_mapname('map$[.@m]);
+		monster .@map$,0,0,"--en--",1163,.@qtdMob,.@npc_name$+"::OnNormalDied";
+		callfunc "F_MobMultiplier", 3897, .@qtdMob;
+		monster .@map$,0,0,"--en--",1276,.@qtdMob,.@npc_name$+"::OnNormalDied";
+		callfunc "F_MobMultiplier", 3898, .@qtdMob;
+		monster .@map$,0,0,"--en--",1192,.@qtdMob,.@npc_name$+"::OnNormalDied";
+		callfunc "F_MobMultiplier", 3898, .@qtdMob;
+		monster .@map$,0,0,"--en--",1117,.@qtdMob,.@npc_name$+"::OnNormalDied";
+		callfunc "F_MobMultiplier", 3898, .@qtdMob;
+		monster .@map$,0,0,"--en--",1302,.@qtdElite,.@npc_name$+"::OnEliteDied";
+		callfunc "F_EliteMultiplier", 3898, .@qtdElite;
+	}
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	deltimer instance_npcname(strnpcinfo(0)) + "::OnTimer";
+	addtimer 2000, instance_npcname(strnpcinfo(0)) + "::OnTimer";
+	end;
+
+OnNormalDied:
+	set .@map$, instance_mapname(strnpcinfo(4));
+	set .@npc_name$, instance_npcname(strnpcinfo(0));
+	getmapxy(.@mapname$, .@mapx, .@mapy, BL_PC);
+	'pontos += 1;
+	if(rand(10000) <= 100){
+		monster .@mapname$,.@mapx,.@mapy,"--en--",1627,1;
+		.@GID = $@mobid[0];
+		setunitdata .@GID, UMOB_DMGIMMUNE, 1;
+		unitskillusepos .@GID,"AB_EPICLESIS",5,.@mapx,.@mapy,-4000;
+		unitwarp .@GID,"this",-1,-1;
+		sleep2 30000;
+		if(unitexists(.@GID)) unitkill .@GID;
+	}
+	if(rand(10000) <= 100){
+		monster .@mapname$,.@mapx,.@mapy,"--en--",1627,1;
+		.@GID = $@mobid[0];
+		setunitdata .@GID, UMOB_DMGIMMUNE, 1;
+		unitskilluseid .@GID,"SR_GENTLETOUCH_REVITALIZE",5,getcharid(3),-1000;
+		unitkill .@GID;
+	}
+	if(rand(10000) <= 100)
+		unitskilluseid getcharid(3),"SM_ENDURE",1;
+	if('pontos > 'pontosMax) 'pontos = 'pontosMax;
+	if('pontos >= 'pontosMax && !'boss){
+		callsub OnBossSpawn, killerrid;
+	}
+	end;
+OnEliteDied:
+	set .@map$, instance_mapname(strnpcinfo(4));
+	set .@npc_name$, instance_npcname(strnpcinfo(0));
+	'pontos += 75;
+	if('pontos > 'pontosMax) 'pontos = 'pontosMax;
+	if('pontos >= 'pontosMax && !'boss){
+		callsub OnBossSpawn, killerrid;
+	}
+	end;
+
+OnBossSpawn:
+	attachrid(getarg(0));
+	'boss = 1;
+	getmapxy(.@mapname$, .@mapx, .@mapy, BL_PC);
+	sleep2 1000;
+	mapannounce .@mapname$, "[Fenda] O MvP nasceu perto do jogador ["+strcharinfo(0)+"]!",bc_map;
+	areamonster .@mapname$,.@mapx-6,.@mapy-6,.@mapx+6,.@mapy+6,"--en--",1272,1,instance_npcname(strnpcinfo(0))+"::OnBossDied";
+	callfunc "F_BossMultiplier", 1272, 1;
+	end;
+
+OnBossDied:
+	set .@map$, instance_mapname(strnpcinfo(4));
+	set .@npc_name$, instance_npcname(strnpcinfo(0));
+	for(.@i = 0; .@i < getarraysize('map$); .@i++){
+        killmonsterall instance_mapname('map$[.@i]);
+    }
+	getmapxy(.@mapname$, .@mapx, .@mapy, BL_PC);
+	sleep2 1000;
+	mapannounce .@mapname$, "[Fenda] O MvP foi morto, parabéns a todos!",bc_map;
+	//duplicate_dynamic(instance_npcname("Urushi#2"),getcharid(0));
+	duplicate instance_npcname("Urushi#2"),.@mapname$,.@mapx,.@mapy;
+	callsub OnReward;
+	end;
+
+OnReward:
+	detachrid;
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	if(fenda_premio >= 6) end;
+	copyarray .@item[0], getd("'item_nv"+'nivel+"[0]"), getarraysize(getd("'item_nv"+'nivel));
+	for(.@j = 0; .@j < getarraysize(.@item); .@j += 3){
+		if(rand(10000) <= .@item[.@j+2]){
+			mapannounce strcharinfo(3), "[Fenda] O jogador ["+strcharinfo(0)+"] dropou o item "+getitemname(.@item[.@j])+" ["+(.@item[.@j+2]/100)+"%].",bc_map;
+			getitem .@item[.@j], .@item[.@j+1];
+		}
+	}
+	fenda_premio++;
+	end;
+
+OnTimer:
+	.@pontos = ('pontos * 100) / 'pontosMax;
+	//dispbottom "Pontos: "+'pontos+", 1: "+('pontos * 100)+", 2: "+(('pontos * 100) / 'pontosMax)+", Result: "+.@pontos+"%";
+	cutin ""+.@pontos,2;
+	if('pontos != 'pontosMax){
+		addtimer 2000, instance_npcname(strnpcinfo(0)) + "::OnTimer";
+	}
+	end;
+
+OnInstanceDestroy:
+    addrid(2, 0, instance_live_info(ILI_OWNER));
+    deltimer instance_npcname(strnpcinfo(0)) + "::OnTimer";
+    cutin "",255;
+    bonus_script_clear;
+    sc_end SC_EPICLESIS;
+    sc_end SC_GT_REVITALIZE;
+    sc_end SC_ENDURE;
+    sc_end SC_SPEEDUP1;
+    sc_end SC_TUNAPARTY;
+    sc_end SC_SPCOST_RATE;
+    end;
+}
+
+// Portais
+dominio_c,340,340,0	script	#fenda_warp1	45,3,3,{
+OnTouch:
+	warp instance_mapname('map$[1]),'x[1],'y[1];
+	end;
+OnInstanceInit:
+	sleep 1000;
+	if('m != 4 && 'm != 0)
+		disablenpc;
+	end;
+}
+
+dominio_d,56,338,0	script	#fenda_warp2	45,3,3,{
+OnTouch:
+	warp instance_mapname('map$[2]),'x[2],'y[2];
+	end;
+OnInstanceInit:
+	sleep 1000;
+	if('m != 0 && 'm != 1)
+		disablenpc;
+	end;
+}
+
+dominio_e,85,43,0	script	#fenda_warp3	45,3,3,{
+OnTouch:
+	warp instance_mapname('map$[3]),'x[3],'y[3];
+	end;
+OnInstanceInit:
+	sleep 1000;
+	if('m != 1 && 'm != 2)
+		disablenpc;
+	end;
+}
+
+dominio_f,363,290,0	script	#fenda_warp4	45,3,3,{
+OnTouch:
+	warp instance_mapname('map$[4]),'x[4],'y[4];
+	end;
+OnInstanceInit:
+	sleep 600;
+	if('m != 2 && 'm != 3)
+		disablenpc;
+	end;
+}
+
+dominio_ta,338,317,0	script	#fenda_warp5	45,3,3,{
+OnTouch:
+	warp instance_mapname('map$[0]),'x[0],'y[0];
+	end;
+OnInstanceInit:
+	sleep 1000;
+	if('m != 3 && 'm != 4)
+		disablenpc;
+	end;
+}
+
+dominio_ta,213,132,0	warp	#fenda_warp6	2,2,dominio_ta,212,99
+dominio_ta,212,105,0	warp	#fenda_warp7	2,2,dominio_ta,213,139
+
+// Pilones
+dominio_c,0,0,0	script	#fenda_pil1	4_GEFFEN_09,{
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	sc_start SC_SPEEDUP1,60000,50;
+	cloakonnpc;
+	end;
+OnInstanceInit:
+	while( !checkcell( strnpcinfo(4),( .@x = rand( 1, 300 )),( .@y = rand( 1, 300 )), cell_chkpass ));
+		movenpc strnpcinfo(0), .@x, .@y;
+	freeloop true;
+	while (instance_id()){
+		viewpointmap strnpcinfo(4), 2, .@x, .@y, 1,0xFF0000;
+		getmapxy .@map$, .@x, .@y, BL_NPC, strnpcinfo(3);
+		viewpointmap strnpcinfo(4), 1, .@x, .@y, 1,0xFF0000;
+		sleep 1000;
+	}
+	end;
+}
+dominio_c,0,0,0	script	#fenda_pil2	4_GEFFEN_09,{
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	sc_start SC_TUNAPARTY,60000,5;
+	cloakonnpc;
+	end;
+OnInstanceInit:
+	while( !checkcell( strnpcinfo(4),( .@x = rand( 1, 300 )),( .@y = rand( 1, 300 )), cell_chkpass ));
+		movenpc strnpcinfo(0), .@x, .@y;
+	freeloop true;
+	while (instance_id()){
+		viewpointmap strnpcinfo(4), 2, .@x, .@y, 2,0xFF0000;
+		getmapxy .@map$, .@x, .@y, BL_NPC, strnpcinfo(3);
+		viewpointmap strnpcinfo(4), 1, .@x, .@y, 2,0xFF0000;
+		sleep 1000;
+	}
+	end;
+}
+dominio_c,0,0,0	script	#fenda_pil3	4_GEFFEN_09,{
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	bonus_script "{ bonus bShortAtkRate,100; bonus bLongAtkRate,100; bonus2 bMagicAddRace,RC_All,100; }",60;
+	cloakonnpc;
+	end;
+OnInstanceInit:
+	while( !checkcell( strnpcinfo(4),( .@x = rand( 1, 300 )),( .@y = rand( 1, 300 )), cell_chkpass ));
+		movenpc strnpcinfo(0), .@x, .@y;
+	freeloop true;
+	while (instance_id()){
+		viewpointmap strnpcinfo(4), 2, .@x, .@y, 3,0xFF0000;
+		getmapxy .@map$, .@x, .@y, BL_NPC, strnpcinfo(3);
+		viewpointmap strnpcinfo(4), 1, .@x, .@y, 3,0xFF0000;
+		sleep 1000;
+	}
+	end;
+}
+dominio_c,0,0,0	script	#fenda_pil4	4_GEFFEN_09,{
+	addrid(2, 0, instance_live_info(ILI_OWNER));
+	bonus_script "{ bonus bDelayrate,-70; }",30;
+	sc_start SC_SPCOST_RATE,30000,100;
+	percentheal 0,100;
+	cloakonnpc;
+	end;
+OnInstanceInit:
+	while( !checkcell( strnpcinfo(4),( .@x = rand( 1, 300 )),( .@y = rand( 1, 300 )), cell_chkpass ));
+		movenpc strnpcinfo(0), .@x, .@y;
+	freeloop true;
+	while (instance_id()){
+		viewpointmap strnpcinfo(4), 2, .@x, .@y, 4,0xFF0000;
+		getmapxy .@map$, .@x, .@y, BL_NPC, strnpcinfo(3);
+		viewpointmap strnpcinfo(4), 1, .@x, .@y, 4,0xFF0000;
+		sleep 1000;
+	}
+	end;
+}
+dominio_d,0,0,0	duplicate(#fenda_pil1)	#fenda_pil5	4_GEFFEN_09
+dominio_d,0,0,0	duplicate(#fenda_pil2)	#fenda_pil6	4_GEFFEN_09
+dominio_d,0,0,0	duplicate(#fenda_pil3)	#fenda_pil7	4_GEFFEN_09
+dominio_d,0,0,0	duplicate(#fenda_pil4)	#fenda_pil8	4_GEFFEN_09
+dominio_e,0,0,0	duplicate(#fenda_pil1)	#fenda_pil9	4_GEFFEN_09
+dominio_e,0,0,0	duplicate(#fenda_pil2)	#fenda_pil10	4_GEFFEN_09
+dominio_e,0,0,0	duplicate(#fenda_pil3)	#fenda_pil11	4_GEFFEN_09
+dominio_e,0,0,0	duplicate(#fenda_pil4)	#fenda_pil12	4_GEFFEN_09
+dominio_f,0,0,0	duplicate(#fenda_pil1)	#fenda_pil17	4_GEFFEN_09
+dominio_f,0,0,0	duplicate(#fenda_pil2)	#fenda_pil18	4_GEFFEN_09
+dominio_f,0,0,0	duplicate(#fenda_pil3)	#fenda_pil19	4_GEFFEN_09
+dominio_f,0,0,0	duplicate(#fenda_pil4)	#fenda_pil20	4_GEFFEN_09
+dominio_ta,0,0,0	duplicate(#fenda_pil1)	#fenda_pil21	4_GEFFEN_09
+dominio_ta,0,0,0	duplicate(#fenda_pil2)	#fenda_pil22	4_GEFFEN_09
+dominio_ta,0,0,0	duplicate(#fenda_pil3)	#fenda_pil23	4_GEFFEN_09
+dominio_ta,0,0,0	duplicate(#fenda_pil4)	#fenda_pil24	4_GEFFEN_09
+
+// Saída
+//============================================================
+bat_b03,0,0,4	script	Urushi#2	4_F_08_STATUE,{
+	mes .nome$;
+	mes "Vejo que sobreviveu aos terrores que assolam essas terras.";
+	mes "Você possui "+f_enchant+" tentativas de encantamento.";
+	mes "O que deseja fazer?";
+    next;
+    switch(select("- Encantar Visuais:- Receber Esfera de Encantamento:- Sair da instância")){
+	case 1:
+		mes .nome$;
+		mes "Energizar: Traga um 'Cálice do Elixir Sagrado II' para obter mais uma chance de encantar.";
+		mes "-------------";
+		mes "Selecione o que deseja encantar.";
+		next;
+		// TO DO: fazer os encantamentos
+    	switch(select("- Energizar Fenda:- Encantar Visual Topo:- Encantar Visual Meio:- Encantar Visual Baixo")){
+		}
+		break;
+	case 2:
+		mes .nome$;
+		if('nivel < 10){
+			mes "Apenas nos níveis Extreme para cima poderão receber a esfera.";
+		}
+		break;
+	default:
+        warp "prontera",156,170;
+        bonus_script_clear;
+        sc_end SC_EPICLESIS;
+        sc_end SC_GT_REVITALIZE;
+        sc_end SC_ENDURE;
+        sc_end SC_SPEEDUP1;
+        sc_end SC_TUNAPARTY;
+        sc_end SC_SPCOST_RATE;
+        end;
+	}
+	close;
+
+OnInstanceInit:
+	set .nome$, "[ ^0000FF"+strnpcinfo(1)+"^000000 ]";
+	end;
+}
+
+bat_b03	mapflag	nobranch
+dominio_c	mapflag	nobranch
+dominio_d	mapflag	nobranch
+dominio_e	mapflag	nobranch
+dominio_f	mapflag	nobranch
+dominio_ta	mapflag	nobranch
+bat_b03	mapflag	pvp	off
+dominio_c	mapflag	pvp	off
+dominio_d	mapflag	pvp	off
+dominio_e	mapflag	pvp	off
+dominio_f	mapflag	pvp	off
+dominio_ta	mapflag	pvp	off
+bat_b03	mapflag	noteleport
+dominio_c	mapflag	noteleport
+dominio_d	mapflag	noteleport
+dominio_e	mapflag	noteleport
+dominio_f	mapflag	noteleport
+dominio_ta	mapflag	noteleport
+bat_b03	mapflag	nowarpto
+dominio_c	mapflag	nowarpto
+dominio_d	mapflag	nowarpto
+dominio_e	mapflag	nowarpto
+dominio_f	mapflag	nowarpto
+dominio_ta	mapflag	nowarpto
+bat_b03	mapflag	partylock
+dominio_c	mapflag	partylock
+dominio_d	mapflag	partylock
+dominio_e	mapflag	partylock
+dominio_f	mapflag	partylock
+dominio_ta	mapflag	partylock
+bat_b03	mapflag	restricted	6
+dominio_c	mapflag	restricted	6
+dominio_d	mapflag	restricted	6
+dominio_e	mapflag	restricted	6
+dominio_f	mapflag	restricted	6
+dominio_ta	mapflag	restricted	6
+bat_b03	mapflag	nosave	SavePoint
+dominio_c	mapflag	nosave	SavePoint
+dominio_d	mapflag	nosave	SavePoint
+dominio_e	mapflag	nosave	SavePoint
+dominio_f	mapflag	nosave	SavePoint
+dominio_ta	mapflag	nosave	SavePoint
+bat_b03	mapflag	nomemo
+dominio_c	mapflag	nomemo
+dominio_d	mapflag	nomemo
+dominio_e	mapflag	nomemo
+dominio_f	mapflag	nomemo
+dominio_ta	mapflag	nomemo
