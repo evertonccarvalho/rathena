@@ -1,7 +1,7 @@
 //============================================================
 // Entrada
 //============================================================
-prontera,156,204,5	script	Fenda#1	100,{
+prontera,121,211,5	script	Fenda#1	100,{
 
 	set .@party_id,getcharid(1);
     set .@inst_name$,.inst_name$;
@@ -613,10 +613,13 @@ bat_b03,0,0,4	script	Urushi#2	4_F_08_STATUE,{
 		}
 		break;
 	case 2:
-		mes .nome$;
-		if('nivel < 10){
-			mes "Apenas nos níveis Extreme para cima poderão receber a esfera.";
-		}
+	mes .nome$;
+    if('nivel >= 7){ // Por exemplo, permitir a partir do nível 7 (Hard)
+        getitem 35004, 100; //Moeda de Cheffenia
+        mes "Você recebeu uma Esfera de Encantamento!";
+    } else {
+        mes "Você precisa completar pelo menos o nível 7 (Hard) para receber a esfera.";
+    }
 		break;
 	default:
         warp "prontera",156,170;

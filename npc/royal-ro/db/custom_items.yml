@@ -212,3 +212,131 @@ Body:
       Weight: 1
       Script: |
         callfunc("F_Battle_Passe",5,15000,878);
+
+# ---------------------------------------------------
+#--------------------- Renew Items--------------------
+# ---------------------------------------------------
+
+    - Id: 6635
+      AegisName: Blacksmith_Blessing
+      Name: Blacksmith Blessing
+      Type: Etc
+      Buy: 20
+      Flags:
+      BuyingStore: true
+      Trade:
+      NoDrop: true
+    - Id: 23550
+      AegisName: Winter_Cookie
+      Name: Winter Cookie
+      Type: Usable
+      Weight: 50
+      Script: |
+        percentheal 5,0;
+        sc_start SC_ATKPOTION,600000,3;
+    - Id: 100316
+      AegisName: G_Tyrs_Blessing
+      Name: True Tyr's Blessing
+      Type: Usable
+      Weight: 10
+      Flags:
+        BuyingStore: true
+      NoUse:
+        Sitting: true
+      Script: |
+        sc_start SC_FLEEFOOD,3600000,30;
+        sc_start SC_HITFOOD,3600000,30;
+        sc_start SC_ATKPOTION,3600000,20;
+        sc_start SC_MATKPOTION,3600000,20;
+        sc_start SC_SPEEDUP0,600000,25;
+    - Id: 22820
+      AegisName: G_ASPD_Potion
+      Name: True Enhanced ASPD Potion
+      Type: Usable
+      Weight: 10
+      Flags:
+        BuyingStore: true
+      NoUse:
+        Sitting: true
+      Script: |
+        sc_start SC_ATTHASTE_CASH,3600000,3;
+        sc_start SC_SPEEDUP0,600000,25;
+    - Id: 22821
+      AegisName: G_Red_Booster
+      Name: True Red Booster
+      Type: Usable
+      Weight: 10
+      Flags:
+        BuyingStore: true
+      NoUse:
+        Sitting: true
+      Script: |
+        specialeffect2 EF_POTION_BERSERK;
+        sc_start SC_2011RWC_SCROLL,3600000,0;
+        sc_start SC_SPEEDUP0,600000,25;
+    - Id: 17066
+      AegisName: Poison_Bottle_Box50
+      Name: Poison Bottle Box50
+      Type: Cash
+      Buy: 20
+      Weight: 10
+      Flags:
+        UniqueId: true
+      Script: |
+        getitem 678,50;
+    - Id: 17067
+      AegisName: Poison_Bottle_Box100
+      Name: Poison Bottle Box100
+      Type: Cash
+      Buy: 20
+      Weight: 10
+      Flags:
+        UniqueId: true
+      Script: |
+        getitem 678,100;
+    - Id: 17068
+      AegisName: Acidbomb_Box50
+      Name: Acidbomb Box50
+      Type: Usable
+      Buy: 20
+      Weight: 10
+      Flags:
+        UniqueId: true
+      Script: |
+        getgroupitem(IG_ACIDBOMB_BOX50);
+    - Id: 17069
+      AegisName: Acidbomb_Box100
+      Name: Acidbomb Box100
+      Type: Usable
+      Buy: 20
+      Weight: 10
+      Flags:
+        UniqueId: true
+      Script: |
+        getitem 7135,100;
+        getitem 7136,100;
+    - Id: 17070
+      AegisName: Acidbomb_Box500
+      Name: Acidbomb Box500
+      Type: Usable
+      Buy: 20
+      Weight: 10
+      Flags:
+        UniqueId: true
+      Script: |
+        getitem 7135,500;
+        getitem 7136,500;
+    - Id: 12642
+      AegisName: Fruit_Of_Mastela_Box2
+      Name: Fruit Of Mastela 100 Box
+      Type: Usable
+      Trade:
+        NoDrop: true
+        NoTrade: true
+        NoSell: true
+        NoCart: true
+        NoGuildStorage: true
+        NoMail: true
+        NoAuction: true
+      Script: |
+        getitem 522,100;
