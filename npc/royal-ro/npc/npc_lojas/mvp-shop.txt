@@ -114,7 +114,7 @@ CaseCH:
 			setarray .ItemLists[0],
 				12914,     // Caixa Ágil [10]
 				12913,     // Caixa Abençoada [10]
-				24021,     // Caixa de Mastela [100]
+				12642,     // Caixa de Mastela [100]
 				13989,     // Caixa de Bomba Ácida [10]
 				14004,     // Caixa de Veneno Mortal [10]
 				7621,      // Amuleto de Ziegfried

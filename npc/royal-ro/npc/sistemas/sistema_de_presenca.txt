@@ -179,49 +179,20 @@ end;
 			mes "fórum do servidor.";
 			close;
 
-		case 5: // Original case 4, now case 5
+		case 5:
 			next;
-			mes .ns$;
-			if(Presencaon){
-				mes "As mensagens foram desligadas.";
-				set Presencaon,0;
-				close;
+			if (Presencaon == 0) {
+				mes .ns$;
+				mes "Mensagens do sistema de presença foram ^00B2EEligadas^000000 para você.";
+				set Presencaon, 1;
 			} else {
-				mes "As mensagens foram ligadas.";
-				set Presencaon,1;
-				close;
+				mes .ns$;
+				mes "Mensagens do sistema de presença foram ^FF0000desligadas^000000 para você.";
+				set Presencaon, 0;
 			}
+			close;
 	}
-}
-
-//================================================
-//== Contador de Presença
-
--	script	Presenca	-1,{
-
-OnPCLoginEvent:
-	.ns2$ = getvariableofnpc(.ns2$,"Pontos de Presença");
-	.vip_needed = getvariableofnpc(.vip_needed,"Pontos de Presença");
-	.pontos_normal = getvariableofnpc(.pontos_normal,"Pontos de Presença");
-	.pontos_vip = getvariableofnpc(.pontos_vip,"Pontos de Presença");
-	addtimer 60000,"Presenca::OnTime";
-end;
-
-OnTime:
-	if(checkvending() || Presenca == 65000) end;
-	if(Presenca > 0){
-		#Presenca += Presenca;
-		set Presenca,0;
-	}
-	if (getgroupid() < .vip_needed) {
-		#Presenca += .pontos_normal;
-		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 1 Ponto e ficou com "+#Presenca+" Pontos de Presença.";
-	} else {
-		#Presenca += .pontos_vip;
-		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 2 Pontos e ficou com "+#Presenca+" Pontos de Presença.";
-	}
-	addtimer 60000,"Presenca::OnTime";
-end;
+	end;
 
 OnBuyItem:
 	// Calculate total cost
@@ -275,6 +246,39 @@ OnBuyItem:
 	deletearray @bought_nameid[0],getarraysize(@bought_nameid);
 	deletearray @bought_quantity[0],getarraysize(@bought_quantity);
 	close;
+}
+
+
+
+//================================================
+//== Contador de Presença
+
+-	script	Presenca	-1,{
+
+OnPCLoginEvent:
+	.ns2$ = getvariableofnpc(.ns2$,"Pontos de Presença");
+	.vip_needed = getvariableofnpc(.vip_needed,"Pontos de Presença");
+	.pontos_normal = getvariableofnpc(.pontos_normal,"Pontos de Presença");
+	.pontos_vip = getvariableofnpc(.pontos_vip,"Pontos de Presença");
+	addtimer 60000,"Presenca::OnTime";
+end;
+
+OnTime:
+	if(checkvending() || Presenca == 65000) end;
+	if(Presenca > 0){
+		#Presenca += Presenca;
+		set Presenca,0;
+	}
+	if (getgroupid() < .vip_needed) {
+		#Presenca += .pontos_normal;
+		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 1 Ponto e ficou com "+#Presenca+" Pontos de Presença.";
+	} else {
+		#Presenca += .pontos_vip;
+		if(Presencaon)	dispbottom .ns2$+" : Você recebeu 2 Pontos e ficou com "+#Presenca+" Pontos de Presença.";
+	}
+	addtimer 60000,"Presenca::OnTime";
+end;
+
 }
 
 //================================================
