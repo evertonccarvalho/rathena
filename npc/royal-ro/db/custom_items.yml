@@ -340,3 +340,36 @@ Body:
         NoAuction: true
       Script: |
         getitem 522,100;
+
+    - Id: 480126
+      AegisName: C_Giant_Shark
+      Name: Costume Giant Shark
+      Type: Armor
+      Locations:
+        Costume_Garment: true
+      ArmorLevel: 1
+      View: 109
+    - Id: 480127
+      AegisName: C_Hooked_Straw_Hat
+      Name: Costume Hooked Straw Hat
+      Type: Armor
+      Locations:
+        Costume_Garment: true
+      ArmorLevel: 1
+      View: 115
+    - Id: 480129
+      AegisName: C_Triple_Ice_Cream
+      Name: Costume Triple Ice Cream
+      Type: Armor
+      Locations:
+        Costume_Garment: true
+      ArmorLevel: 1
+      View: 116
+    - Id: 480130
+      AegisName: C_Beer_Server
+      Name: Costume Beer Server
+      Type: Armor
+      Locations:
+        Costume_Garment: true
+      ArmorLevel: 1
+      View: 117

@@ -32,7 +32,7 @@ callfunc "qshop_";
 
 // Script Core
 //============================================================
--	script	quest_shop2	-1,{ 
+-	script	quest_shop2	-1,{
 function Add; function Chk; function Slot; function A_An;
 OnInit:
 	freeloop(1);
@@ -72,19 +72,13 @@ OnInit:
 	Add(1,12516,1,0,75);
 	Add(1,12422,1,0,50);
 	Add(1,12425,1,0,50);
-	Add(1,12213,1,0,150);	
+	Add(1,12213,1,0,150);
+	Add(1,480126,1,0,200);
 	Add(1,480127,1,0,200);
-	Add(1,35223,1,0,200);
-	Add(1,35224,1,0,200);
-	Add(1,35225,1,0,200);
-	Add(1,35226,1,0,200);
-	Add(1,35227,1,0,200);
-	Add(1,35228,1,0,200);
-	Add(1,35229,1,0,200);
-	Add(1,35230,1,0,200);
-	Add(1,35231,1,0,200);
-	Add(1,35232,1,0,200);
-	Add(1,35233,1,0,200);
+	Add(1,480129,1,0,200);
+	Add(1,480130,1,0,200);
+
+
 
 // -----------------------------------------------------------
 
@@ -140,7 +134,7 @@ OnBuyItem:
 	while(1) {
 		switch(select(" - Comprar ^0055FF"+getitemname(.@q[0])+"^000000:"+((.@preview && !@qe[7])?" - Visualizar":"")+": - ^777777Cancelar^000000")) {
 		case 1:
-			if (@qe[0]) { 
+			if (@qe[0]) {
 				mes "[Loja PVP]";
 				mes "Faltam pontos de PVP!";
 				close;
@@ -228,7 +222,7 @@ function	script	qshop_	{
 	deletearray @i[0],getarraysize(@i);
 	for(set .@i,0; .@i<getargcount(); set .@i,.@i+1)
 		set @i[.@i],getarg(.@i);
-	doevent "quest_shop2::OnMenu";		
+	doevent "quest_shop2::OnMenu";
 	end;
 }
 
