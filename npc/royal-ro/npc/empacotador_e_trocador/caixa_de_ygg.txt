@@ -1,0 +1,63 @@
+prontera,128,213,5	script	Empacotador de Yggdrasil	560,{
+	mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+	mes "Olá "+StrCharInfo(0)+"!";
+	mes "Vejo que você está interessado em trocar Frutos de Yggdrasil em Caixas.";
+	mes "Isto facilitará as trocas e vendas de frutos no servidor.";
+	next;
+	mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+	mes "Ok, em que você está interessado?";
+	next;
+	switch(select("[^008000»^000000] Trocar frutos por caixa.:Em nada, deixa pra próxima."))
+	{
+	case 1:
+		mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+		mes "Bem, você escolheu trocar frutos por caixa.";
+		mes "Eu posso trocar por 1 caixa de 50un. ou 100un.";
+		next;
+		mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+		mes "Escolha qual caixa que você quer receber em troca.";
+		next;
+		switch(select("[^008000»^000000] Caixa de Yggdrasil 100un.:[^008000»^000000] Caixa de Yggdrasil 50un.:Nenhuma, obrigado."))
+		{
+		case 1:
+			if(countitem(607) >= 100) {
+			delitem 607,100;
+			getitem 22005,1;
+			mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+			mes "Aqui está, tenha um bom jogo!";
+			close;
+			}
+			else {
+    			mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+			mes "Você não tem 100 Frutos de Yggdrasil.";
+			mes "Volte quando você tiver eles!";
+			close;
+			}
+			break;
+
+		case 2:
+			if(countitem(607) >= 50) {
+			delitem 607,50;
+			getitem 22004,1;
+			mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+			mes "Aqui está, tenha um bom jogo!";
+			close;
+			}
+			else {
+    			mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+			mes "Você não tem 50 Frutos de Yggdrasil.";
+			mes "Volte quando você tiver eles!";
+			close;
+			}
+			break;
+
+		case 3:
+			mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+			mes "Tudo bem, quando mudar de idéia volte aqui!";
+			close;
+		}
+case 2:
+	mes "[ ^008000Empacotador de Yggdrasil^000000 ]";
+	mes "Tudo bem, quando mudar de idéia volte aqui!";
+	close;
+}	}
